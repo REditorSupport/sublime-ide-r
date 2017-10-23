@@ -7,4 +7,3 @@ from .source_prompt import RBoxSourcePromptCommand
 from .format_code import RBoxFormatCodeCommand
 from .extract_function import RBoxExtractFunctionCommand
 from .utils import RBoxReplaceSelectionCommand
-from .linter import install_linter_spec
