@@ -11,6 +11,8 @@ Improve your R coding experiences with Sublime Text!
 
 ## Features highlight!
 
+**Note**: The original `R Extended` syntax has [merged](https://github.com/sublimehq/Packages/pull/932) into Sublime Text 3142. Please use`R` syntax if you are using 3142 or above.
+
 <table>
     <tr>
         <th>Auto Completions</th>
