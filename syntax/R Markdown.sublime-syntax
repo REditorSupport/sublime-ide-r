@@ -966,12 +966,12 @@ contexts:
             - meta_content_scope: source.r
             - match: \}
               pop: true
-            - include: "R Extended.sublime-syntax"
+            - include: scope:source.r
         - match: ""
           set:
             - meta_scope: markup.raw.code-fence.markdown
             - meta_content_scope: source.r
-            - include: "R Extended.sublime-syntax"
+            - include: scope:source.r
             - match: '[ ]{,3}(```)\s*$'
               scope: punctuation.definition.raw.code-fence.end.markdown
               pop: true
@@ -984,7 +984,7 @@ contexts:
       push:
         - meta_scope: markup.raw.inline.markdown
         - meta_content_scope: source.r
-        - include: "R Extended.sublime-syntax"
+        - include: scope:source.r
         - match: \1(?!`)
           scope: punctuation.definition.raw.end.markdown
           pop: true
