@@ -4,6 +4,11 @@
     // (windows):    "C:\\Program Files\\R\\R-x.y.z\\bin\\Rscript.exe"
     "rscript_binary": null,
 
+    // path to R, for example
+    // (mac, linux): "/usr/local/bin/R"
+    // (windows):    "C:\\Program Files\\R\\R-x.y.z\\bin\\R.exe"
+    "r_binary": null,
+
     // additional paths to PATH variable
     "additional_paths": []
 }
