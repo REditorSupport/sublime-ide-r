@@ -13,7 +13,7 @@ def main_menu_is_visible():
     return _main_menu_is_visible[0]
 
 
-class RBoxMainMenuListener(sublime_plugin.EventListener):
+class RideMainMenuListener(sublime_plugin.EventListener):
     def window_is_rproj(self, folders):
         for folder in folders:
             if not os.path.isdir(folder):
@@ -76,7 +76,7 @@ class RBoxMainMenuListener(sublime_plugin.EventListener):
 
         def set_main_menu():
 
-            menu_path = os.path.join(sublime.packages_path(), 'User', 'R-Box',
+            menu_path = os.path.join(sublime.packages_path(), 'User', 'RIDE',
                                      'Main.sublime-menu')
             menu_dir = os.path.dirname(menu_path)
 
@@ -87,7 +87,7 @@ class RBoxMainMenuListener(sublime_plugin.EventListener):
 
                 if not os.path.exists(menu_path):
                     data = sublime.load_resource(
-                        "Packages/R-Box/support/R-Box.sublime-menu")
+                        "Packages/RIDE/support/RIDE.sublime-menu")
                     with open(menu_path, 'w') as f:
                         f.write(data.replace("\r\n", "\n"))
                         f.close()
@@ -101,7 +101,7 @@ class RBoxMainMenuListener(sublime_plugin.EventListener):
         self.timer.start()
 
 
-class RBoxPackageSendCodeCommand(sublime_plugin.WindowCommand):
+class RidePackageSendCodeCommand(sublime_plugin.WindowCommand):
     def is_visible(self):
         return self.window.id() in _window_is_rproject
 

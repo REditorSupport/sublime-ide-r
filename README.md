@@ -1,7 +1,7 @@
-R package for Sublime Text
+RIDE: Make Sublime Text a prefect IDE for R
 
-> This is a development version of [R-Box](https://github.com/randy3k/R-Box) aiming to utilize the use
-  of [language server](https://github.com/REditorSupport/languageserver). This repo will utimately replace `R-Box` by transfering it to here.
+> This is a new iteration of [R-Box](https://github.com/randy3k/R-Box) aiming to utilize the use
+  of [language server](https://github.com/REditorSupport/languageserver).
 
 ------------
 

@@ -1,10 +1,4 @@
 {
-    // enable auto completions
-    "auto_completions": false,
-
-    // show popup hints
-    "show_popup_hints": false,
-
     // path to Rscript, for example
     // (mac, linux): "/usr/local/bin/Rscript"
     // (windows):    "C:\\Program Files\\R\\R-x.y.z\\bin\\Rscript.exe"

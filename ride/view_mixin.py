@@ -4,14 +4,14 @@ import sublime
 VALIDCALL = re.compile(r"(?:([a-zA-Z][a-zA-Z0-9.]*)(?::::?))?([.a-zA-Z0-9_-]+)\s*\($")
 
 
-class RBoxViewMixin:
+class RideViewMixin:
 
     def function_name_at_point(self, view, pt):
         if not view.match_selector(pt, "meta.function-call.r"):
             return None, None
         scope_begin = view.extract_scope(pt).begin()
         if view.match_selector(scope_begin, "support.function.r, variable.function.r"):
-            scope_begin = view.find("\(", scope_begin).begin() + 1
+            scope_begin = view.find(r"\(", scope_begin).begin() + 1
         line = self.extract_line(view, scope_begin, truncated=True)
         m = VALIDCALL.search(line)
         if m:
@@ -67,7 +67,7 @@ class RBoxViewMixin:
 
             for begin, end, text in reversed(replacements):
                 mdpops_view.run_command(
-                    "r_box_replace_selection",
+                    "ride_replace_selection",
                     {"region": (begin, end), "text": format(text)})
 
         return mdpops_view.substr(sublime.Region(0, mdpops_view.size()))

@@ -10,7 +10,7 @@ def escape_dq(string):
     return string
 
 
-class RBoxSourcePromptCommand(sublime_plugin.TextCommand):
+class RideSourcePromptCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         view = self.view
         point = view.sel()[0].end() if len(view.sel()) > 0 else 0

@@ -3,7 +3,7 @@ import tempfile
 import re
 import os
 import subprocess
-from .settings import r_box_settings
+from .settings import ride_settings
 
 ANSI_ESCAPE = re.compile(r'(\x9B|\x1B\[)[0-?]*[ -/]*[@-~]')
 
@@ -33,7 +33,7 @@ class ScriptMixin:
         return None
 
     def custom_env(self):
-        paths = r_box_settings.additional_paths()
+        paths = ride_settings.additional_paths()
         if sublime.platform() == "osx":
             paths += ["/Library/TeX/texbin", "/usr/local/bin"]
         env = os.environ.copy()
@@ -43,7 +43,7 @@ class ScriptMixin:
         return env
 
     def rscript(self, script=None, file=None, args=None, stdin_text=None):
-        cmd = [r_box_settings.rscript_binary()]
+        cmd = [ride_settings.rscript_binary()]
         if script:
             cmd = cmd + ["-e", script]
         elif file:
@@ -84,7 +84,7 @@ class ScriptMixin:
             if not self.message_shown:
                 sublime.message_dialog(
                     "Rscript binary cannot be found automatically. "
-                    "The path to `Rscript` can be specified in the R-Box settings.")
+                    "The path to `Rscript` can be specified in the RIDE settings.")
                 self.message_shown = True
             raise Exception("Rscript binary not found.")
 
@@ -109,17 +109,9 @@ class ScriptMixin:
         out = self.rscript("cat(names(formals({}:::{})))".format(pkg, funct))
         return out.strip().split(" ")
 
-    def format_code(self, code, indent=4, width_cutoff=100):
-        formatted_code = self.rscript(
-            "formatR::tidy_source(file('stdin'), indent={:d}, width.cutoff={:d})".format(
-                indent, width_cutoff),
-            stdin_text=code)
-
-        return formatted_code[0:-1]
-
     def detect_free_vars(self, code):
         dfv_path = tempfile.mkstemp(suffix=".R")[1]
-        data = sublime.load_resource("Packages/R-Box/box/detect_free_vars.R")
+        data = sublime.load_resource("Packages/RIDE/ride/detect_free_vars.R")
         with open(dfv_path, 'w') as f:
             f.write(data.replace("\r\n", "\n"))
             f.close()

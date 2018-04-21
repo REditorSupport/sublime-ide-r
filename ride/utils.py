@@ -68,7 +68,7 @@ class OutputPanel:
         pass
 
 
-class RBoxReplaceSelectionCommand(sublime_plugin.TextCommand):
+class RideReplaceSelectionCommand(sublime_plugin.TextCommand):
 
     def run(self, edit, region, text):
         self.view.replace(edit, sublime.Region(region[0], region[1]), text)

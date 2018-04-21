@@ -5,12 +5,12 @@ import subprocess
 from .utils import read_registry
 
 
-class RBoxSettings:
+class RIDESettings:
     _rscript_binary = None
     _additional_paths = []
 
     def get(self, key, default):
-        s = sublime.load_settings('R-Box.sublime-settings')
+        s = sublime.load_settings('RIDE.sublime-settings')
         return s.get(key, default)
 
     def rscript_binary(self):
@@ -42,4 +42,4 @@ class RBoxSettings:
         return additional_paths
 
 
-r_box_settings = RBoxSettings()
+ride_settings = RIDESettings()

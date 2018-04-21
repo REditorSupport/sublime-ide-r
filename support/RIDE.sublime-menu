@@ -1,14 +1,10 @@
 [
     {
-        "caption": "R-Box",
-        "id": "R-Box",
+        "caption": "RIDE",
+        "id": "RIDE",
         "children": [
             {
-                "command": "r_box_format_code",
-                "caption": "Format Code"
-            },
-            {
-                "command": "r_box_extract_function",
+                "command": "ride_extract_function",
                 "caption": "Extract Function"
             },
             {
@@ -47,63 +43,63 @@
                 "caption": "-"
             },
             {
-                "command": "r_box_package_send_code",
+                "command": "ride_package_send_code",
                 "args": {
                     "cmd": "devtools::load_all(\"$folder\")"
                 },
                 "caption": "Load Package"
             },
             {
-                "command": "r_box_package_send_code",
+                "command": "ride_package_send_code",
                 "args": {
                     "cmd": "devtools::install(\"$folder\")"
                 },
                 "caption": "Install Package"
             },
             {
-                "command": "r_box_package_send_code",
+                "command": "ride_package_send_code",
                 "args": {
                     "cmd": "devtools::install(\"$folder\", local=FALSE)"
                 },
                 "caption": "Clean and Rebuild Package"
             },
             {
-                "command": "r_box_package_send_code",
+                "command": "ride_package_send_code",
                 "args": {
                     "cmd": "devtools::test(\"$folder\")"
                 },
                 "caption": "Test Package"
             },
             {
-                "command": "r_box_package_send_code",
+                "command": "ride_package_send_code",
                 "args": {
                     "cmd": "devtools::check(\"$folder\")"
                 },
                 "caption": "Check Package"
             },
             {
-                "command": "r_box_package_send_code",
+                "command": "ride_package_send_code",
                 "args": {
                     "cmd": "devtools::document(\"$folder\")"
                 },
                 "caption": "Document Package"
             },
             {
-                "command": "r_box_package_send_code",
+                "command": "ride_package_send_code",
                 "args": {
                     "cmd": "Rcpp::compileAttributes(\"$folder\")"
                 },
                 "caption": "Compile C++ Attributes"
             },
             {
-                "command": "r_box_package_send_code",
+                "command": "ride_package_send_code",
                 "args": {
                     "cmd": "devtools::build(\"$folder\")"
                 },
                 "caption": "Build Source"
             },
             {
-                "command": "r_box_package_send_code",
+                "command": "ride_package_send_code",
                 "args": {
                     "cmd": "devtools::build(\"$folder\", binary=TRUE)"
                 },
@@ -113,15 +109,15 @@
                 "caption": "-"
             },
             {
-                "command": "r_box_render_rmarkdown",
+                "command": "ride_render_rmarkdown",
                 "caption": "Render Rmarkdown"
             },
             {
-                "command": "r_box_sweave_rnw",
+                "command": "ride_sweave_rnw",
                 "caption": "Sweave Rnw to PDF"
             },
             {
-                "command": "r_box_knit_rnw",
+                "command": "ride_knit_rnw",
                 "caption": "Knit Rnw to PDF"
             }
         ]

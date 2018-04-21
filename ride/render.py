@@ -1,7 +1,7 @@
 import sublime_plugin
 
 
-class RBoxRenderRmarkdownCommand(sublime_plugin.TextCommand):
+class RideRenderRmarkdownCommand(sublime_plugin.TextCommand):
     def is_enabled(self):
         return self.view.settings().get("syntax").endswith("R Markdown.sublime-syntax")
 
@@ -10,7 +10,7 @@ class RBoxRenderRmarkdownCommand(sublime_plugin.TextCommand):
         self.view.run_command("send_code", {"cmd": cmd})
 
 
-class RBoxSweaveRnwCommand(sublime_plugin.TextCommand):
+class RideSweaveRnwCommand(sublime_plugin.TextCommand):
     def is_enabled(self):
         return self.view.settings().get("syntax").endswith("R Sweave.sublime-syntax")
 
@@ -21,7 +21,7 @@ class RBoxSweaveRnwCommand(sublime_plugin.TextCommand):
         self.view.run_command("send_code", {"cmd": cmd})
 
 
-class RBoxKnitRnwCommand(sublime_plugin.TextCommand):
+class RideKnitRnwCommand(sublime_plugin.TextCommand):
     def is_enabled(self):
         return self.view.settings().get("syntax").endswith("R Sweave.sublime-syntax")
 

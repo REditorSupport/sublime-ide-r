@@ -3,8 +3,8 @@ import re
 from types import SimpleNamespace
 from collections import OrderedDict
 from .script_mixin import ScriptMixin
-from .view_mixin import RBoxViewMixin
-from .settings import r_box_settings
+from .view_mixin import RideViewMixin
+from .settings import ride_settings
 
 
 VALIDCOMPLETION = re.compile(r"[.a-zA-Z0-9_-]+$")
@@ -84,7 +84,7 @@ class NamespaceManager(ScriptMixin):
 namespace_manager = NamespaceManager()
 
 
-class RBoxNameSpaceListener(RBoxViewMixin, sublime_plugin.EventListener):
+class RideNameSpaceListener(RideViewMixin, sublime_plugin.EventListener):
 
     default_packages = [
         "base", "stats", "methods", "utils", "graphics", "grDevices"
@@ -102,8 +102,8 @@ class RBoxNameSpaceListener(RBoxViewMixin, sublime_plugin.EventListener):
         if not view.match_selector(pt, "source.r, source.r-console"):
             return False
 
-        return r_box_settings.get("auto_completions", True) or \
-            r_box_settings.get("show_popup_hints", True)
+        return ride_settings.get("auto_completions", True) or \
+            ride_settings.get("show_popup_hints", True)
 
     def filter_completions(self, objects):
         return filter(lambda x: VALIDCOMPLETION.match(x), objects)
@@ -123,8 +123,8 @@ class RBoxNameSpaceListener(RBoxViewMixin, sublime_plugin.EventListener):
         completions += [["{}\tInstalled Package".format(pkg), pkg]
                         for pkg in namespace_manager.installed_packages()]
 
-        view.settings().set("R-Box.completions", completions)
-        view.settings().set("R-Box.loaded_packages", packages)
+        view.settings().set("RIDE.completions", completions)
+        view.settings().set("RIDE.loaded_packages", packages)
 
     def refresh_completions_for_view(self, view):
         packages = self.inline_packages_for_view(view)
