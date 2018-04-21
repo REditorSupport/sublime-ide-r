@@ -32,16 +32,6 @@ class ScriptMixin:
 
         return None
 
-    def custom_env(self):
-        paths = ride_settings.additional_paths()
-        if sublime.platform() == "osx":
-            paths += ["/Library/TeX/texbin", "/usr/local/bin"]
-        env = os.environ.copy()
-        if paths:
-            sep = ";" if sublime.platform() == "windows" else ":"
-            env["PATH"] = env["PATH"] + sep + sep.join(paths)
-        return env
-
     def rscript(self, script=None, file=None, args=None, stdin_text=None):
         cmd = [ride_settings.rscript_binary()]
         if script:
@@ -59,7 +49,7 @@ class ScriptMixin:
             startupinfo = None
 
         working_dir = self.find_working_dir()
-        custom_env = self.custom_env()
+        custom_env = ride_settings.custom_env()
 
         try:
             p = subprocess.Popen(

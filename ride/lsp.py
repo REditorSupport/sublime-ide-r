@@ -13,14 +13,10 @@ if LSP_FOUND:
         name = "rlang"
 
         def __init__(self):
-            r_binary = ride_settings.get("r_binary", "R")
-            if not r_binary:
-                r_binary = "R"
-
             self._config = ClientConfig(
                 name=self.name,
                 binary_args=[
-                    r_binary,
+                    ride_settings.r_binary(),
                     "--quiet",
                     "--slave",
                     "-e",
@@ -36,7 +32,7 @@ if LSP_FOUND:
                 enabled=True,
                 init_options=dict(),
                 settings=dict(),
-                env=dict()
+                env={"PATH": ride_settings.custom_env()["PATH"]}
             )
 
         @property
