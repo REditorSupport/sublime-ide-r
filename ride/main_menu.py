@@ -4,6 +4,9 @@ import os
 from shutil import copyfile
 import threading
 
+from .settings import ride_settings
+
+
 _main_menu_is_visible = [False]
 _window_is_rproject = []
 _window_is_not_rproject = []
@@ -113,6 +116,7 @@ class RidePackageExecCommand(sublime_plugin.WindowCommand):
 
     def run(self, **kwargs):
         kwargs["working_dir"] = self.window.folders()[0]
+        kwargs["env"] = {"PATH": ride_settings.custom_env()["PATH"]}
         self.window.run_command("exec", kwargs)
 
 
