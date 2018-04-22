@@ -4,106 +4,133 @@
         "id": "RIDE",
         "children": [
             {
-                "command": "ride_extract_function",
-                "caption": "Extract Function"
+                "caption": "Extract Function",
+                "command": "ride_extract_function"
             },
             {
                 "caption": "-"
             },
             {
+                "caption": "Send Current Line/Selection",
                 "command": "send_code",
                 "args": {
                     "cmd": ""
-                },
-                "caption": "Send Current Line/Selection"
+                }
             },
             {
+                "caption": "Source Current File",
                 "command": "send_code",
                 "args": {
                     "cmd": "source(\"$file\")"
-                },
-                "caption": "Source Current File"
+                }
             },
             {
+                "caption": "Set Working Directory",
                 "command": "send_code",
                 "args": {
                     "cmd": "setwd(\"${file_path:$folder}\")"
-                },
-                "caption": "Set Working Directory"
+                }
             },
             {
+                "caption": "Clear Workspace",
                 "command": "send_code",
                 "args": {
                     "cmd": "rm(list=ls())",
                     "confirmation": "Clear R Workspace?"
-                },
-                "caption": "Clear Workspace"
+                }
             },
             {
                 "caption": "-"
             },
             {
-                "command": "ride_package_send_code",
+                "caption": "Clean and Build Package",
+                "command": "ride_package_exec",
                 "args": {
-                    "cmd": "devtools::load_all(\"$folder\")"
-                },
-                "caption": "Load Package"
+                    "cmd": [
+                        "Rscript", "-e",
+                        "devtools::install(\".\", local=FALSE)"
+                    ]
+                }
             },
             {
-                "command": "ride_package_send_code",
+                "caption": "Test Package",
+                "command": "ride_package_exec",
                 "args": {
-                    "cmd": "devtools::install(\"$folder\")"
-                },
-                "caption": "Install Package"
+                    "cmd": [
+                        "Rscript", "-e",
+                        "devtools::test(\".\")"
+                    ]
+                }
             },
             {
-                "command": "ride_package_send_code",
+                "caption": "Check Package",
+                "command": "ride_package_exec",
                 "args": {
-                    "cmd": "devtools::install(\"$folder\", local=FALSE)"
-                },
-                "caption": "Clean and Rebuild Package"
+                    "cmd": [
+                        "Rscript", "-e",
+                        "devtools::check(\".\")"
+                    ]
+                }
             },
             {
-                "command": "ride_package_send_code",
+                "caption": "Document Package",
+                "command": "ride_package_exec",
                 "args": {
-                    "cmd": "devtools::test(\"$folder\")"
-                },
-                "caption": "Test Package"
+                    "cmd": [
+                        "Rscript", "-e",
+                        "devtools::document(\".\")"
+                    ]
+                }
             },
             {
-                "command": "ride_package_send_code",
+                "caption": "Compile C++ Attributes",
+                "command": "ride_package_exec",
                 "args": {
-                    "cmd": "devtools::check(\"$folder\")"
-                },
-                "caption": "Check Package"
+                    "cmd": [
+                        "Rscript", "-e",
+                        "Rcpp::compileAttributes(\".\")"
+                    ]
+                }
             },
             {
-                "command": "ride_package_send_code",
+                "caption": "Build Source Package",
+                "command": "ride_package_exec",
                 "args": {
-                    "cmd": "devtools::document(\"$folder\")"
-                },
-                "caption": "Document Package"
+                    "cmd": [
+                        "Rscript", "-e",
+                        "devtools::build(\".\")"
+                    ]
+                }
             },
             {
-                "command": "ride_package_send_code",
+                "caption": "Build Binary Package",
+                "command": "ride_package_exec",
                 "args": {
-                    "cmd": "Rcpp::compileAttributes(\"$folder\")"
-                },
-                "caption": "Compile C++ Attributes"
+                    "cmd": [
+                        "Rscript", "-e",
+                        "devtools::build(\".\", binary=TRUE)"
+                    ]
+                }
             },
             {
-                "command": "ride_package_send_code",
+                "caption": "Build Package Site",
+                "command": "ride_package_exec",
                 "args": {
-                    "cmd": "devtools::build(\"$folder\")"
-                },
-                "caption": "Build Source"
+                    "cmd": [
+                        "Rscript", "-e",
+                        "pkgdown::build_site()"
+                    ]
+                }
             },
             {
-                "command": "ride_package_send_code",
+                "caption": "Build Package Site (Lazy)",
+                "command": "ride_package_exec",
                 "args": {
-                    "cmd": "devtools::build(\"$folder\", binary=TRUE)"
-                },
-                "caption": "Build Binary"
+                    "cmd": [
+                        "Rscript", "-e",
+                        "pkgdown::build_site(lazy = TRUE)"
+                    ]
+                }
             },
             {
                 "caption": "-"
