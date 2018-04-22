@@ -1,6 +1,6 @@
-diff --git a/temp.yaml b/Users/Randy/Dropbox/Sublime Text 3/Packages/RIDE/R Markdown.sublime-syntax
-index f2b1008..58612cc 100644
---- a/temp.yaml
+diff --git a/Users/Randy/Desktop/untitled.yaml b/Users/Randy/Dropbox/Sublime Text 3/Packages/RIDE/R Markdown.sublime-syntax
+index f2b1008..4034397 100644
+--- a/Users/Randy/Desktop/untitled.yaml
 +++ b/Users/Randy/Dropbox/Sublime Text 3/Packages/RIDE/R Markdown.sublime-syntax	
 @@ -1,13 +1,13 @@
  %YAML 1.2
@@ -68,11 +68,11 @@ index f2b1008..58612cc 100644
            pop: true
 +        - include: fenced-rcode-block
          - include: fenced-code-block
-+    - include: code-rspan
++    - include: rcode-span
      - include: code-span
    thematic-break:
      - match: '(?={{thematic_break}})'
-@@ -1402,3 +1430,108 @@ contexts:
+@@ -1402,3 +1430,109 @@ contexts:
                          `+
                        scope: invalid.deprecated.unescaped-backticks.markdown
                      - include: inline
@@ -94,14 +94,15 @@ index f2b1008..58612cc 100644
 +            - match: \}
 +              pop: true
 +            - include: scope:source.r
-+        - match: ""
-+          set:
-+            - match: ""
-+              embed: scope:source.r
-+              embed_scope: markup.raw.code-fence.markdown
-+              escape: '[ ]{,3}(```)\s*$'
-+              escape_captures:
-+                  1: punctuation.definition.raw.code-fence.end.markdown
++        - match: "```"
++          pop: true
++          captures:
++            1: punctuation.definition.raw.code-fence.end.markdown
++        - match: ''
++          embed: scope:source.r
++          embed_scope: markup.raw.code-fence.markdown
++          escape: (?=```)
++
 +
 +  rcode-span:
 +    - match: (`+)(r) (?!`)
