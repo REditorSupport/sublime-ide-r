@@ -1,0 +1,183 @@
+diff --git a/temp.yaml b/Users/Randy/Dropbox/Sublime Text 3/Packages/RIDE/R Markdown.sublime-syntax
+index f2b1008..58612cc 100644
+--- a/temp.yaml
++++ b/Users/Randy/Dropbox/Sublime Text 3/Packages/RIDE/R Markdown.sublime-syntax	
+@@ -1,13 +1,13 @@
+ %YAML 1.2
+ ---
+ # http://www.sublimetext.com/docs/3/syntax.html
+-name: Markdown
++name: R Markdown
+ file_extensions:
+-  - md
+-  - mdown
+-  - markdown
+-  - markdn
+-scope: text.html.markdown
++  - rmd
++  - rmdown
++  - rmarkdown
++  - rmarkdn
++scope: text.html.markdown.rmarkdown
+ comment: |-
+   this definition aims to meet CommonMark specifications http://spec.commonmark.org/
+   with GitHub Formatted Markdown extensions              https://github.github.com/gfm/
+@@ -165,6 +165,31 @@ variables:
+     #   )
+ contexts:
+   main:
++    - match: (?=^\s*(?:---|\+\+\+)\s*$)
++      push: front-matter
++    - match: ""
++      set: body
++  front-matter:
++    - match: ^\s*(---)\s*$
++      captures:
++        1: punctuation.definition.frontmatter
++      embed: scope:source.yaml
++      embed_scope: markup.raw.yaml.front-matter
++      escape: ^\s*(---)\s*$
++      escape_captures:
++          1: punctuation.definition.frontmatter
++    - match: ^\s*(\+\+\+)\s*$
++      captures:
++        1: punctuation.definition.frontmatter
++      embed: scope:source.toml
++      embed_scope: markup.raw.toml.front-matter
++      escape: ^\s*(\+\+\+)\s*$
++      escape_captures:
++          1: punctuation.definition.frontmatter
++    - match: ""
++      pop: true
++      set: body
++  body:
+     - match: |-
+         (?x)^
+         (?=  {{block_quote}}
+@@ -630,6 +655,7 @@ contexts:
+     - include: escape
+     - include: ampersand
+     - include: bracket
++    - include: latex-math
+     - include: raw
+     - include: image-inline
+     - include: link-inline
+@@ -1254,7 +1280,9 @@ contexts:
+       push:
+         - match: $
+           pop: true
++        - include: fenced-rcode-block
+         - include: fenced-code-block
++    - include: code-rspan
+     - include: code-span
+   thematic-break:
+     - match: '(?={{thematic_break}})'
+@@ -1402,3 +1430,108 @@ contexts:
+                         `+
+                       scope: invalid.deprecated.unescaped-backticks.markdown
+                     - include: inline
++  fenced-rcode-block:
++    - match: |-
++         (?x)
++          (```)
++          (?=\{(r).*\}.*$)
++      captures:
++        1: punctuation.definition.raw.code-fence.begin.markdown
++      push:
++        - meta_scope: markup.raw.code-fence.markdown
++        - match: \{(r)\s*
++          captures:
++            1: constant.other.language-name.markdown
++          push:
++            - meta_scope: markup.raw.code-fence.markdown.options
++            - meta_content_scope: source.r
++            - match: \}
++              pop: true
++            - include: scope:source.r
++        - match: ""
++          set:
++            - match: ""
++              embed: scope:source.r
++              embed_scope: markup.raw.code-fence.markdown
++              escape: '[ ]{,3}(```)\s*$'
++              escape_captures:
++                  1: punctuation.definition.raw.code-fence.end.markdown
++
++  rcode-span:
++    - match: (`+)(r) (?!`)
++      captures:
++        1: punctuation.definition.raw.begin.markdown
++        2: constant.other.language-name.markdown
++      push:
++        - meta_scope: markup.raw.inline.markdown
++        - meta_content_scope: source.r
++        - match: \1(?!`)
++          scope: punctuation.definition.raw.end.markdown
++          pop: true
++        - match: '`+'
++        - match: ^\s*$\n?
++          scope: invalid.illegal.non-terminated.raw.markdown
++          pop: true
++        - include: scope:source.r
++
++  latex-math:
++    - match: \\\$
++    - match: \$\$
++      scope: string.other.math.latex punctuation.definition.string.begin.latex
++      push:
++        - meta_scope: text.tex.latex meta.environment.math.latex
++        - include: scope:text.tex.latex#macros
++        - include: math-content
++        - match: \$\$
++          scope: string.other.math.latex punctuation.definition.string.end.latex
++          pop: true
++    - match: |-
++        (?x)
++        (\$)(?=\S)
++        (?=
++          (?:
++            \\\\
++            |\\\$
++            |[^\$]
++          )*?
++          \S\$(?:[^a-zA-Z0-9]|$)
++        )
++      scope: string.other.math.latex punctuation.definition.string.begin.latex
++      push:
++        - meta_scope: text.tex.latex meta.environment.math.latex
++        - include: scope:text.tex.latex#macros
++        - include: math-content
++        - match: \$
++          scope: string.other.math.latex punctuation.definition.string.end.latex
++          pop: true
++    - match: '(?=\\begin\{\s*(equation|align)\s*\*?\s*\})'
++      push:
++        - include: math-content
++        - match: '(?=\S)'
++          pop: true
++
++  math-braces:
++    - match: '\{'
++      scope: punctuation.definition.group.brace.begin.latex
++      push:
++        - meta_scope: meta.group.brace.latex
++        - match: '\}'
++          scope: punctuation.definition.group.brace.end.latex
++          pop: true
++        - include: math-content
++
++  math-content:
++    - include: rcode-span
++    - include: scope:text.tex.latex#verb
++    - include: scope:text.tex.latex#text-decorators
++    - include: scope:text.tex.latex#references
++    - include: scope:text.tex.latex#begin-end-commands
++    - include: scope:text.tex#greeks
++    - include: scope:text.tex#math-brackets
++    - include: math-braces
++    - include: scope:text.tex.latex#boxes
++    - include: scope:text.tex#math-commands
++    - include: scope:text.tex#math-operators
++    - include: scope:text.tex#math-characters
++    - include: scope:text.tex#math-numerics
++    - include: scope:text.tex.latex#general-constants
