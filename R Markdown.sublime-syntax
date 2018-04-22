@@ -1504,6 +1504,11 @@ contexts:
         - match: \$
           scope: string.other.math.latex punctuation.definition.string.end.latex
           pop: true
+    - match: '(?=\\begin\{\s*(equation|align)\s*\*?\s*\})'
+      push:
+        - include: math-content
+        - match: '(?=\S)'
+          pop: true
 
   math-braces:
     - match: '\{'
