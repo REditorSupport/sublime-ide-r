@@ -1,10 +1,18 @@
 from .settings import ride_settings
+
+
+UNLOAD_MESSAGE = """
+LSP cannot be found. It usually happens when LSP is not installed or
+RIDE is loaded before LSP. For the latter case, please make sure
+LSP is installed to "Installed Packages" as a `sublime-package` file.
+"""
+
 try:
     from LSP.plugin.core.handlers import LanguageHandler
     from LSP.plugin.core.settings import ClientConfig
     LSP_FOUND = True
 except Exception:
-    print("LSP not found.")
+    print(UNLOAD_MESSAGE)
     LSP_FOUND = False
 
 
