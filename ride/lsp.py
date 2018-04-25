@@ -31,7 +31,7 @@ if LSP_FOUND:
                     "languageserver::run()"
                 ],
                 tcp_port=None,
-                scopes=["source.r"],
+                scopes=["source.r", "text.html.markdown.rmarkdown"],
                 syntaxes=[
                     "Packages/R/R.sublime-syntax",
                     "Packages/RIDE/R Markdown.sublime-syntax"
