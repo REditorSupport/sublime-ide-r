@@ -429,6 +429,7 @@ contexts:
               pop: true
             - include: inline
             - include: bold
+            - include: supersubscript
             - include: bold-italic-trailing
         - match: \*
           scope: punctuation.definition.italic.end.markdown
@@ -444,6 +445,7 @@ contexts:
               pop: true
             - include: inline
             - include: italic
+            - include: supersubscript
             - include: bold-italic-trailing
         - include: inline
         - include: bold-italic-trailing
@@ -464,6 +466,7 @@ contexts:
         - match: \b_(?=[^\s_])(?=[^*_]*\*\*)
           comment: eat the underscore that has no corresponding underscore before the closing bold punctuation on the same line, as it won't be treated as italic by CommonMark
         - include: italic
+        - include: supersubscript
         - include: bold-italic-trailing
     - match: '\b(__)(_)(?=\S)(?!_)'
       captures:
@@ -496,6 +499,7 @@ contexts:
               pop: true
             - include: inline
             - include: italic
+            - include: supersubscript
             - include: bold-italic-trailing
         - match: __\b
           scope: punctuation.definition.bold.end.markdown
@@ -511,6 +515,7 @@ contexts:
               pop: true
             - include: inline
             - include: bold
+            - include: supersubscript
             - include: bold-italic-trailing
         - include: inline
         - include: bold-italic-trailing
@@ -531,6 +536,7 @@ contexts:
         - match: \*(?=[^\s*])(?=[^*_]*__\b)
           comment: eat the asterisk that has no corresponding asterisk before the closing bold punctuation on the same line, as it won't be treated as italic by CommonMark
         - include: italic
+        - include: supersubscript
         - include: bold-italic-trailing
   bracket:
     - match: '<(?![a-z/?\$!])'
@@ -665,10 +671,12 @@ contexts:
     - include: link-ref-literal
     - include: link-ref
     - include: link-ref-footnote
+    - include: footnote-inline
   inline-bold-italic:
     - include: inline
     - include: bold
     - include: italic
+    - include: supersubscript
     - include: strikethrough
   inline-bold-italic-linebreak:
     - include: inline-bold-italic
@@ -688,6 +696,7 @@ contexts:
           pop: true
         - include: inline
         - include: bold
+        - include: supersubscript
         - match: '\*+'
         - include: bold-italic-trailing
     - match: '\b_(?=\S)(?!_)'
@@ -704,19 +713,44 @@ contexts:
           pop: true
         - include: inline
         - include: bold
+        - include: supersubscript
         - include: bold-italic-trailing
     - match: '[*_]+'
+  supersubscript:
+    - match: '(~)(?=([^~ \n]|\\ )+~)'
+      scope: punctuation.definition.subscript.begin.markdown
+      push:
+        - meta_scope: markup.subscript.markdown-pandoc
+        - match: ~
+          scope: punctuation.definition.subscript.end.markdown
+          pop: true
+        - include: inline
+        - include: bold
+        - include: italic
+        - include: bold-italic-trailing
+    - match: '(\^)(?=([^\^ \n]|\\ )+\^)'
+      scope: punctuation.definition.superscript.begin.markdown
+      push:
+        - meta_scope: markup.superscript.markdown-pandoc
+        - match: \^
+          scope: punctuation.definition.superscript.end.markdown
+          pop: true
+        - include: inline
+        - include: bold
+        - include: italic
+        - include: bold-italic-trailing
   strikethrough:
-    - match: '(~+)(?=\S)(?!~)'
+    - match: '(~~+)(?=\S)(?!~)'
       scope: punctuation.definition.strikethrough.begin.markdown
       push:
         - meta_scope: markup.strikethrough.markdown-gfm
-        - match: ~+
+        - match: ~~+
           scope: punctuation.definition.strikethrough.end.markdown
           pop: true
         - include: inline
         - include: bold
         - include: italic
+        - include: supersubscript
         - include: bold-italic-trailing
   bold-italic-trailing:
     - include: scope:text.html.basic
@@ -1339,6 +1373,7 @@ contexts:
           pop: true
     - include: bold
     - include: italic
+    - include: supersubscript
     - include: hard-line-break
     - include: scope:text.html.basic
   link-text-allow-image:
@@ -1422,6 +1457,7 @@ contexts:
                       push:
                         - include: bold
                         - include: italic
+                        - include: supersubscript
                         - match: ''
                           pop: true
                     - match: |-
@@ -1430,6 +1466,17 @@ contexts:
                         `+
                       scope: invalid.deprecated.unescaped-backticks.markdown
                     - include: inline
+  footnote-inline:
+    - match: \^\[
+      captures:
+        1: punctuation.definition.footnote.begin.markdown
+      push:
+        - meta_scope: meta.footnote.inline.markdown
+        - meta_content_scope: markup.italic.markdown
+        - match: \]
+          captures:
+            1: punctuation.definition.footnote.end.markdown
+          pop: true
   fenced-rcode-block:
     - match: |-
          (?x)
