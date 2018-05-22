@@ -3,7 +3,7 @@ from .settings import ride_settings
 
 UNLOAD_MESSAGE = """
 LSP cannot be found. It usually happens when LSP is not installed or
-RIDE is loaded before LSP. For the latter case, please make sure
+R-IDE is loaded before LSP. For the latter case, please make sure
 LSP is installed to "Installed Packages" as a `sublime-package` file.
 """
 
@@ -34,7 +34,7 @@ if LSP_FOUND:
                 scopes=["source.r", "text.html.markdown.rmarkdown"],
                 syntaxes=[
                     "Packages/R/R.sublime-syntax",
-                    "Packages/RIDE/R Markdown.sublime-syntax"
+                    "Packages/R-IDE/R Markdown.sublime-syntax"
                 ],
                 languageId='r',
                 enabled=True,

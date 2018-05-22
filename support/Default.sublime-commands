@@ -1,19 +1,19 @@
 [
     {
-        "caption": "Preferences: RIDE Settings",
+        "caption": "Preferences: R-IDE Settings",
         "command": "edit_settings",
         "args":
         {
-            "base_file": "${packages}/RIDE/RIDE.sublime-settings",
+            "base_file": "${packages}/R-IDE/R-IDE.sublime-settings",
             "default": "{\n\t$0\n}\n"
         }
     },
     {
-        "caption": "Preferences: RIDE Key Bindings",
+        "caption": "Preferences: R-IDE Key Bindings",
         "command": "edit_settings",
         "args":
         {
-            "base_file": "${packages}/RIDE/support/Default.sublime-keymap",
+            "base_file": "${packages}/R-IDE/support/Default.sublime-keymap",
             "user_file": "${packages}/User/Default ($platform).sublime-keymap",
             "default": "[\n\t$0\n]\n"
         }

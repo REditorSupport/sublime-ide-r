@@ -123,8 +123,8 @@ class RideNameSpaceListener(RideViewMixin, sublime_plugin.EventListener):
         completions += [["{}\tInstalled Package".format(pkg), pkg]
                         for pkg in namespace_manager.installed_packages()]
 
-        view.settings().set("RIDE.completions", completions)
-        view.settings().set("RIDE.loaded_packages", packages)
+        view.settings().set("ride.completions", completions)
+        view.settings().set("ride.loaded_packages", packages)
 
     def refresh_completions_for_view(self, view):
         packages = self.inline_packages_for_view(view)

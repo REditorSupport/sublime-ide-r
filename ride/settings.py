@@ -12,7 +12,7 @@ class RIDESettings:
     _additional_paths = []
 
     def get(self, key, default):
-        s = sublime.load_settings('RIDE.sublime-settings')
+        s = sublime.load_settings('R-IDE.sublime-settings')
         return s.get(key, default)
 
     def rscript_binary(self):

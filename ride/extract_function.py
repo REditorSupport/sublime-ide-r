@@ -9,7 +9,7 @@ from .namespace import namespace_manager
 class RideExtractFunctionCommand(ScriptMixin, sublime_plugin.TextCommand):
     def run(self, edit, func_name=None):
         if "codetools" not in namespace_manager.installed_packages():
-            print("RIDE: package `codetools` is not installed.")
+            print("R-IDE: package `codetools` is not installed.")
             return
 
         if not func_name:

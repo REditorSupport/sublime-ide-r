@@ -81,9 +81,9 @@ class RideMainMenuListener(sublime_plugin.EventListener):
         def set_main_menu():
 
             menu_path = os.path.join(
-                sublime.packages_path(), 'User', 'RIDE', 'Main.sublime-menu')
+                sublime.packages_path(), 'User', 'R-IDE', 'Main.sublime-menu')
             user_menu_path = os.path.join(
-                sublime.packages_path(), 'User', 'RIDE', 'RIDE.sublime-menu')
+                sublime.packages_path(), 'User', 'R-IDE', 'R-IDE.sublime-menu')
             menu_dir = os.path.dirname(menu_path)
 
             if self.is_r_project(view.window()) or self.is_r_file(view):
@@ -96,7 +96,7 @@ class RideMainMenuListener(sublime_plugin.EventListener):
                         copyfile(user_menu_path, menu_path)
                     else:
                         data = sublime.load_resource(
-                            "Packages/RIDE/support/RIDE.sublime-menu")
+                            "Packages/R-IDE/support/R-IDE.sublime-menu")
                         with open(menu_path, 'w') as f:
                             f.write(data.replace("\r\n", "\n"))
                             f.close()

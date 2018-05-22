@@ -1,7 +1,7 @@
 [
     {
-        "caption": "RIDE",
-        "id": "RIDE",
+        "caption": "R-IDE",
+        "id": "R-IDE",
         "children": [
             {
                 "caption": "Extract Function",

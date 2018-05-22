@@ -74,7 +74,7 @@ class ScriptMixin:
             if not self.message_shown:
                 sublime.message_dialog(
                     "Rscript binary cannot be found automatically. "
-                    "The path to `Rscript` can be specified in the RIDE settings.")
+                    "The path to `Rscript` can be specified in the R-IDE settings.")
                 self.message_shown = True
             raise Exception("Rscript binary not found.")
 
@@ -101,7 +101,7 @@ class ScriptMixin:
 
     def detect_free_vars(self, code):
         dfv_path = tempfile.mkstemp(suffix=".R")[1]
-        data = sublime.load_resource("Packages/RIDE/ride/detect_free_vars.R")
+        data = sublime.load_resource("Packages/R-IDE/ride/detect_free_vars.R")
         with open(dfv_path, 'w') as f:
             f.write(data.replace("\r\n", "\n"))
             f.close()
