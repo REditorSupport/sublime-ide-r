@@ -5,7 +5,7 @@ import subprocess
 from .utils import read_registry
 
 
-class RIDESettings:
+class RideSettings:
     _r_binary = None
     _rscript_binary = None
     _custom_env = None
@@ -74,4 +74,4 @@ class RIDESettings:
         return env
 
 
-ride_settings = RIDESettings()
+ride_settings = RideSettings()
