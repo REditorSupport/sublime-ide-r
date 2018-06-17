@@ -22,9 +22,6 @@ cd $HOME/.config/sublime-text-3/Packages
 cd "$env:appdata\Sublime Text 3\Packages\"
 
 git clone git@github.com:REditorSupport/sublime-ide-r.git R-IDE
-
-# LSP master is also required (as 2018-5-19)
-git clone git@github.com:tomv564/LSP.git
 ```
 
 ```
