@@ -49,3 +49,7 @@ if LSP_FOUND:
 
         def on_start(self, window):
             return True
+
+else:
+    class LspRLangPlugin():
+        pass

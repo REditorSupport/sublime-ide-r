@@ -149,3 +149,10 @@ class RideKnitRnwCommand(sublime_plugin.TextCommand):
                """knitr::knit(\"$file\", output=\"$file_base_name.tex\")\n"""
                """tools::texi2dvi(\"$file_base_name.tex\", pdf = TRUE)")""")
         self.view.run_command("send_code", {"cmd": cmd})
+
+
+def plugin_unload():
+    menu_path = os.path.join(
+        sublime.packages_path(), 'User', 'R-IDE', 'Main.sublime-menu')
+    if os.path.exists(menu_path):
+        os.remove(menu_path)
