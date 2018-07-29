@@ -70,7 +70,7 @@ class ScriptMixin:
                 raise Exception(
                     "Failed to execute RScript with the following output:\n\n{}".format(stderr))
 
-        except FileNotFoundError as e:
+        except FileNotFoundError:
             if not self.message_shown:
                 sublime.message_dialog(
                     "Rscript binary cannot be found automatically. "
