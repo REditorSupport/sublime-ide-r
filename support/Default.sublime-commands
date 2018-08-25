@@ -17,5 +17,9 @@
             "user_file": "${packages}/User/Default ($platform).sublime-keymap",
             "default": "[\n\t$0\n]\n"
         }
+    },
+    {
+        "caption": "R-IDE: Extract Function",
+        "command": "ride_extract_function"
     }
 ]
