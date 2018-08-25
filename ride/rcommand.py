@@ -1,5 +1,4 @@
 import sublime
-import tempfile
 import re
 import os
 import subprocess
@@ -8,7 +7,7 @@ from .settings import ride_settings
 ANSI_ESCAPE = re.compile(r'(\x9B|\x1B\[)[0-?]*[ -/]*[@-~]')
 
 
-class ScriptMixin:
+class RCommandMixin:
     message_shown = False
 
     def find_working_dir(self):
@@ -32,12 +31,16 @@ class ScriptMixin:
 
         return None
 
-    def rscript(self, script=None, file=None, args=None, stdin_text=None):
-        cmd = [ride_settings.rscript_binary()]
+    def R(self, script=None, file=None, args=None, stdin_text=None, slave=True, quiet=True):
+        cmd = [ride_settings.r_binary()]
+        if slave:
+            cmd = cmd + ["--slave"]
+        elif quiet:
+            cmd = cmd + ["--quiet"]
         if script:
             cmd = cmd + ["-e", script]
         elif file:
-            cmd = cmd + [file]
+            cmd = cmd + ["-f", file]
         if args:
             cmd = cmd + args
 
@@ -77,43 +80,3 @@ class ScriptMixin:
                     "The path to `Rscript` can be specified in the R-IDE settings.")
                 self.message_shown = True
             raise Exception("Rscript binary not found.")
-
-    def installed_packages(self):
-        return self.rscript("cat(rownames(installed.packages()))").strip().split(" ")
-
-    def list_package_objects(self, pkg, exported_only=True):
-        if exported_only:
-            objects = self.rscript("cat(getNamespaceExports(asNamespace('{}')))".format(pkg))
-        else:
-            objects = self.rscript("cat(objects(asNamespace('{}')))".format(pkg))
-        return objects.strip().split(" ")
-
-    def get_function_call(self, pkg, funct):
-        out = self.rscript("args({}:::{})".format(pkg, funct))
-        out = re.sub(r"^function ", funct, out).strip()
-        out = re.sub(r"<bytecode: [^>]+>", "", out).strip()
-        out = re.sub(r"NULL(?:\n|\s)*$", "", out).strip()
-        return out
-
-    def list_function_args(self, pkg, funct):
-        out = self.rscript("cat(names(formals({}:::{})))".format(pkg, funct))
-        return out.strip().split(" ")
-
-    def detect_free_vars(self, code):
-        dfv_path = tempfile.mkstemp(suffix=".R")[1]
-        data = sublime.load_resource("Packages/R-IDE/ride/detect_free_vars.R")
-        with open(dfv_path, 'w') as f:
-            f.write(data.replace("\r\n", "\n"))
-            f.close()
-
-        result = self.rscript(
-            file=dfv_path,
-            stdin_text=code
-        ).strip()
-
-        try:
-            os.unlink(dfv_path)
-        except Exception:
-            pass
-
-        return [s.strip() for s in result.split("\n")] if result else []

@@ -65,6 +65,6 @@ detect_free_vars <- function(file) {
     return(unique(freeVars))
 }
 
-for (var in detect_free_vars(file('stdin'))) {
+for (var in detect_free_vars(file("stdin"))) {
     cat(var, "\n")
 }

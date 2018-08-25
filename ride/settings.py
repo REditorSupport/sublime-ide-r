@@ -7,29 +7,12 @@ from .utils import read_registry
 
 class RideSettings:
     _r_binary = None
-    _rscript_binary = None
     _custom_env = None
     _additional_paths = []
 
     def get(self, key, default):
         s = sublime.load_settings('R-IDE.sublime-settings')
         return s.get(key, default)
-
-    def rscript_binary(self):
-        rscript_binary = self.get("rscript_binary", self._rscript_binary)
-        if not rscript_binary:
-            if sublime.platform() == "windows":
-                try:
-                    rscript_binary = os.path.join(
-                        read_registry("Software\\R-Core\\R", "InstallPath")[0],
-                        "bin",
-                        "Rscript.exe")
-                except Exception:
-                    pass
-        if not rscript_binary:
-            rscript_binary = "Rscript"
-        self._rscript_binary = rscript_binary
-        return rscript_binary
 
     def r_binary(self):
         r_binary = self.get("r_binary", self._r_binary)

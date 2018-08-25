@@ -1,17 +1,14 @@
 import sublime
 import sublime_plugin
+import tempfile
 import re
+import os
 
-from .script_mixin import ScriptMixin
-from .namespace import namespace_manager
+from .rcommand import RCommandMixin
 
 
-class RideExtractFunctionCommand(ScriptMixin, sublime_plugin.TextCommand):
+class RideExtractFunctionCommand(RCommandMixin, sublime_plugin.TextCommand):
     def run(self, edit, func_name=None):
-        if "codetools" not in namespace_manager.installed_packages():
-            print("R-IDE: package `codetools` is not installed.")
-            return
-
         if not func_name:
             self.view.window().show_input_panel(
                 "Function name:", "",
@@ -53,3 +50,22 @@ class RideExtractFunctionCommand(ScriptMixin, sublime_plugin.TextCommand):
         except Exception as e:
             print(e)
             sublime.status_message("Extract function failed.")
+
+    def detect_free_vars(self, code):
+        dfv_path = tempfile.mkstemp(suffix=".R")[1]
+        data = sublime.load_resource("Packages/R-IDE/ride/detect_free_vars.R")
+        with open(dfv_path, 'w') as f:
+            f.write(data.replace("\r\n", "\n"))
+            f.close()
+
+        result = self.R(
+            file=dfv_path,
+            stdin_text=code
+        ).strip()
+
+        try:
+            os.unlink(dfv_path)
+        except Exception:
+            pass
+
+        return [s.strip() for s in result.split("\n")] if result else []

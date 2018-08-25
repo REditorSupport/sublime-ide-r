@@ -3,11 +3,7 @@ import sublime_plugin
 import os
 import re
 
-
-def escape_dq(string):
-    string = string.replace('\\', '\\\\')
-    string = string.replace('"', '\\"')
-    return string
+from .utils import escape_dquote
 
 
 class RideSourcePromptCommand(sublime_plugin.TextCommand):
@@ -47,7 +43,7 @@ class RideSourcePromptCommand(sublime_plugin.TextCommand):
             s, ):
         fdir = os.path.dirname(self.view.file_name())
         s = os.path.relpath(s, fdir)
-        self.view.run_command("insert", {"characters": escape_dq(s)})
+        self.view.run_command("insert", {"characters": escape_dquote(s)})
 
     def listdir(self, view, dir, base, ext, on_done):
         """List a directory using quick panel"""

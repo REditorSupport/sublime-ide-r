@@ -46,106 +46,79 @@
                 "caption": "Clean and Build Package",
                 "command": "ride_package_exec",
                 "args": {
-                    "cmd": [
-                        "Rscript", "-e",
-                        "devtools::install(\".\", local=FALSE)"
-                    ]
+                    "cmd": "devtools::install(\".\", local=FALSE)"
                 }
             },
             {
                 "caption": "Test Package",
                 "command": "ride_package_exec",
                 "args": {
-                    "cmd": [
-                        "Rscript", "-e",
-                        "devtools::test(\".\")"
-                    ]
+                    "cmd": "devtools::test(\".\")"
                 }
             },
             {
                 "caption": "Check Package",
                 "command": "ride_package_exec",
                 "args": {
-                    "cmd": [
-                        "Rscript", "-e",
-                        "devtools::check(\".\")"
-                    ]
+                    "cmd": "devtools::check(\".\")"
                 }
             },
             {
                 "caption": "Document Package",
                 "command": "ride_package_exec",
                 "args": {
-                    "cmd": [
-                        "Rscript", "-e",
-                        "devtools::document(\".\")"
-                    ]
+                    "cmd": "devtools::document(\".\")"
                 }
             },
             {
                 "caption": "Compile C++ Attributes",
                 "command": "ride_package_exec",
                 "args": {
-                    "cmd": [
-                        "Rscript", "-e",
-                        "Rcpp::compileAttributes(\".\")"
-                    ]
+                    "cmd": "Rcpp::compileAttributes(\".\")"
                 }
             },
             {
                 "caption": "Build Source Package",
                 "command": "ride_package_exec",
                 "args": {
-                    "cmd": [
-                        "Rscript", "-e",
-                        "devtools::build(\".\")"
-                    ]
+                    "cmd": "devtools::build(\".\")"
                 }
             },
             {
                 "caption": "Build Binary Package",
                 "command": "ride_package_exec",
                 "args": {
-                    "cmd": [
-                        "Rscript", "-e",
-                        "devtools::build(\".\", binary=TRUE)"
-                    ]
+                    "cmd": "devtools::build(\".\", binary=TRUE)"
                 }
             },
             {
                 "caption": "Build Package Site",
                 "command": "ride_package_exec",
                 "args": {
-                    "cmd": [
-                        "Rscript", "-e",
-                        "pkgdown::build_site()"
-                    ]
+                    "cmd": "pkgdown::build_site()"
                 }
             },
             {
                 "caption": "Build Package Site (Lazy)",
                 "command": "ride_package_exec",
                 "args": {
-                    "cmd": [
-                        "Rscript", "-e",
-                        "pkgdown::build_site(lazy = TRUE)"
-                    ]
+                    "cmd": "pkgdown::build_site(lazy = TRUE)"
                 }
             },
             {
                 "caption": "-"
             },
             {
-                "command": "ride_render_rmarkdown",
-                "caption": "Render Rmarkdown"
+                "caption": "Render Rmarkdown",
+                "command": "ride_render_rmarkdown"
             },
             {
-                "command": "ride_sweave_rnw",
-                "caption": "Sweave Rnw to PDF"
+                "caption": "Sweave Rnw to PDF",
+                "command": "ride_sweave_rnw"
             },
             {
-                "command": "ride_knit_rnw",
-                "caption": "Knit Rnw to PDF"
+                "caption": "Knit Rnw to PDF",
+                "command": "ride_knit_rnw"
             }
         ]
     }

@@ -78,6 +78,9 @@ class RideMainMenuListener(sublime_plugin.EventListener):
         if hasattr(self, "timer") and self.timer:
             self.timer.cancel()
 
+        if not ride_settings.get("r_ide_menu", False):
+            return
+
         def set_main_menu():
 
             menu_path = os.path.join(
@@ -114,41 +117,13 @@ class RidePackageExecCommand(sublime_plugin.WindowCommand):
     def is_visible(self):
         return self.window.id() in _window_is_rproject
 
-    def run(self, **kwargs):
+    def run(self, cmd):
+        kwargs = {}
+        kwargs["cmd"] = [ride_settings.r_binary(), "--slave", "-e", cmd]
         kwargs["working_dir"] = self.window.folders()[0]
         kwargs["env"] = {"PATH": ride_settings.custom_env()["PATH"]}
+        kwargs = sublime.expand_variables(kwargs, self.window.extract_variables())
         self.window.run_command("exec", kwargs)
-
-
-class RideRenderRmarkdownCommand(sublime_plugin.TextCommand):
-    def is_enabled(self):
-        return self.view.settings().get("syntax").endswith("R Markdown.sublime-syntax")
-
-    def run(self, edit):
-        cmd = "rmarkdown::render(\"$file\", encoding = \"UTF-8\")"
-        self.view.run_command("send_code", {"cmd": cmd})
-
-
-class RideSweaveRnwCommand(sublime_plugin.TextCommand):
-    def is_enabled(self):
-        return self.view.settings().get("syntax").endswith("R Sweave.sublime-syntax")
-
-    def run(self, edit):
-        cmd = ("""setwd(\"$file_path\")\n"""
-               """Sweave(\"$file\")\n"""
-               """tools::texi2dvi(\"$file_base_name.tex\", pdf = TRUE)""")
-        self.view.run_command("send_code", {"cmd": cmd})
-
-
-class RideKnitRnwCommand(sublime_plugin.TextCommand):
-    def is_enabled(self):
-        return self.view.settings().get("syntax").endswith("R Sweave.sublime-syntax")
-
-    def run(self, edit):
-        cmd = ("""setwd(\"$file_path\")\n"""
-               """knitr::knit(\"$file\", output=\"$file_base_name.tex\")\n"""
-               """tools::texi2dvi(\"$file_base_name.tex\", pdf = TRUE)")""")
-        self.view.run_command("send_code", {"cmd": cmd})
 
 
 def plugin_unload():
