@@ -73,7 +73,7 @@ def R(script=None, file=None, args=None, stdin_text=None,
     except FileNotFoundError:
         if not message_shown[0]:
             sublime.message_dialog(
-                "Rscript binary cannot be found automatically. "
-                "The path to `Rscript` can be specified in the R-IDE settings.")
+                "R binary cannot be found automatically. "
+                "The path to `R` can be specified in the R-IDE settings.")
             message_shown[0] = True
-        raise Exception("Rscript binary not found.")
+        raise Exception("R binary not found.")
