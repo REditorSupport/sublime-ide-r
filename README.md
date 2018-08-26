@@ -20,3 +20,12 @@ install.packages("languageserver")
 ## Usage
 
 To enable language server for R files. Run `LSP: Enable Language Server Globally` (or `In Project` if you are working with a project) in Command Palette and select `rlang`. Upon successful execution, you should see a badge called `rlang` in the status bar.
+
+
+## Recommendations
+
+- [SendCode](https://github.com/randy3k/SendCode) for sending R code to Terminal / R GUI / RStudio.
+- [Bracket​Highlighter](https://github.com/facelessuser/BracketHighlighter) for advanced bracket highlighting.
+- [Whitespace](https://github.com/randy3k/Whitespace) for cleaning whitespaces.
+- [Terminus](https://github.com/randy3k/Terminus) for running R Console in Sublime Text.
+- [rtichoke](https://github.com/randy3k/rtichoke) is a better R console for Terminal.
