@@ -6,8 +6,6 @@
 
     // show R-IDE main menu
     "r_ide_menu": true,
-    "color_scheme": "Packages/R-IDE/R-IDE.tmTheme",
-    "draw_centered": true,
 
     // additional paths to PATH variable
     "additional_paths": [],
