@@ -1,30 +1,22 @@
 R-IDE: Make Sublime Text a prefect IDE for R
-
-This is a new iteration of the no-longer-maintained [R-Box](https://github.com/randy3k/R-Box) aiming to utilize the use
-  of [language server](https://github.com/REditorSupport/languageserver) + better support R Markdown + better support of R packaging + .....
-
 ------------
 
 <a href="https://www.paypal.me/randy3k/5usd" title="Donate to this project using Paypal"><img src="https://img.shields.io/badge/paypal-donate-blue.svg" /></a>
 
+This is a new iteration of the no-longer-maintained [R-Box](https://github.com/randy3k/R-Box) aiming to utilize the use
+  of [language server](https://github.com/REditorSupport/languageserver) + better support R Markdown + better support of R packaging + .....
 
-Improve your R coding experiences with Sublime Text!
+## Installation
 
-
-**Advanced user only (for the moment):  you need to also install [LSP](https://github.com/tomv564/LSP) and [language server](https://github.com/REditorSupport/languageserver) in order to use R-IDE.**
-
-```
-# mac
-cd "$HOME/Library/Application Support/Sublime Text 3/Packages"
-# linux
-cd $HOME/.config/sublime-text-3/Packages
-# windows (PowerShell)
-cd "$env:appdata\Sublime Text 3\Packages\"
-
-git clone git@github.com:REditorSupport/sublime-ide-r.git R-IDE
-```
-
-```
+1. Install `languageserver` from CRAN
+```R
 # install R package languageserver
 install.packages("languageserver")
 ```
+
+2. Install `R-IDE` and `LSP` from Package Control
+
+
+## Usage
+
+To enable language server for R files. Run `LSP: Enable Language Server Globlly` (or `In Project` if you are working with a project) in Command Palette and select `rlang`. Upon successful execution, you should see a badge called `rlang` in the status bar.
