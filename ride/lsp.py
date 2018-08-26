@@ -44,7 +44,7 @@ if LSP_FOUND:
                 ],
                 languageId='r',
                 languages=[],
-                enabled=True,
+                enabled=False,
                 init_options=dict(),
                 settings=dict(),
                 env={"PATH": ride_settings.custom_env("PATH")}
@@ -60,7 +60,7 @@ if LSP_FOUND:
     class LspCqueryRPlugin(LanguageHandler):
         @property
         def name(self):
-            return "cquery-r"
+            return "rlang-c++"
 
         def __init__(self):
             self._config = ClientConfig(
@@ -72,19 +72,16 @@ if LSP_FOUND:
                 scopes=[
                     "source.c",
                     "source.c++",
-                    "source.objc",
-                    "source.objc++"
+                    "source.c++.rcpp"
                 ],
                 syntaxes=[
                     "Packages/C++/C.sublime-syntax",
                     "Packages/C++/C++.sublime-syntax",
-                    "Packages/Objective-C/Objective-C.sublime-syntax",
-                    "Packages/Objective-C/Objective-C++.sublime-syntax"
                     "Packages/R-IDE/Rcpp.sublime-syntax"
                 ],
-                languageId='objc++',
+                languageId='c++',
                 languages=[],
-                enabled=True,
+                enabled=False,
                 init_options={
                     "cacheDirectory": tempfile.mkdtemp(),
                     "extraClangArguments": [
