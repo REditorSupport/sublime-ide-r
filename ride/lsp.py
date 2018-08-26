@@ -1,4 +1,7 @@
+import tempfile
+
 from .settings import ride_settings
+from .rcommand import R
 
 
 UNLOAD_MESSAGE = """
@@ -17,8 +20,11 @@ except Exception:
 
 
 if LSP_FOUND:
+
     class LspRLangPlugin(LanguageHandler):
-        name = "rlang"
+        @property
+        def name(self):
+            return "rlang"
 
         def __init__(self):
             self._config = ClientConfig(
@@ -37,6 +43,7 @@ if LSP_FOUND:
                     "Packages/R-IDE/R Markdown.sublime-syntax"
                 ],
                 languageId='r',
+                languages=[],
                 enabled=True,
                 init_options=dict(),
                 settings=dict(),
@@ -50,6 +57,53 @@ if LSP_FOUND:
         def on_start(self, window):
             return True
 
+    class LspCqueryRPlugin(LanguageHandler):
+        @property
+        def name(self):
+            return "cquery-r"
+
+        def __init__(self):
+            self._config = ClientConfig(
+                name=self.name,
+                binary_args=[
+                    "cquery"
+                ],
+                tcp_port=None,
+                scopes=[
+                    "source.c",
+                    "source.c++",
+                    "source.objc",
+                    "source.objc++"
+                ],
+                syntaxes=[
+                    "Packages/C++/C.sublime-syntax",
+                    "Packages/C++/C++.sublime-syntax",
+                    "Packages/Objective-C/Objective-C.sublime-syntax",
+                    "Packages/Objective-C/Objective-C++.sublime-syntax"
+                    "Packages/R-IDE/Rcpp.sublime-syntax"
+                ],
+                languageId='objc++',
+                languages=[],
+                enabled=True,
+                init_options={
+                    "cacheDirectory": tempfile.mkdtemp(),
+                    "extraClangArguments": [
+                        "-I{}".format(R(script="cat(R.home('include'))"))
+                    ]
+                },
+                settings=dict()
+            )
+
+        @property
+        def config(self):
+            return self._config
+
+        def on_start(self, window):
+            return True
+
 else:
     class LspRLangPlugin():
+        pass
+
+    class LspCqueryRPlugin():
         pass

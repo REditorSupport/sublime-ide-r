@@ -4,10 +4,10 @@ import tempfile
 import re
 import os
 
-from .rcommand import RCommandMixin
+from .rcommand import R
 
 
-class RideExtractFunctionCommand(RCommandMixin, sublime_plugin.TextCommand):
+class RideExtractFunctionCommand(sublime_plugin.TextCommand):
     def run(self, edit, func_name=None):
         if not func_name:
             self.view.window().show_input_panel(
@@ -58,7 +58,7 @@ class RideExtractFunctionCommand(RCommandMixin, sublime_plugin.TextCommand):
             f.write(data.replace("\r\n", "\n"))
             f.close()
 
-        result = self.R(
+        result = R(
             file=dfv_path,
             stdin_text=code
         ).strip()
