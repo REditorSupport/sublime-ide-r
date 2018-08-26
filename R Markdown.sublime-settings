@@ -1,0 +1,25 @@
+// These settings override both User and Default settings for the R Markdown syntax
+{
+
+	"tab_size": 4,
+	"translate_tabs_to_spaces": true,
+	"trim_trailing_white_space_on_save": false,
+	"auto_match_enabled": true,
+
+	// Layout
+	"draw_centered": true,
+	"word_wrap": true,
+	"wrap_width": 100,
+	"rulers": [],
+
+	// Line
+	"line_numbers": false,
+	"highlight_line": false,
+	"line_padding_top": 2,
+	"line_padding_bottom": 3,
+
+	"gutter": false,
+	"scroll_past_end": true
+
+
+}

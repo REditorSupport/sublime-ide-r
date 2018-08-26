@@ -11,5 +11,5 @@
     "diagnostics": true,
 
     // additional paths to PATH variable
-    "additional_paths": []
+    "additional_paths": [],
 }
