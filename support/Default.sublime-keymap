@@ -59,7 +59,6 @@
     "context": [
       { "operand": "text.html.markdown.rmarkdown", "operator": "equal", "match_all": true, "key": "selector" }
     ]
-  },
-    
+  }
 ]
 
