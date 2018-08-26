@@ -3,7 +3,7 @@
   // Insert knitr Markdown chunk
   { 
     "keys": ["super+alt+c"], 
-    "command": "insert_snippet", "args": {"name": "Packages/knitr/knitr-md-chunk.sublime-snippet"}, 
+    "command": "insert_snippet", "args": {"name": "Packages/R-IDE/support/ide-r-chunk.sublime-snippet"}, 
     "context": [
       { "operand": "text.html.markdown.ide-r", "operator": "equal", "match_all": true, "key": "selector" }
     ]
