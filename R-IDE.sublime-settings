@@ -7,6 +7,9 @@
     // show R-IDE main menu
     "r_ide_menu": true,
 
+    // use diagnostics from LSP
+    "diagnostics": true,
+
     // additional paths to PATH variable
     "additional_paths": []
 }
