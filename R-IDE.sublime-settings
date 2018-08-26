@@ -4,9 +4,9 @@
     // (windows):    "C:\\Program Files\\R\\R-x.y.z\\bin\\R.exe"
     "r_binary": null,
 
-    // additional paths to PATH variable
-    "additional_paths": [],
-
     // show R-IDE main menu
-    "r_ide_menu": true
+    "r_ide_menu": true,
+
+    // additional paths to PATH variable
+    "additional_paths": []
 }

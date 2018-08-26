@@ -14,7 +14,7 @@ class RideRenderRmarkdownCommand(sublime_plugin.TextCommand):
         kwargs = {}
         kwargs["cmd"] = [ride_settings.r_binary(), "--slave", "-e", cmd]
         kwargs["working_dir"] = os.path.dirname(self.view.file_name())
-        kwargs["env"] = {"PATH": ride_settings.custom_env()["PATH"]}
+        kwargs["env"] = {"PATH": ride_settings.custom_env("PATH")}
         kwargs = sublime.expand_variables(kwargs, self.view.window().extract_variables())
         self.view.window().run_command("exec", kwargs)
 
@@ -29,7 +29,7 @@ class RideSweaveRnwCommand(sublime_plugin.TextCommand):
         kwargs = {}
         kwargs["cmd"] = [ride_settings.r_binary(), "--slave", "-e", cmd]
         kwargs["working_dir"] = os.path.dirname(self.view.file_name())
-        kwargs["env"] = {"PATH": ride_settings.custom_env()["PATH"]}
+        kwargs["env"] = {"PATH": ride_settings.custom_env("PATH")}
         kwargs = sublime.expand_variables(kwargs, self.view.window().extract_variables())
         self.view.window().run_command("exec", kwargs)
 
@@ -44,6 +44,6 @@ class RideKnitRnwCommand(sublime_plugin.TextCommand):
         kwargs = {}
         kwargs["cmd"] = [ride_settings.r_binary(), "--slave", "-e", cmd]
         kwargs["working_dir"] = os.path.dirname(self.view.file_name())
-        kwargs["env"] = {"PATH": ride_settings.custom_env()["PATH"]}
+        kwargs["env"] = {"PATH": ride_settings.custom_env("PATH")}
         kwargs = sublime.expand_variables(kwargs, self.view.window().extract_variables())
         self.view.window().run_command("exec", kwargs)

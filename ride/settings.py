@@ -42,9 +42,13 @@ class RideSettings:
         self._additional_paths = additional_paths
         return additional_paths
 
-    def custom_env(self):
+    def custom_env(self, key=None):
         if self._custom_env:
-            return self._custom_env
+            if key:
+                return self._custom_env[key]
+            else:
+                return self._custom_env
+
         paths = self.additional_paths()
         if sublime.platform() == "osx":
             paths += ["/Library/TeX/texbin", "/usr/local/bin"]
@@ -54,7 +58,10 @@ class RideSettings:
             env["PATH"] = env["PATH"] + sep + sep.join(paths)
 
         self._custom_env = env
-        return env
+        if key:
+            return env[key]
+        else:
+            return env
 
 
 ride_settings = RideSettings()

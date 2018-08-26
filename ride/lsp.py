@@ -47,7 +47,7 @@ if LSP_FOUND:
                 enabled=True,
                 init_options=dict(),
                 settings=dict(),
-                env={"PATH": ride_settings.custom_env()["PATH"]}
+                env={"PATH": ride_settings.custom_env("PATH")}
             )
 
         @property
