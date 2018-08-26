@@ -5,7 +5,7 @@
     "keys": ["super+alt+c"], 
     "command": "insert_snippet", "args": {"name": "Packages/R-IDE/support/ide-r-chunk.sublime-snippet"}, 
     "context": [
-      { "operand": "text.html.markdown.ide-r", "operator": "equal", "match_all": true, "key": "selector" }
+      { "operand": "text.html.markdown.rmarkdown", "operator": "equal", "match_all": true, "key": "selector" }
     ]
   },
     
