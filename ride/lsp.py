@@ -1,3 +1,5 @@
+import sublime
+
 import tempfile
 
 from .settings import ride_settings
@@ -5,9 +7,7 @@ from .rcommand import R
 
 
 UNLOAD_MESSAGE = """
-LSP cannot be found. It usually happens when LSP is not installed or
-R-IDE is loaded before LSP. For the latter case, please make sure
-LSP is installed to "Installed Packages" as a `sublime-package` file.
+R-IDE: LSP is not installed. Please install it via Package Control.
 """
 
 try:
@@ -101,9 +101,15 @@ if LSP_FOUND:
         def on_start(self, window):
             return True
 
+    def plugin_loaded():
+        pass
+
 else:
     class LspRLangPlugin():
         pass
 
     class LspCqueryRPlugin():
         pass
+
+    def plugin_loaded():
+        sublime.message_dialog(UNLOAD_MESSAGE)

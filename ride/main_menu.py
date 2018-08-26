@@ -126,7 +126,7 @@ class RidePackageExecCommand(sublime_plugin.WindowCommand):
         self.window.run_command("exec", kwargs)
 
 
-def plugin_unload():
+def plugin_unloaded():
     menu_path = os.path.join(
         sublime.packages_path(), 'User', 'R-IDE', 'Main.sublime-menu')
     if os.path.exists(menu_path):
