@@ -14,9 +14,9 @@ This is a new iteration of the no-longer-maintained [R-Box](https://github.com/r
 install.packages("languageserver")
 ```
 
-2. Install `R-IDE` and `LSP` from Package Control
+2. Install `R-IDE` and [`LSP`](https://github.com/tomv564/LSP) from Package Control
 
 
 ## Usage
 
-To enable language server for R files. Run `LSP: Enable Language Server Globlly` (or `In Project` if you are working with a project) in Command Palette and select `rlang`. Upon successful execution, you should see a badge called `rlang` in the status bar.
+To enable language server for R files. Run `LSP: Enable Language Server Globally` (or `In Project` if you are working with a project) in Command Palette and select `rlang`. Upon successful execution, you should see a badge called `rlang` in the status bar.
