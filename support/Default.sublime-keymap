@@ -50,7 +50,7 @@
             { "key": "eol_selector", "operator": "not_equal", "operand": "string.quoted.double", "match_all": true },
             { "key": "selector", "operator": "equal", "operand": "source.r" }
         ]
-    }
+    },
     
   // Insert knitr Markdown chunk
   { 
