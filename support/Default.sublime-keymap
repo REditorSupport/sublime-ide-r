@@ -1,14 +1,5 @@
 [
-    
-  // Insert knitr Markdown chunk
-  { 
-    "keys": ["super+alt+c"], 
-    "command": "insert_snippet", "args": {"name": "Packages/R-IDE/support/ide-r-chunk.sublime-snippet"}, 
-    "context": [
-      { "operand": "text.html.markdown.rmarkdown", "operator": "equal", "match_all": true, "key": "selector" }
-    ]
-  },
-    
+        
     // fix double quotes in Rnw
     { "keys": ["\""], "command": "insert_snippet", "args": {"contents": "\"${0:$SELECTION}\""}, "context":
         [
@@ -60,4 +51,15 @@
             { "key": "selector", "operator": "equal", "operand": "source.r" }
         ]
     }
+    
+  // Insert knitr Markdown chunk
+  { 
+    "keys": ["super+alt+c"], 
+    "command": "insert_snippet", "args": {"name": "Packages/R-IDE/support/ide-r-chunk.sublime-snippet"}, 
+    "context": [
+      { "operand": "text.html.markdown.rmarkdown", "operator": "equal", "match_all": true, "key": "selector" }
+    ]
+  },
+    
 ]
+
