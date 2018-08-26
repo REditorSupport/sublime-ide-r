@@ -3,6 +3,7 @@ import sublime
 import tempfile
 
 from .settings import ride_settings
+from .rproject import is_package, is_supported_file
 from .rcommand import R
 
 
@@ -55,7 +56,7 @@ if LSP_FOUND:
             return self._config
 
         def on_start(self, window):
-            return True
+            return is_package(window) or is_supported_file(window.active_view())
 
     class LspCqueryRPlugin(LanguageHandler):
         @property
@@ -96,7 +97,7 @@ if LSP_FOUND:
             return self._config
 
         def on_start(self, window):
-            return True
+            return is_package(window) or is_supported_file(window.active_view())
 
     def plugin_loaded():
         pass

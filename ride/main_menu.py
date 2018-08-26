@@ -5,12 +5,9 @@ from shutil import copyfile
 import threading
 
 from .settings import ride_settings
-
+from .rproject import is_package, is_supported_file
 
 _main_menu_is_visible = [False]
-_window_is_rproject = []
-_window_is_not_rproject = []
-_window_folders = {}
 
 
 def main_menu_is_visible():
@@ -18,59 +15,6 @@ def main_menu_is_visible():
 
 
 class RideMainMenuListener(sublime_plugin.EventListener):
-    def window_is_rproj(self, folders):
-        for folder in folders:
-            if not os.path.isdir(folder):
-                continue
-            for f in os.listdir(folder):
-                if f.endswith(".Rproj"):
-                    return True
-
-            description_file = os.path.join(folder, "DESCRIPTION")
-            namespace_file = os.path.join(folder, "NAMESPACE")
-            r_source_dir = os.path.join(folder, "R")
-            if os.path.isfile(description_file) and os.path.isfile(namespace_file) \
-                    and os.path.isdir(r_source_dir):
-                return True
-
-        return False
-
-    def is_r_project(self, window):
-        if not window:
-            return False
-        folders = window.folders()
-
-        if folders:
-            if window.id() in _window_folders and _window_folders[window.id()] == folders:
-                if window.id() in _window_is_rproject:
-                    return True
-                elif window.id() in _window_is_not_rproject:
-                    return False
-
-            _window_folders[window.id()] = folders
-
-            if self.window_is_rproj(folders):
-                _window_is_rproject.append(window.id())
-                return True
-            else:
-                _window_is_not_rproject.append(window.id())
-                return False
-
-        return False
-
-    def is_r_file(self, view):
-        try:
-            pt = view.sel()[0].end()
-        except Exception:
-            pt = 0
-
-        if view.match_selector(pt, "source.r, "
-                               "text.tex.latex.rsweave, "
-                               "text.html.markdown.rmarkdown, "
-                               "source.c++.rcpp"):
-            return True
-
-        return False
 
     def on_activated_async(self, view):
         if view.settings().get('is_widget'):
@@ -89,7 +33,7 @@ class RideMainMenuListener(sublime_plugin.EventListener):
                 sublime.packages_path(), 'User', 'R-IDE', 'R-IDE.sublime-menu')
             menu_dir = os.path.dirname(menu_path)
 
-            if self.is_r_project(view.window()) or self.is_r_file(view):
+            if is_package(view.window()) or is_supported_file(view):
 
                 if not os.path.exists(menu_dir):
                     os.makedirs(menu_dir, 0o755)
@@ -115,7 +59,7 @@ class RideMainMenuListener(sublime_plugin.EventListener):
 
 class RidePackageExecCommand(sublime_plugin.WindowCommand):
     def is_visible(self):
-        return self.window.id() in _window_is_rproject
+        return is_package(self.window)
 
     def run(self, cmd):
         kwargs = {}
