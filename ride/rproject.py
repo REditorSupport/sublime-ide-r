@@ -2,6 +2,8 @@ import os
 
 
 def is_package(window):
+    if not window:
+        return False
     for folder in window.folders():
         if not os.path.isdir(folder):
             continue
@@ -20,6 +22,8 @@ def is_package(window):
 
 
 def is_supported_file(view):
+    if not view:
+        return False
     try:
         pt = view.sel()[0].end()
     except Exception:
