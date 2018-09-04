@@ -1527,7 +1527,7 @@ contexts:
     - match: \$\$
       scope: string.other.math.latex punctuation.definition.string.begin.latex
       push:
-        - meta_scope: text.tex.latex meta.environment.math.latex
+        - meta_scope: text.tex.latex meta.environment.math.block.dollar.latex
         - include: scope:text.tex.latex#macros
         - include: math-content
         - match: \$\$
@@ -1546,7 +1546,7 @@ contexts:
         )
       scope: string.other.math.latex punctuation.definition.string.begin.latex
       push:
-        - meta_scope: text.tex.latex meta.environment.math.latex
+        - meta_scope: text.tex.latex meta.environment.math.inline.dollar.latex
         - include: scope:text.tex.latex#macros
         - include: math-content
         - match: \$
@@ -1554,6 +1554,7 @@ contexts:
           pop: true
     - match: '(?=\\begin\{\s*(equation|align)\s*\*?\s*\})'
       push:
+        - meta_scope: text.tex.latex meta.environment.math.block.be.latex
         - include: math-content
         - match: '(?=\S)'
           pop: true
