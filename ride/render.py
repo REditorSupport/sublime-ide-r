@@ -25,9 +25,9 @@ class RideSweaveRnwCommand(sublime_plugin.WindowCommand):
         view = self.window.active_view()
         return view.settings().get("syntax").endswith("R Sweave.sublime-syntax")
 
-    def run(self, edit):
-        cmd = ("""Sweave(\"$file_name\")\n"""
-               """tools::texi2dvi(\"$file_base_name.tex\", pdf = TRUE)""")
+    def run(self):
+        cmd = ("""Sweave(\"$file_name\");"""
+               """tinytex::latexmk(\"$file_base_name.tex\")""")
         cmd = sublime.expand_variables(cmd, self.window.extract_variables())
         kwargs = {}
         kwargs["cmd"] = [ride_settings.r_binary(), "--slave", "-e", cmd]
@@ -41,9 +41,8 @@ class RideKnitRnwCommand(sublime_plugin.WindowCommand):
         view = self.window.active_view()
         return view.settings().get("syntax").endswith("R Sweave.sublime-syntax")
 
-    def run(self, edit):
-        cmd = ("""knitr::knit(\"$file_name\", output=\"$file_base_name.tex\")\n"""
-               """tools::texi2dvi(\"$file_base_name.tex\", pdf = TRUE)")""")
+    def run(self):
+        cmd = "knitr::knit2pdf(\"$file_name\")"
         cmd = sublime.expand_variables(cmd, self.window.extract_variables())
         kwargs = {}
         kwargs["cmd"] = [ride_settings.r_binary(), "--slave", "-e", cmd]
