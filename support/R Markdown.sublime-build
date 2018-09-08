@@ -1,4 +1,5 @@
 {
     "selector": "text.html.markdown.rmarkdown",
-    "target": "ride_render_rmarkdown"
+    "target": "ride_render_rmarkdown",
+    "cancel": {"kill": true}
 }

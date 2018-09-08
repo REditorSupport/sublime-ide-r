@@ -1,10 +1,12 @@
 {
     "selector": "text.tex.latex.rsweave",
     "target": "ride_sweave_rnw",
+    "cancel": {"kill": true},
     "variants": [
         {
             "name": "knitr",
-            "target": "ride_knit_rnw"
+            "target": "ride_knit_rnw",
+            "cancel": {"kill": true}
         }
     ]
 }
