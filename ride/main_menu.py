@@ -57,19 +57,6 @@ class RideMainMenuListener(sublime_plugin.EventListener):
         self.timer.start()
 
 
-class RidePackageExecCommand(sublime_plugin.WindowCommand):
-    def is_visible(self):
-        return is_package(self.window)
-
-    def run(self, cmd):
-        kwargs = {}
-        kwargs["cmd"] = [ride_settings.r_binary(), "--slave", "-e", cmd]
-        kwargs["working_dir"] = self.window.folders()[0]
-        kwargs["env"] = {"PATH": ride_settings.custom_env("PATH")}
-        kwargs = sublime.expand_variables(kwargs, self.window.extract_variables())
-        self.window.run_command("exec", kwargs)
-
-
 def plugin_unloaded():
     menu_path = os.path.join(
         sublime.packages_path(), 'User', 'R-IDE', 'Main.sublime-menu')

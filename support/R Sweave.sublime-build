@@ -1,20 +1,12 @@
 {
     "selector": "text.tex.latex.rsweave",
-    "working_dir": "$file_path",
-    "cmd": [
-        "Rscript", "-e",
-        "Sweave('$file_name'); tools::texi2dvi('$file_base_name.tex', pdf = TRUE)"
-    ],
+    "target": "ride_sweave_rnw",
+    "cancel": {"kill": true},
     "variants": [
         {
             "name": "knitr",
-            "cmd": [
-                "Rscript", "-e",
-                "knitr::knit('$file_name'); tools::texi2dvi('$file_base_name.tex', pdf = TRUE)"
-            ]
+            "target": "ride_knit_rnw",
+            "cancel": {"kill": true}
         }
-    ],
-    "osx":{
-        "path": "/Library/TeX/texbin:/usr/local/bin:$PATH"
-    }
+    ]
 }
