@@ -8,7 +8,7 @@ This is a new iteration of the no-longer-maintained [R-Box](https://github.com/r
 
 ## Installation
 
-1. Install `languageserver` from CRAN
+1. Install [`languageserver`](https://github.com/REditorSupport/languageserver) from CRAN
 ```R
 # install R package languageserver
 install.packages("languageserver")
@@ -19,7 +19,13 @@ install.packages("languageserver")
 
 ## Usage
 
-To enable language server for R files. Run `LSP: Enable Language Server Globally` (or `In Project` if you are working with a project) in Command Palette and select `rlang`. Upon successful execution, you should see a badge called `rlang` in the status bar.
+- language features for R files
+
+    Execute `LSP: Enable Language Server Globally` (or `In Project` if you are working with a project) in Command Palette and enable `rlang`. Upon successful execution, you should see a badge called `rlang` in the status bar.
+
+- language features for C/C++ files
+    
+    `R-IDE` ultilizes [`cquery`](https://github.com/cquery-project/cquery) to provide language features for C/C++ files. Install `cquery` first. Then enable `cquery-r` server in LSP.
 
 
 ## Recommendations
