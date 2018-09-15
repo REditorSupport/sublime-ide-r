@@ -61,7 +61,7 @@ if LSP_FOUND:
     class LspCqueryRPlugin(LanguageHandler):
         @property
         def name(self):
-            return "rlang-c++"
+            return "cquery-r"
 
         def __init__(self):
             self._config = ClientConfig(
@@ -87,7 +87,10 @@ if LSP_FOUND:
                     "cacheDirectory": tempfile.mkdtemp(),
                     "extraClangArguments": [
                         "-I{}".format(R(script="cat(R.home('include'))"))
-                    ]
+                    ],
+                    "completion": {
+                        "enableSnippets": False
+                    }
                 },
                 settings=dict()
             )
