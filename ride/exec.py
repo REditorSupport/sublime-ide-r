@@ -13,7 +13,10 @@ class RidePackageExecCommand(sublime_plugin.WindowCommand):
         kwargs = {}
         kwargs["cmd"] = [ride_settings.r_binary(), "--slave", "-e", cmd]
         kwargs["working_dir"] = self.window.folders()[0]
-        kwargs["env"] = {"PATH": ride_settings.custom_env("PATH")}
+        kwargs["env"] = {
+            "PATH": ride_settings.custom_env("PATH"),
+            "LANG": ride_settings.get("lang", "en_US.UTF-8")
+        }
         kwargs = sublime.expand_variables(kwargs, self.window.extract_variables())
         kwargs["kill"] = kill
         self.window.run_command("exec", kwargs)

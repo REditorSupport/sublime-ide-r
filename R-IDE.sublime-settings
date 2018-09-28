@@ -10,6 +10,9 @@
     // use diagnostics from LSP
     "diagnostics": true,
 
+    // environment variable LANG
+    "lang": "en_US.UTF-8",
+
     // additional paths to PATH variable
     "additional_paths": []
 }
