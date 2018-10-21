@@ -1,4 +1,4 @@
-R-IDE: Make Sublime Text a prefect IDE for R
+R-IDE: Make Sublime Text a perfect IDE for R
 ------------
 
 <a href="https://www.paypal.me/randy3k/5usd" title="Donate to this project using Paypal"><img src="https://img.shields.io/badge/paypal-donate-blue.svg" /></a>
