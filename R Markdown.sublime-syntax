@@ -173,7 +173,7 @@ contexts:
     - match: |-
         (?x:
             \s*                        # Leading whitespace
-            (\[)(.+?)(\])(:)           # Reference name
+            (\[)([^\^]+?)(\])(:)           # Reference name
             [ \t]*                     # Optional whitespace
             (?:
               (<)([^>]+)(>)            # The url
