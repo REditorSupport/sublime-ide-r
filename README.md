@@ -34,4 +34,4 @@ install.packages("languageserver")
 - [Bracket​Highlighter](https://github.com/facelessuser/BracketHighlighter) for advanced bracket highlighting.
 - [Whitespace](https://github.com/randy3k/Whitespace) for cleaning whitespaces.
 - [Terminus](https://github.com/randy3k/Terminus) for running R Console in Sublime Text.
-- [rtichoke](https://github.com/randy3k/rtichoke) is a better R console for Terminal.
+- [radian](https://github.com/randy3k/radian) is a better R console for Terminal.
