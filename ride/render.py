@@ -11,7 +11,7 @@ class RideRenderRmarkdownCommand(sublime_plugin.WindowCommand):
         return view.settings().get("syntax").endswith("R Markdown.sublime-syntax")
 
     def run(self, kill=False):
-        cmd = "rmarkdown::render(\"$file_name\", encoding = \"UTF-8\")"
+        cmd = "rmarkdown::render('$file_name', encoding = 'UTF-8')"
         cmd = sublime.expand_variables(cmd, self.window.extract_variables())
         kwargs = {}
         kwargs["cmd"] = [ride_settings.r_binary(), "--slave", "-e", cmd]
@@ -30,8 +30,8 @@ class RideSweaveRnwCommand(sublime_plugin.WindowCommand):
         return view.settings().get("syntax").endswith("R Sweave.sublime-syntax")
 
     def run(self, kill=False):
-        cmd = ("""Sweave(\"$file_name\");"""
-               """tinytex::latexmk(\"$file_base_name.tex\")""")
+        cmd = ("""Sweave('$file_name');"""
+               """tinytex::latexmk('$file_base_name.tex')""")
         cmd = sublime.expand_variables(cmd, self.window.extract_variables())
         kwargs = {}
         kwargs["cmd"] = [ride_settings.r_binary(), "--slave", "-e", cmd]
@@ -50,7 +50,7 @@ class RideKnitRnwCommand(sublime_plugin.WindowCommand):
         return view.settings().get("syntax").endswith("R Sweave.sublime-syntax")
 
     def run(self, kill=False):
-        cmd = "knitr::knit2pdf(\"$file_name\")"
+        cmd = "knitr::knit2pdf('$file_name')"
         cmd = sublime.expand_variables(cmd, self.window.extract_variables())
         kwargs = {}
         kwargs["cmd"] = [ride_settings.r_binary(), "--slave", "-e", cmd]
