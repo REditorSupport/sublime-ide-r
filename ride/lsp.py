@@ -47,7 +47,10 @@ if LSP_FOUND:
                 languages=[],
                 enabled=False,
                 init_options=dict(),
-                settings={"diagnostics": ride_settings.get("diagnostics", True)},
+                settings={
+                    "diagnostics": ride_settings.get("diagnostics", True),
+                    "debug": ride_settings.get("lsp_debug", False)
+                },
                 env={"PATH": ride_settings.custom_env("PATH")}
             )
 
