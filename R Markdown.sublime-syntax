@@ -219,8 +219,11 @@ contexts:
           captures:
             1: punctuation.definition.heading.setext.markdown
           pop: true
-        - match: '@[\w:-]+'
-          scope: string.other.link.description.title.markdown
+        - match: '(@)([\w:-]+)'
+          scope: meta.link.reference.markdown
+          captures:
+            1: constant.other.reference
+            2: keyword.other.reference.latex
   ampersand:
     - match: (?!{{html_entity}})&
       comment: |
