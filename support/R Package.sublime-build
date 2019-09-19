@@ -6,7 +6,7 @@
     "variants": [
         {
             "name": "Clean and Build",
-            "cmd": "devtools::install(local=FALSE)"
+            "cmd": "devtools::install(build = TRUE)"
         },
         {
             "name": "Test",
