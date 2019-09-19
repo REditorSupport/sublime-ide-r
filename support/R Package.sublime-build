@@ -5,6 +5,10 @@
     "cancel": {"kill": true},
     "variants": [
         {
+            "name": "Quick Build",
+            "cmd": "devtools::install(quick = TRUE)"
+        },
+        {
             "name": "Clean and Build",
             "cmd": "devtools::install(build = TRUE)"
         },
