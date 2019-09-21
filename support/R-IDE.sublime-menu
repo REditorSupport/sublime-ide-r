@@ -43,10 +43,17 @@
                 "caption": "-"
             },
             {
-                "caption": "Clean and Build Package",
+                "caption": "Quick Install Package",
                 "command": "ride_package_exec",
                 "args": {
-                    "cmd": "devtools::install(local=FALSE)"
+                    "cmd": "devtools::install(quick = TRUE)"
+                }
+            },
+            {
+                "caption": "Install Package",
+                "command": "ride_package_exec",
+                "args": {
+                    "cmd": "devtools::install()"
                 }
             },
             {
