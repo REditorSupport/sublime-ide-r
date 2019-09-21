@@ -10,7 +10,7 @@
         },
         {
             "name": "Install",
-            "cmd": "devtools::install(build = TRUE)"
+            "cmd": "devtools::install()"
         },
         {
             "name": "Test",
