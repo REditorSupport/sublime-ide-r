@@ -17,6 +17,10 @@
             "cmd": "devtools::test()"
         },
         {
+            "name": "Test File",
+            "cmd": "devtools::test_file(\"$file\")"
+        },
+        {
             "name": "Check",
             "cmd": "devtools::check()"
         },

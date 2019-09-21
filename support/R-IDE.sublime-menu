@@ -57,6 +57,13 @@
                 }
             },
             {
+                "caption": "Test File",
+                "command": "ride_package_exec",
+                "args": {
+                    "cmd": "devtools::test_file(\"$file\")"
+                }
+            },
+            {
                 "caption": "Check Package",
                 "command": "ride_package_exec",
                 "args": {
