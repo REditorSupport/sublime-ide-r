@@ -51,7 +51,10 @@ if LSP_FOUND:
                     "diagnostics": ride_settings.get("diagnostics", True),
                     "debug": ride_settings.get("lsp_debug", False)
                 },
-                env={"PATH": ride_settings.custom_env("PATH")}
+                env={
+                    "PATH": ride_settings.custom_env("PATH"),
+                    "LANG": ride_settings.custom_env("LANG")
+                }
             )
 
         @property

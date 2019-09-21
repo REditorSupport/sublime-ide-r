@@ -18,7 +18,7 @@ class RideRenderRmarkdownCommand(sublime_plugin.WindowCommand):
         kwargs["working_dir"] = os.path.dirname(self.window.active_view().file_name())
         kwargs["env"] = {
             "PATH": ride_settings.custom_env("PATH"),
-            "LANG": ride_settings.get("lang", "en_US.UTF-8")
+            "LANG": ride_settings.custom_env("LANG")
         }
         kwargs["kill"] = kill
         self.window.run_command("exec", kwargs)
@@ -38,7 +38,7 @@ class RideSweaveRnwCommand(sublime_plugin.WindowCommand):
         kwargs["working_dir"] = os.path.dirname(self.window.active_view().file_name())
         kwargs["env"] = {
             "PATH": ride_settings.custom_env("PATH"),
-            "LANG": ride_settings.get("lang", "en_US.UTF-8")
+            "LANG": ride_settings.custom_env("LANG")
         }
         kwargs["kill"] = kill
         self.window.run_command("exec", kwargs)
@@ -57,7 +57,7 @@ class RideKnitRnwCommand(sublime_plugin.WindowCommand):
         kwargs["working_dir"] = os.path.dirname(self.window.active_view().file_name())
         kwargs["env"] = {
             "PATH": ride_settings.custom_env("PATH"),
-            "LANG": ride_settings.get("lang", "en_US.UTF-8")
+            "LANG": ride_settings.custom_env("LANG")
         }
         kwargs["kill"] = kill
         self.window.run_command("exec", kwargs)

@@ -57,6 +57,12 @@ class RideSettings:
             sep = ";" if sublime.platform() == "windows" else ":"
             env["PATH"] = env["PATH"] + sep + sep.join(paths)
 
+        lang = self.get("lang", None)
+        if lang:
+            env["LANG"] = lang
+        elif "LANG" not in env:
+            env["LANG"] = "en_US.UTF-8"
+
         self._custom_env = env
         if key:
             return env[key]

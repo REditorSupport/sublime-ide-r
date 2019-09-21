@@ -15,7 +15,7 @@ class RidePackageExecCommand(sublime_plugin.WindowCommand):
         kwargs["working_dir"] = self.window.folders()[0]
         env.update({
             "PATH": ride_settings.custom_env("PATH"),
-            "LANG": ride_settings.get("lang", "en_US.UTF-8")
+            "LANG": ride_settings.custom_env("LANG")
         })
         kwargs["env"] = env
         kwargs = sublime.expand_variables(kwargs, self.window.extract_variables())
