@@ -1,0 +1,6 @@
+{
+    "keyfiles": ["DESCRIPTION"],
+    "selector": "source.r",
+    "target": "ride_exec",
+    "cancel": {"kill": true}
+}

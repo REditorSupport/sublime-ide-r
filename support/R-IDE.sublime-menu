@@ -4,6 +4,10 @@
         "id": "R-IDE",
         "children": [
             {
+                "caption": "Exec",
+                "command": "ride_exec"
+            },
+            {
                 "caption": "Extract Function",
                 "command": "ride_extract_function"
             },
@@ -43,80 +47,80 @@
                 "caption": "-"
             },
             {
-                "caption": "Quick Install Package",
-                "command": "ride_package_exec",
-                "args": {
-                    "cmd": "devtools::install(quick = TRUE)"
-                }
-            },
-            {
                 "caption": "Install Package",
-                "command": "ride_package_exec",
+                "command": "ride_exec",
                 "args": {
                     "cmd": "devtools::install()"
                 }
             },
             {
+                "caption": "Install Package Locally",
+                "command": "ride_exec",
+                "args": {
+                    "cmd": "devtools::install(quick = TRUE)"
+                }
+            },
+            {
                 "caption": "Test Package",
-                "command": "ride_package_exec",
+                "command": "ride_exec",
                 "args": {
                     "cmd": "devtools::test()"
                 }
             },
             {
                 "caption": "Test File",
-                "command": "ride_package_exec",
+                "command": "ride_exec",
                 "args": {
                     "cmd": "devtools::test_file(\"$file\")"
                 }
             },
             {
                 "caption": "Check Package",
-                "command": "ride_package_exec",
+                "command": "ride_exec",
                 "args": {
                     "cmd": "devtools::check()"
                 }
             },
             {
                 "caption": "Document Package",
-                "command": "ride_package_exec",
+                "command": "ride_exec",
                 "args": {
                     "cmd": "devtools::document()"
                 }
             },
             {
                 "caption": "Compile C++ Attributes",
-                "command": "ride_package_exec",
+                "command": "ride_exec",
                 "args": {
                     "cmd": "Rcpp::compileAttributes()"
                 }
             },
             {
+                "caption": "Clean DLL",
+                "command": "ride_exec",
+                "args": {
+                    "cmd": "devtools::clean_dll()"
+                }
+            },
+            {
                 "caption": "Build Source Package",
-                "command": "ride_package_exec",
+                "command": "ride_exec",
                 "args": {
                     "cmd": "devtools::build()"
                 }
             },
             {
                 "caption": "Build Binary Package",
-                "command": "ride_package_exec",
+                "command": "ride_exec",
                 "args": {
                     "cmd": "devtools::build(binary=TRUE)"
                 }
             },
             {
                 "caption": "Build Package Site",
-                "command": "ride_package_exec",
+                "command": "ride_exec",
                 "args": {
                     "cmd": "pkgdown::build_site()"
-                }
-            },
-            {
-                "caption": "Build Package Site (Lazy)",
-                "command": "ride_package_exec",
-                "args": {
-                    "cmd": "pkgdown::build_site(lazy = TRUE)"
                 }
             },
             {

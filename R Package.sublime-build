@@ -1,16 +1,16 @@
 {
     "keyfiles": ["DESCRIPTION"],
-    "target": "ride_package_exec",
-    "cmd": "devtools::install()",
+    "target": "ride_exec",
+    "cmd": "",
     "cancel": {"kill": true},
     "variants": [
         {
-            "name": "Quick Install",
-            "cmd": "devtools::install(quick = TRUE)"
-        },
-        {
             "name": "Install",
             "cmd": "devtools::install()"
+        },
+        {
+            "name": "Local Install",
+            "cmd": "devtools::install(quick = TRUE)"
         },
         {
             "name": "Test",
@@ -33,20 +33,20 @@
             "cmd": "Rcpp::compileAttributes()"
         },
         {
+            "name": "Clean DLL",
+            "cmd": "devtools::clean_dll()"
+        },
+        {
             "name": "Build Source",
             "cmd": "devtools::build()"
         },
         {
             "name": "Build Binary",
-            "cmd": "devtools::build(binary=TRUE)"
+            "cmd": "devtools::build(binary = TRUE)"
         },
         {
             "name": "Build Site",
             "cmd": "pkgdown::build_site()"
-        },
-        {
-            "name": "Build Site (Lazy)",
-            "cmd": "pkgdown::build_site(lazy = TRUE)"
         }
     ]
 }

@@ -21,5 +21,9 @@
     {
         "caption": "R-IDE: Extract Function",
         "command": "ride_extract_function"
+    },
+    {
+        "caption": "R-IDE: Exec",
+        "command": "ride_exec_core"
     }
 ]

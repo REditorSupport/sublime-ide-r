@@ -1,23 +1,146 @@
 import sublime
 import sublime_plugin
 
+import threading
+
 from .settings import ride_settings
 from .rproject import is_package
+from .rcommand import R
 
 
-class RidePackageExecCommand(sublime_plugin.WindowCommand):
-    def is_visible(self):
-        return is_package(self.window)
+class RideExecCommand(sublime_plugin.WindowCommand):
+    def run(self, kill=False, **kwargs):
+        if kill:
+            self.window.run_command("exec", {"kill": True})
+            return
 
-    def run(self, cmd, kill=False, env={}):
+        if "cmd" in kwargs and kwargs["cmd"]:
+            self.window.run_command("ride_exec_core", kwargs)
+        elif "cmd" not in kwargs:
+            sublime.set_timeout(lambda: self.window.run_command(
+                    "show_overlay", {
+                        "overlay": "command_palette",
+                        "command": "ride_exec_core"
+                    }), 10)
+
+
+class RideExecCoreCommand(sublime_plugin.WindowCommand):
+    def run(self, cmd="", env={}, working_dir="", **kwargs):
+        try:
+            cmd = "{package}::{function}({args})".format(**kwargs)
+        except KeyError:
+            pass
+
         kwargs = {}
-        kwargs["cmd"] = [ride_settings.r_binary(), "--slave", "-e", cmd]
-        kwargs["working_dir"] = self.window.folders()[0]
+        kwargs["cmd"] = [ride_settings.r_binary(), "--quiet", "-e", cmd]
+        if not working_dir and is_package(self.window):
+            working_dir = self.window.folders()[0]
+        kwargs["working_dir"] = working_dir
         env.update({
             "PATH": ride_settings.custom_env("PATH"),
             "LANG": ride_settings.custom_env("LANG")
         })
         kwargs["env"] = env
         kwargs = sublime.expand_variables(kwargs, self.window.extract_variables())
-        kwargs["kill"] = kill
         self.window.run_command("exec", kwargs)
+
+    def input(self, *args):
+        return RideRunAskPackage()
+
+
+class RideRunAskPackage(sublime_plugin.ListInputHandler):
+    packages = []
+    _initial_text = None
+
+    def name(self):
+        return "package"
+
+    def initial_text(self):
+        if RideRunAskPackage._initial_text:
+            return RideRunAskPackage._initial_text
+
+    def list_items(self):
+        if not self.packages:
+            self.packages[:] = R(
+                "cat(paste(rownames(installed.packages())), sep='\n')").strip().split("\n")
+        return self.packages
+
+    def confirm(self, text):
+        RideRunAskPackage._initial_text = text
+
+    def placeholder(self):
+        return "package::"
+
+    def description(self, value, text):
+        return "{}::".format(value)
+
+    def next_input(self, args):
+        return RideRunAskFunction(args)
+
+
+class RideRunAskFunction(sublime_plugin.ListInputHandler):
+    exports = {}
+    _initial_text = {}
+    package = None
+
+    def __init__(self, args):
+        package = args["package"]
+        self.package = package
+        if package not in self.exports:
+            self.exports[package] = R(
+                """
+                cat(paste(getNamespaceExports(asNamespace('{}')), collapse = '\n'))
+                """.format(package)).strip().split("\n")
+
+    def name(self):
+        return "function"
+
+    def initial_text(self):
+        if self.package in RideRunAskFunction._initial_text:
+            return RideRunAskFunction._initial_text[self.package]
+
+    def placeholder(self):
+        return "object"
+
+    def confirm(self, text):
+        RideRunAskFunction._initial_text[self.package] = text
+
+    def list_items(self):
+        package = self.package
+        if package in self.exports:
+            return self.exports[package]
+
+    def next_input(self, args):
+        return RideRunAskArgs(args)
+
+
+class RideRunAskArgs(sublime_plugin.TextInputHandler):
+    package = None
+    function = None
+    formals = {}
+
+    def __init__(self, args):
+        self.package = args["package"]
+        self.function = args["function"]
+        pkgfunc = "{}::{}".format(self.package, self.function)
+
+        def fetcher():
+            formals = R("cat(paste(names(formals({})), collapse = ', '))".format(pkgfunc))
+            self.formals[pkgfunc] = formals
+
+        if pkgfunc not in self.formals:
+            threading.Thread(target=fetcher).start()
+
+    def name(self):
+        return "args"
+
+    def placeholder(self):
+        return "args..."
+
+    def preview(self, value):
+        pkgfunc = "{}::{}".format(self.package, self.function)
+        if pkgfunc in self.formals:
+            formals = self.formals[pkgfunc]
+            return formals
+        else:
+            return None
