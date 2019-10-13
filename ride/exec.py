@@ -1,8 +1,6 @@
 import sublime
 import sublime_plugin
 
-import threading
-
 from .settings import ride_settings
 from .rproject import is_package
 from .rcommand import R
@@ -68,6 +66,9 @@ class RideRunAskPackage(sublime_plugin.ListInputHandler):
     def confirm(self, text):
         RideRunAskPackage._initial_text = text
 
+    def cancel(self):
+        RideRunAskPackage._initial_text = None
+
     def placeholder(self):
         return "package::"
 
@@ -105,6 +106,10 @@ class RideRunAskFunction(sublime_plugin.ListInputHandler):
     def confirm(self, text):
         RideRunAskFunction._initial_text[self.package] = text
 
+    def cancel(self):
+        if self.package in RideRunAskFunction._initial_text:
+            del RideRunAskFunction._initial_text[self.package]
+
     def list_items(self):
         package = self.package
         if package in self.exports:
@@ -117,30 +122,29 @@ class RideRunAskFunction(sublime_plugin.ListInputHandler):
 class RideRunAskArgs(sublime_plugin.TextInputHandler):
     package = None
     function = None
-    formals = {}
+    _initial_text = {}
 
     def __init__(self, args):
-        self.package = args["package"]
-        self.function = args["function"]
-        pkgfunc = "{}::{}".format(self.package, self.function)
-
-        def fetcher():
-            formals = R("cat(paste(names(formals({})), collapse = ', '))".format(pkgfunc))
-            self.formals[pkgfunc] = formals
-
-        if pkgfunc not in self.formals:
-            threading.Thread(target=fetcher).start()
+        package = args["package"]
+        function = args["function"]
+        self.pkgfunc = "{}::{}".format(package, function)
 
     def name(self):
         return "args"
 
+    def initial_text(self):
+        if self.pkgfunc in RideRunAskArgs._initial_text:
+            return RideRunAskArgs._initial_text[self.pkgfunc]
+
     def placeholder(self):
         return "args..."
 
-    def preview(self, value):
-        pkgfunc = "{}::{}".format(self.package, self.function)
-        if pkgfunc in self.formals:
-            formals = self.formals[pkgfunc]
-            return formals
-        else:
-            return None
+    def preview(self, text):
+        return "{}({})".format(self.pkgfunc, text)
+
+    def confirm(self, text):
+        RideRunAskArgs._initial_text[self.pkgfunc] = text
+
+    def cancel(self):
+        if self.pkgfunc in RideRunAskArgs._initial_text:
+            del RideRunAskArgs._initial_text[self.pkgfunc]
