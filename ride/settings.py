@@ -14,6 +14,10 @@ class RideSettings:
         s = sublime.load_settings('R-IDE.sublime-settings')
         return s.get(key, default)
 
+    def add_on_change(self, key, on_change):
+        s = sublime.load_settings('R-IDE.sublime-settings')
+        s.add_on_change(key, on_change)
+
     def r_binary(self):
         r_binary = self.get("r_binary", self._r_binary)
         if not r_binary:

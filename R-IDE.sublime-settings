@@ -7,6 +7,48 @@
     // show R-IDE main menu
     "r_ide_menu": true,
 
+    "r_ide_exec_items": [
+        {
+            "name": "Install Package",
+            "cmd": "devtools::install()"
+        },
+        {
+            "name": "Install Package Locally",
+            "cmd": "devtools::install(quick = TRUE)"
+        },
+        {
+            "name": "Test Package",
+            "cmd": "devtools::test()"
+        },
+        {
+            "name": "Test File",
+            "cmd": "devtools::test_file(\"$file\")"
+        },
+        {
+            "name": "Check Package",
+            "cmd": "devtools::check()"
+        },
+        {
+            "name": "Document Package",
+            "cmd": "devtools::document()"
+        },
+        {
+            "name": "Build Package Site",
+            "cmd": "pkgdown::build_site()"
+        },
+        {
+            "name": "-"
+        },
+        {
+            "name": "Render R Markdown",
+            "cmd": "rmarkdown::render('$file_name', encoding = 'UTF-8')"
+        },
+        {
+            "name": "Kint Rnw",
+            "cmd": "knitr::knit2pdf('$file_name')"
+        }
+    ],
+
     // use diagnostics from LSP
     "diagnostics": true,
 
