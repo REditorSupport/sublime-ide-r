@@ -69,3 +69,18 @@ class RideExtractFunctionCommand(sublime_plugin.TextCommand):
             pass
 
         return [s.strip() for s in result.split("\n")] if result else []
+
+    def is_enabled(self, **kwargs):
+        view = self.view
+        try:
+            pt = view.sel()[0].end()
+        except Exception:
+
+            pt = 0
+        if not view.match_selector(pt, "source.r"):
+            return False
+
+        if all(s.empty() for s in view.sel()):
+            return False
+
+        return True
