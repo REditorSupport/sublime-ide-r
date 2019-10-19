@@ -6,7 +6,7 @@ from .ride.source_prompt import RideSourcePromptCommand
 from .ride.extract_function import RideExtractFunctionCommand
 from .ride.exec import RideExecCommand, RideExecCoreCommand
 from .ride.lsp import (
-    LspRLangPlugin, LspCqueryRPlugin,
+    LspRLangPlugin, LspCclsRPlugin,
     plugin_loaded as lsp_plugin_loaded
 )
 

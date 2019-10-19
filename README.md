@@ -25,7 +25,7 @@ install.packages("languageserver")
 
 - language features for C/C++ files
     
-    `R-IDE` ultilizes [`cquery`](https://github.com/cquery-project/cquery) to provide language features for C/C++ files. Install `cquery` first. Then enable `cquery-r` server in LSP.
+    `R-IDE` ultilizes [`ccls`](https://github.com/MaskRay/ccls) to provide language features for C/C++ files. Install `ccls` first. Then enable `ccls-r` server in LSP.
 
 - R-IDE menu
 

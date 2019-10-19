@@ -64,16 +64,16 @@ if LSP_FOUND:
         def on_start(self, window):
             return is_package(window) or is_supported_file(window.active_view())
 
-    class LspCqueryRPlugin(LanguageHandler):
+    class LspCclsRPlugin(LanguageHandler):
         @property
         def name(self):
-            return "cquery-r"
+            return "ccls-r"
 
         def __init__(self):
             self._config = ClientConfig(
                 name=self.name,
                 binary_args=[
-                    "cquery"
+                    "ccls"
                 ],
                 tcp_port=None,
                 scopes=[
@@ -90,12 +90,14 @@ if LSP_FOUND:
                 languages=[],
                 enabled=False,
                 init_options={
-                    "cacheDirectory": tempfile.mkdtemp(),
-                    "extraClangArguments": [
-                        "-I{}".format(R(script="cat(R.home('include'))"))
-                    ],
-                    "completion": {
-                        "enableSnippets": False
+                    "cache": {"directory": tempfile.mkdtemp()},
+                    "clang": {
+                        "extraArgs": [
+                            "-I{}".format(R(script="cat(R.home('include'))"))
+                        ]
+                    },
+                    "client": {
+                        "snippetSupport": False
                     }
                 },
                 settings=dict()
@@ -115,7 +117,7 @@ else:
     class LspRLangPlugin():
         pass
 
-    class LspCqueryRPlugin():
+    class LspCclsRPlugin():
         pass
 
     def plugin_loaded():
