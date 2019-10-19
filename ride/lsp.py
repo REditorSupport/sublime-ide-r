@@ -3,8 +3,8 @@ import sublime
 import tempfile
 
 from .settings import ride_settings
-from .rproject import is_package, is_supported_file
 from .rcommand import R
+from .utils import is_package, is_supported_file
 
 
 UNLOAD_MESSAGE = """

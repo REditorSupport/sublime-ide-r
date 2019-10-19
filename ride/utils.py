@@ -1,5 +1,6 @@
 import sublime
 
+import os
 import re
 
 if sublime.platform() == "windows":
@@ -49,3 +50,49 @@ def expand_variables(cmd, extracted_variables):
             return sublime.expand_variables(m.group("var"), extracted_variables)
     cmd = PATTERN.sub(convert, cmd)
     return cmd
+
+
+def is_package(window):
+    if not window:
+        return False
+    for folder in window.folders():
+        if not os.path.isdir(folder):
+            continue
+        for f in os.listdir(folder):
+            if f.endswith(".Rproj"):
+                return True
+
+        description_file = os.path.join(folder, "DESCRIPTION")
+        namespace_file = os.path.join(folder, "NAMESPACE")
+        r_source_dir = os.path.join(folder, "R")
+        if os.path.isfile(description_file) and os.path.isfile(namespace_file) \
+                and os.path.isdir(r_source_dir):
+            return True
+
+    return False
+
+
+def is_supported_file(view, ext=""):
+    if not view:
+        return False
+    try:
+        pt = view.sel()[0].end()
+    except Exception:
+        pt = 0
+
+    scope_map = {
+        "r": "source.r",
+        "rnw": "text.tex.latex.rsweave",
+        "rmarkdown": "text.html.markdown.rmarkdown",
+        "rcpp": "source.c++.rcpp"
+    }
+
+    if ext:
+        scope = scope_map[ext]
+    else:
+        scope = ",".join(scope_map.values())
+
+    if view.match_selector(pt, scope):
+        return True
+
+    return False

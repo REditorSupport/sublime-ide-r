@@ -11,42 +11,51 @@
     "r_ide_exec_items": [
         {
             "name": "Install Package",
-            "cmd": "devtools::install()"
+            "cmd": "devtools::install()",
+            "selector": "package"
         },
         {
             "name": "Install Package Locally",
-            "cmd": "devtools::install(quick = TRUE)"
+            "cmd": "devtools::install(quick = TRUE)",
+            "selector": "package"
         },
         {
             "name": "Test Package",
-            "cmd": "devtools::test()"
+            "cmd": "devtools::test()",
+            "selector": "package"
         },
         {
             "name": "Test File",
-            "cmd": "devtools::test_file(\"$file\")"
+            "cmd": "devtools::test_file(\"$file\")",
+            "selector": "package, r"
         },
         {
             "name": "Check Package",
-            "cmd": "devtools::check()"
+            "cmd": "devtools::check()",
+            "selector": "package"
         },
         {
             "name": "Document Package",
-            "cmd": "devtools::document()"
+            "cmd": "devtools::document()",
+            "selector": "package"
         },
         {
             "name": "Build Package Site",
-            "cmd": "pkgdown::build_site()"
+            "cmd": "pkgdown::build_site()",
+            "selector": "package"
         },
         {
             "name": "-"
         },
         {
             "name": "Render R Markdown",
-            "cmd": "rmarkdown::render('$file_name', encoding = 'UTF-8')"
+            "cmd": "rmarkdown::render('$file_name', encoding = 'UTF-8')",
+            "selector": "rmarkdown"
         },
         {
             "name": "Kint Rnw",
-            "cmd": "knitr::knit2pdf('$file_name')"
+            "cmd": "knitr::knit2pdf('$file_name')",
+            "selector": "rnw"
         }
     ],
 

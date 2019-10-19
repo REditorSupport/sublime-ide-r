@@ -25,9 +25,5 @@
     {
         "caption": "R-IDE: Exec",
         "command": "ride_exec_core"
-    },
-    {
-        "caption": "R-IDE: Regenerate Build Menu",
-        "command": "ride_regenerate_build"
     }
 ]

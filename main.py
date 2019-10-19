@@ -1,7 +1,6 @@
 from .ride.generate import (
-    plugin_loaded as generate_plugin_loaded,
     plugin_unloaded as generate_plugin_unloaded,
-    RideMenuListener, RideRegenerateBuildCommand
+    RideDynamicMenuListener, RideDynamicBuildListener
 )
 from .ride.source_prompt import RideSourcePromptCommand
 from .ride.extract_function import RideExtractFunctionCommand
@@ -13,7 +12,6 @@ from .ride.lsp import (
 
 
 def plugin_loaded():
-    generate_plugin_loaded()
     lsp_plugin_loaded()
 
 

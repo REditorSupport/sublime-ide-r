@@ -6,7 +6,7 @@ import os
 import threading
 
 from .settings import ride_settings
-from .rproject import is_package, is_supported_file
+from .utils import is_package, is_supported_file
 
 
 ride_menu = [
@@ -34,6 +34,7 @@ ride_menu = [
 
 ride_build = {
     "keyfiles": ["DESCRIPTION"],
+    "selector": "source.r, text.tex.latex.rsweave, text.html.markdown.rmarkdown, source.c++.rcpp",
     "target": "ride_exec",
     "cancel": {"kill": True},
     "variants": []
@@ -50,47 +51,53 @@ def generate_menu(path):
                 "caption": item["name"],
                 "command": "ride_exec",
                 "args": {
-                    "cmd": item["cmd"]
+                    "cmd": item["cmd"],
+                    "selector": item["selector"] if "selector" in item else ""
                 }
             })
         else:
             menu[0]["children"].append({"caption": item["name"]})
 
+    pathdir = os.path.dirname(path)
+    if not os.path.exists(pathdir):
+        os.makedirs(pathdir, 0o755)
     with open(path, 'w') as json_file:
         json.dump(menu, json_file)
 
 
-def generate_build(path):
+def generate_build(path, scope_flags):
     build = copy.deepcopy(ride_build)
 
-    items = ride_settings.get("r_ide_exec_items", [])
-    build["variants"] = [x for x in items if x["name"] != "-"]
+    variants = ride_settings.get("r_ide_exec_items", [])
+    for v in variants:
+        if v["name"] == "-":
+            continue
+        selector = v["selector"] if "selector" in v else ""
+        scopes = [x.strip() for x in selector.split(",")]
+        if any(not scope_flags[s] for s in scopes):
+            continue
+        build["variants"].append(v)
 
+    pathdir = os.path.dirname(path)
+    if not os.path.exists(pathdir):
+        os.makedirs(pathdir, 0o755)
     with open(path, 'w') as json_file:
         json.dump(build, json_file)
-
-
-def plugin_loaded():
-    build_path = os.path.join(
-        sublime.packages_path(), 'User', 'R-IDE', 'R-IDE.sublime-build')
-
-    if not os.path.exists(build_path):
-        generate_build(build_path)
-
-    ride_settings.add_on_change("r_ide_exec_items", lambda: generate_build(build_path))
 
 
 def plugin_unloaded():
     menu_path = os.path.join(
         sublime.packages_path(), 'User', 'R-IDE', 'Main.sublime-menu')
-
     if os.path.exists(menu_path):
         os.unlink(menu_path)
 
+    build_path = os.path.join(
+        sublime.packages_path(), 'User', 'R-IDE', 'R-IDE.sublime-build')
+    if os.path.exists(build_path):
+        os.unlink(build_path)
 
-class RideMenuListener(sublime_plugin.EventListener):
-    # TODO: dynamic build and menu based on file types
 
+class RideDynamicMenuListener(sublime_plugin.EventListener):
     def on_activated_async(self, view):
         if view.settings().get('is_widget'):
             return
@@ -111,12 +118,39 @@ class RideMenuListener(sublime_plugin.EventListener):
                 if os.path.exists(menu_path):
                     os.remove(menu_path)
 
-        self.timer = threading.Timer(0.1, set_main_menu)
+        self.timer = threading.Timer(0.5, set_main_menu)
         self.timer.start()
 
 
-class RideRegenerateBuildCommand(sublime_plugin.WindowCommand):
-    def run(self):
-        build_path = os.path.join(
-            sublime.packages_path(), 'User', 'R-IDE', 'R-IDE.sublime-build')
-        generate_build(build_path)
+class RideDynamicBuildListener(sublime_plugin.EventListener):
+    def on_activated_async(self, view):
+        if view.settings().get('is_widget'):
+            return
+        ispackage = is_package(view.window())
+        isr = is_supported_file(view, "r")
+        isrmarkdown = is_supported_file(view, "rmarkdown")
+        isrcpp = is_supported_file(view, "rcpp")
+        isrnw = is_supported_file(view, "rnw")
+
+        if not (ispackage or isr or isrmarkdown or isrcpp or isrnw):
+            return
+        if hasattr(self, "timer") and self.timer:
+            self.timer.cancel()
+
+        def set_build():
+            print("set build")
+            build_path = os.path.join(
+                sublime.packages_path(), 'User', 'R-IDE', 'R-IDE.sublime-build')
+            generate_build(
+                build_path,
+                {
+                    "package": ispackage,
+                    "r": isr,
+                    "rcpp": isrcpp,
+                    "rmarkdown": isrmarkdown,
+                    "rnw": isrnw
+                }
+            )
+
+        self.timer = threading.Timer(0.5, set_build)
+        self.timer.start()

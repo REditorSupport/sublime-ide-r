@@ -1,13 +1,14 @@
 import sublime
 import sublime_plugin
+import os
 
 from .settings import ride_settings
-from .rproject import is_package
 from .rcommand import R
+from .utils import is_package, is_supported_file
 
 
 class RideExecCommand(sublime_plugin.WindowCommand):
-    def run(self, kill=False, **kwargs):
+    def run(self, selector="", kill=False, **kwargs):
         if kill:
             self.window.run_command("exec", {"kill": True})
             return
@@ -20,6 +21,23 @@ class RideExecCommand(sublime_plugin.WindowCommand):
                         "overlay": "command_palette",
                         "command": "ride_exec_core"
                     }), 10)
+
+    def is_enabled(self, selector="", **kwargs):
+        scopes = [x.strip() for x in selector.split(",")]
+        if "package" in scopes and not is_package(self.window):
+            return False
+
+        view = self.window.active_view()
+        if "r" in scopes and not is_supported_file(view, "r"):
+            return False
+
+        if "rmarkdown" in scopes and not is_supported_file(view, "rmarkdown"):
+            return False
+
+        if "rnw" in scopes and not is_supported_file(view, "rnw"):
+            return False
+
+        return True
 
 
 class RideExecCoreCommand(sublime_plugin.WindowCommand):
@@ -43,10 +61,10 @@ class RideExecCoreCommand(sublime_plugin.WindowCommand):
         self.window.run_command("exec", kwargs)
 
     def input(self, *args):
-        return RideRunAskPackage()
+        return RideAskPackage()
 
 
-class RideRunAskPackage(sublime_plugin.ListInputHandler):
+class RideAskPackage(sublime_plugin.ListInputHandler):
     packages = []
     _initial_text = None
 
@@ -54,8 +72,8 @@ class RideRunAskPackage(sublime_plugin.ListInputHandler):
         return "package"
 
     def initial_text(self):
-        if RideRunAskPackage._initial_text:
-            return RideRunAskPackage._initial_text
+        if RideAskPackage._initial_text:
+            return RideAskPackage._initial_text
 
     def list_items(self):
         if not self.packages:
@@ -64,10 +82,10 @@ class RideRunAskPackage(sublime_plugin.ListInputHandler):
         return self.packages
 
     def confirm(self, text):
-        RideRunAskPackage._initial_text = text
+        RideAskPackage._initial_text = text
 
     def cancel(self):
-        RideRunAskPackage._initial_text = None
+        RideAskPackage._initial_text = None
 
     def placeholder(self):
         return "package::"
@@ -76,10 +94,10 @@ class RideRunAskPackage(sublime_plugin.ListInputHandler):
         return "{}::".format(value)
 
     def next_input(self, args):
-        return RideRunAskFunction(args)
+        return RideAskFunction(args)
 
 
-class RideRunAskFunction(sublime_plugin.ListInputHandler):
+class RideAskFunction(sublime_plugin.ListInputHandler):
     exports = {}
     _initial_text = {}
     package = None
@@ -97,18 +115,18 @@ class RideRunAskFunction(sublime_plugin.ListInputHandler):
         return "function"
 
     def initial_text(self):
-        if self.package in RideRunAskFunction._initial_text:
-            return RideRunAskFunction._initial_text[self.package]
+        if self.package in RideAskFunction._initial_text:
+            return RideAskFunction._initial_text[self.package]
 
     def placeholder(self):
         return "object"
 
     def confirm(self, text):
-        RideRunAskFunction._initial_text[self.package] = text
+        RideAskFunction._initial_text[self.package] = text
 
     def cancel(self):
-        if self.package in RideRunAskFunction._initial_text:
-            del RideRunAskFunction._initial_text[self.package]
+        if self.package in RideAskFunction._initial_text:
+            del RideAskFunction._initial_text[self.package]
 
     def list_items(self):
         package = self.package
@@ -116,10 +134,10 @@ class RideRunAskFunction(sublime_plugin.ListInputHandler):
             return self.exports[package]
 
     def next_input(self, args):
-        return RideRunAskArgs(args)
+        return RideAskArgs(args)
 
 
-class RideRunAskArgs(sublime_plugin.TextInputHandler):
+class RideAskArgs(sublime_plugin.TextInputHandler):
     package = None
     function = None
     _initial_text = {}
@@ -133,8 +151,8 @@ class RideRunAskArgs(sublime_plugin.TextInputHandler):
         return "args"
 
     def initial_text(self):
-        if self.pkgfunc in RideRunAskArgs._initial_text:
-            return RideRunAskArgs._initial_text[self.pkgfunc]
+        if self.pkgfunc in RideAskArgs._initial_text:
+            return RideAskArgs._initial_text[self.pkgfunc]
 
     def placeholder(self):
         return "args..."
@@ -143,8 +161,8 @@ class RideRunAskArgs(sublime_plugin.TextInputHandler):
         return "{}({})".format(self.pkgfunc, text)
 
     def confirm(self, text):
-        RideRunAskArgs._initial_text[self.pkgfunc] = text
+        RideAskArgs._initial_text[self.pkgfunc] = text
 
     def cancel(self):
-        if self.pkgfunc in RideRunAskArgs._initial_text:
-            del RideRunAskArgs._initial_text[self.pkgfunc]
+        if self.pkgfunc in RideAskArgs._initial_text:
+            del RideAskArgs._initial_text[self.pkgfunc]
