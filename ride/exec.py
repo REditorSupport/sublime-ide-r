@@ -1,9 +1,8 @@
 import sublime
 import sublime_plugin
-import os
 
 from .settings import ride_settings
-from .rcommand import R
+from .r import R
 from .utils import is_package, is_supported_file
 
 

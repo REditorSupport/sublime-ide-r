@@ -4,7 +4,7 @@ import tempfile
 import re
 import os
 
-from .rcommand import R
+from .r import R
 from .utils import is_supported_file
 
 
