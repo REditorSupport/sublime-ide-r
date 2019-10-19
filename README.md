@@ -27,6 +27,20 @@ install.packages("languageserver")
     
     `R-IDE` ultilizes [`cquery`](https://github.com/cquery-project/cquery) to provide language features for C/C++ files. Install `cquery` first. Then enable `cquery-r` server in LSP.
 
+- R-IDE menu
+
+    There is a R-IDE menu when an R project or an R file is opened. User could edit the setting `r_ide_exec_items` to modify the menu.
+
+    <img width="240" alt="Screen Shot 2019-10-18 at 7 20 49 PM" src="https://user-images.githubusercontent.com/1690993/67136543-789a7b80-f1dc-11e9-9156-98d2e64e25fd.png">
+
+- Build system
+
+    Hit `cmd/ctrl+b` to launch the predefined commands. Use the setting `r_ide_exec_items` to modify the items.
+
+- R-IDE Exec
+
+    User could run any R functions via `R-IDE: Exec`.
+
 
 ## Recommendations
 
