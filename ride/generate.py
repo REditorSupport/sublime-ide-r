@@ -138,7 +138,6 @@ class RideDynamicBuildListener(sublime_plugin.EventListener):
             self.timer.cancel()
 
         def set_build():
-            print("set build")
             build_path = os.path.join(
                 sublime.packages_path(), 'User', 'R-IDE', 'R-IDE.sublime-build')
             generate_build(
