@@ -81,6 +81,10 @@ if LSP_FOUND:
                 if os.path.isdir(cpath):
                     clang_extraArgs.append("-isystem{}".format(cpath))
 
+                sysrootpath = "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
+                if os.path.isdir(sysrootpath):
+                    clang_extraArgs.append("-isysroot{}".format(sysrootpath))
+
             self._config = ClientConfig(
                 name=self.name,
                 binary_args=[
