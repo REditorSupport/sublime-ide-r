@@ -1,6 +1,8 @@
 import sublime
 
 import tempfile
+import os
+import sys
 
 from .settings import ride_settings
 from .r import R
@@ -70,10 +72,19 @@ if LSP_FOUND:
             return "ccls-r"
 
         def __init__(self):
+            clang_extraArgs = [
+                "-I{}".format(R(script="cat(R.home('include'))"))
+            ]
+            if sys.platform == "darwin":
+                # https://github.com/MaskRay/ccls/issues/191#issuecomment-453809905
+                cpath = "/Library/Developer/CommandLineTools/usr/include/c++/v1"
+                if os.path.isdir(cpath):
+                    clang_extraArgs.append("-isystem{}".format(cpath))
+
             self._config = ClientConfig(
                 name=self.name,
                 binary_args=[
-                    "ccls"
+                    ride_settings.get("ccls", "ccls"),
                 ],
                 tcp_port=None,
                 scopes=[
@@ -91,14 +102,8 @@ if LSP_FOUND:
                 enabled=False,
                 init_options={
                     "cache": {"directory": tempfile.mkdtemp()},
-                    "clang": {
-                        "extraArgs": [
-                            "-I{}".format(R(script="cat(R.home('include'))"))
-                        ]
-                    },
-                    "client": {
-                        "snippetSupport": False
-                    }
+                    "clang": {"extraArgs": clang_extraArgs},
+                    "client": {"snippetSupport": False}
                 },
                 settings=dict()
             )
