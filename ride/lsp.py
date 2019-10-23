@@ -3,6 +3,8 @@ import sublime
 import tempfile
 import os
 import sys
+import subprocess
+
 
 from .settings import ride_settings
 from .r import R
@@ -77,11 +79,18 @@ if LSP_FOUND:
             ]
             if sys.platform == "darwin":
                 # https://github.com/MaskRay/ccls/issues/191#issuecomment-453809905
-                cpath = "/Library/Developer/CommandLineTools/usr/include/c++/v1"
+                try:
+                    cpath = subprocess.check_output(["clang", "-print-resource-dir"]).decode()
+                    cpath = os.path.normpath(os.path.join(cpath, "../../../include/c++/v1"))
+                except Exception:
+                    cpath = "/Library/Developer/CommandLineTools/usr/include/c++/v1"
                 if os.path.isdir(cpath):
                     clang_extraArgs.append("-isystem{}".format(cpath))
 
-                sysrootpath = "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
+                try:
+                    sysrootpath = subprocess.check_output(["xcrun", "--show-sdk-path"]).decode()
+                except Exception:
+                    sysrootpath = "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
                 if os.path.isdir(sysrootpath):
                     clang_extraArgs.append("-isysroot{}".format(sysrootpath))
 
