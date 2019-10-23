@@ -80,7 +80,7 @@ if LSP_FOUND:
             if sys.platform == "darwin":
                 # https://github.com/MaskRay/ccls/issues/191#issuecomment-453809905
                 try:
-                    cpath = subprocess.check_output(["clang", "-print-resource-dir"]).decode()
+                    cpath = subprocess.check_output(["clang", "-print-resource-dir"]).decode().strip()
                     cpath = os.path.normpath(os.path.join(cpath, "../../../include/c++/v1"))
                 except Exception:
                     cpath = "/Library/Developer/CommandLineTools/usr/include/c++/v1"
@@ -88,7 +88,7 @@ if LSP_FOUND:
                     clang_extraArgs.append("-isystem{}".format(cpath))
 
                 try:
-                    sysrootpath = subprocess.check_output(["xcrun", "--show-sdk-path"]).decode()
+                    sysrootpath = subprocess.check_output(["xcrun", "--show-sdk-path"]).decode().strip()
                 except Exception:
                     sysrootpath = "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
                 if os.path.isdir(sysrootpath):
@@ -97,7 +97,7 @@ if LSP_FOUND:
             self._config = ClientConfig(
                 name=self.name,
                 binary_args=[
-                    ride_settings.get("ccls", "ccls"),
+                    ride_settings.get("ccls", "ccls")
                 ],
                 tcp_port=None,
                 scopes=[
