@@ -15,19 +15,19 @@ ride_menu = [
         "id": "R-IDE",
         "children": [
             {
+                "caption": "Extract Function",
+                "command": "ride_extract_function"
+            },
+            {
+                "caption": "-"
+            },
+            {
                 "caption": "Exec",
                 "command": "ride_exec"
             },
             {
                 "caption": "-"
             },
-            {
-                "caption": "Extract Function",
-                "command": "ride_extract_function"
-            },
-            {
-                "caption": "-"
-            }
         ]
     }
 ]
@@ -43,9 +43,14 @@ ride_build = {
 
 def generate_menu(path):
     menu = copy.deepcopy(ride_menu)
+    menu_items = ride_settings.get("menu_items", [])
+    if menu_items:
+        menu[0]["children"].insert(2, {"caption": "-"})
+    for item in reversed(menu_items):
+        menu[0]["children"].insert(2, item)
 
-    items = ride_settings.get("r_ide_exec_items", [])
-    for item in items:
+    exec_items = ride_settings.get("exec_items", [])
+    for item in exec_items:
         if "cmd" in item:
             menu[0]["children"].append({
                 "caption": item["name"],
@@ -68,7 +73,7 @@ def generate_menu(path):
 def generate_build(path, scope_flags):
     build = copy.deepcopy(ride_build)
 
-    variants = ride_settings.get("r_ide_exec_items", [])
+    variants = ride_settings.get("exec_items", [])
     for v in variants:
         if v["name"] == "-":
             continue

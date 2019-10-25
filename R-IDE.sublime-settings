@@ -7,8 +7,25 @@
     // show R-IDE main menu
     "r_ide_menu": true,
 
+    // this settings is used to add extra items to the R-IDE menu
+    // for example, user could add the following SendCode commands
+    // "menu_items": [
+    //     {
+    //         "caption": "Set Working Directory",
+    //         "command": "send_code",
+    //         "args": {"cmd": "setwd(\"${file_path:$folder}\")"}
+    //     },
+    //     {
+    //         "caption": "Source Current File",
+    //         "command": "send_code",
+    //         "args": {"cmd": "source(\"$file\")"}
+    //     }
+    // ],
+    "menu_items": [],
+
+
     // this setting is used to dynamically generate the menu and build variants
-    "r_ide_exec_items": [
+    "exec_items": [
         {
             "name": "Install Package",
             "cmd": "devtools::install()",
