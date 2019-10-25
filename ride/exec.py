@@ -51,11 +51,9 @@ class RideExecCoreCommand(sublime_plugin.WindowCommand):
         if not working_dir and is_package(self.window):
             working_dir = self.window.folders()[0]
         kwargs["working_dir"] = working_dir
-        env.update({
-            "PATH": ride_settings.custom_env("PATH"),
-            "LANG": ride_settings.custom_env("LANG")
-        })
-        kwargs["env"] = env
+        _env = ride_settings.custom_env()
+        _env.update(env)
+        kwargs["env"] = _env
         kwargs = sublime.expand_variables(kwargs, self.window.extract_variables())
         self.window.run_command("exec", kwargs)
 
