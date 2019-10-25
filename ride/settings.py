@@ -18,7 +18,7 @@ class RideSettings:
         s = sublime.load_settings('R-IDE.sublime-settings')
         s.add_on_change(key, on_change)
 
-    def r_binary(self):
+    def r_binary(self, default="R"):
         r_binary = self.get("r_binary", self._r_binary)
         if not r_binary:
             if sublime.platform() == "windows":
@@ -30,7 +30,7 @@ class RideSettings:
                 except Exception:
                     pass
         if not r_binary:
-            r_binary = "R"
+            r_binary = default
         self._r_binary = r_binary
         return r_binary
 

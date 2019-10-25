@@ -32,10 +32,13 @@ if LSP_FOUND:
             return "rlang"
 
         def __init__(self):
+            path = ride_settings.get("r_binary_lsp", None)
+            if not path:
+                path = ride_settings.r_binary()
             self._config = ClientConfig(
                 name=self.name,
                 binary_args=[
-                    ride_settings.r_binary(),
+                    path,
                     "--quiet",
                     "--slave",
                     "-e",
