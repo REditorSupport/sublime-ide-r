@@ -69,11 +69,13 @@
         {
             "name": "Render R Markdown",
             "cmd": "rmarkdown::render('$file_name', encoding = 'UTF-8')",
+            "working_dir": "$file_path",
             "selector": "rmarkdown"
         },
         {
             "name": "Kint Rnw",
             "cmd": "knitr::knit2pdf('$file_name')",
+            "working_dir": "$file_path",
             "selector": "rnw"
         }
     ],

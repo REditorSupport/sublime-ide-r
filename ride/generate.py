@@ -52,13 +52,16 @@ def generate_menu(path):
     exec_items = ride_settings.get("exec_items", [])
     for item in exec_items:
         if "cmd" in item:
+            args = {
+                "cmd": item["cmd"],
+                "selector": item["selector"] if "selector" in item else ""
+            }
+            if "working_dir" in item:
+                args["working_dir"] = item["working_dir"]
             menu[0]["children"].append({
                 "caption": item["name"],
                 "command": "ride_exec",
-                "args": {
-                    "cmd": item["cmd"],
-                    "selector": item["selector"] if "selector" in item else ""
-                }
+                "args": args
             })
         else:
             menu[0]["children"].append({"caption": item["name"]})
@@ -118,7 +121,8 @@ class RideDynamicMenuListener(sublime_plugin.EventListener):
                 sublime.packages_path(), 'User', 'R-IDE', 'Main.sublime-menu')
 
             if is_package(view.window()) or is_supported_file(view):
-                generate_menu(menu_path)
+                if not os.path.exists(menu_path):
+                    generate_menu(menu_path)
             else:
                 if os.path.exists(menu_path):
                     os.remove(menu_path)
