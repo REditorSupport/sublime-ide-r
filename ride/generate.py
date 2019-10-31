@@ -51,6 +51,7 @@ def generate_menu(path):
 
     exec_items = ride_settings.get("exec_items", [])
     for item in exec_items:
+        caption = item["caption"] if "caption" in item else item["name"]
         if "cmd" in item:
             args = {
                 "cmd": item["cmd"],
@@ -59,12 +60,12 @@ def generate_menu(path):
             if "working_dir" in item:
                 args["working_dir"] = item["working_dir"]
             menu[0]["children"].append({
-                "caption": item["name"],
+                "caption": caption,
                 "command": "ride_exec",
                 "args": args
             })
         else:
-            menu[0]["children"].append({"caption": item["name"]})
+            menu[0]["children"].append({"caption": caption})
 
     pathdir = os.path.dirname(path)
     if not os.path.exists(pathdir):
@@ -76,14 +77,21 @@ def generate_menu(path):
 def generate_build(path, scope_flags):
     build = copy.deepcopy(ride_build)
 
-    variants = ride_settings.get("exec_items", [])
-    for v in variants:
-        if v["name"] == "-":
+    items = ride_settings.get("exec_items", [])
+    for item in items:
+        caption = item["caption"] if "caption" in item else item["name"]
+        if caption == "-":
             continue
-        selector = v["selector"] if "selector" in v else ""
+        selector = item["selector"] if "selector" in item else ""
         scopes = [x.strip() for x in selector.split(",")]
         if any(not scope_flags[s] for s in scopes):
             continue
+        v = {
+            "name": caption,
+            "cmd": item["cmd"]
+        }
+        if "working_dir" in item:
+            v["working_dir"] = item["working_dir"]
         build["variants"].append(v)
 
     pathdir = os.path.dirname(path)

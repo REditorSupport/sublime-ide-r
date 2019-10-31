@@ -29,51 +29,51 @@
     // this setting is used to dynamically generate the menu and build variants
     "exec_items": [
         {
-            "name": "Install Package",
+            "caption": "Install Package",
             "cmd": "devtools::install()",
             "selector": "package"
         },
         {
-            "name": "Install Package Locally",
+            "caption": "Install Package Locally",
             "cmd": "devtools::install(quick = TRUE)",
             "selector": "package"
         },
         {
-            "name": "Test Package",
+            "caption": "Test Package",
             "cmd": "devtools::test()",
             "selector": "package"
         },
         {
-            "name": "Test File",
+            "caption": "Test File",
             "cmd": "devtools::test_file(\"$file\")",
             "selector": "package, r"
         },
         {
-            "name": "Check Package",
+            "caption": "Check Package",
             "cmd": "devtools::check()",
             "selector": "package"
         },
         {
-            "name": "Document Package",
+            "caption": "Document Package",
             "cmd": "devtools::document()",
             "selector": "package"
         },
         {
-            "name": "Build Package Site",
+            "caption": "Build Package Site",
             "cmd": "pkgdown::build_site()",
             "selector": "package"
         },
         {
-            "name": "-"
+            "caption": "-"
         },
         {
-            "name": "Render R Markdown",
+            "caption": "Render R Markdown",
             "cmd": "rmarkdown::render('$file_name', encoding = 'UTF-8')",
             "working_dir": "$file_path",
             "selector": "rmarkdown"
         },
         {
-            "name": "Kint Rnw",
+            "caption": "Kint Rnw",
             "cmd": "knitr::knit2pdf('$file_name')",
             "working_dir": "$file_path",
             "selector": "rnw"
