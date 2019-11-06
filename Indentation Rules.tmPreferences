@@ -6,14 +6,14 @@
 		<string>source.r</string>
 		<key>settings</key>
 		<dict>
-      <key>decreaseIndentPattern</key>
-      <string>^\s*\}</string>
-       <key>increaseIndentPattern</key>
-        <string>^.*\{\s*$</string>
-			<key>bracketIndentNextLinePattern</key>
-			<string>^\s*\b(repeat\b|else\b|(((else\s+)?if|for|while)\s*\(.+\)))\s*$</string>
-			<key>unIndentedLinePattern</key>
-			<string>^\s*#</string>
-		</dict>
-	</dict>
+          <key>decreaseIndentPattern</key>
+          <string>^\s*\}</string>
+          <key>increaseIndentPattern</key>
+          <string>^.*\{\s*$</string>
+          <key>bracketIndentNextLinePattern</key>
+          <string>^\s*\b(repeat\b|else\b|(((else\s+)?if|for|while)\s*\(.+\)))\s*$</string>
+          <key>unIndentedLinePattern</key>
+          <string>^\s*#</string>
+      </dict>
+  </dict>
 </plist>
