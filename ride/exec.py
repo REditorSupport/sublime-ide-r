@@ -55,7 +55,12 @@ class RideExecCoreCommand(sublime_plugin.WindowCommand):
         _env.update(env)
         kwargs["env"] = _env
         kwargs = sublime.expand_variables(kwargs, self.window.extract_variables())
-        self.window.run_command("exec", kwargs)
+        if ride_settings.get("terminus_output", False):
+            kwargs["panel_name"] = "R-IDE"
+            kwargs["auto_close"] = False
+            self.window.run_command("terminus_open", kwargs)
+        else:
+            self.window.run_command("exec", kwargs)
 
     def input(self, *args):
         return RideAskPackage()

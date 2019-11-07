@@ -80,10 +80,15 @@
         }
     ],
 
+    // (experimental)
+    // use [Terminus](https://packagecontrol.io/packages/Terminus) for build system
+    "terminus_output": false,
+
     // use diagnostics from LSP
     "diagnostics": true,
 
     "lsp_debug": false,
+
 
     // path to ccls
     // "ccls": "PATH TO ccls",
