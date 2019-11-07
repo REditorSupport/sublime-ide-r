@@ -8,6 +8,14 @@ class RideSettings:
     _r_binary = None
 
     def get(self, key, default):
+        window = sublime.active_window()
+        if window:
+            view = window.active_view()
+            if view:
+                r_ide_project_settings = view.settings().get("R-IDE", {})
+                if key in r_ide_project_settings:
+                    return r_ide_project_settings[key]
+
         s = sublime.load_settings('R-IDE.sublime-settings')
         return s.get(key, default)
 
