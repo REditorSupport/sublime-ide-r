@@ -81,8 +81,8 @@
     ],
 
     // (experimental)
-    // use [Terminus](https://packagecontrol.io/packages/Terminus) for build system
-    "terminus_output": false,
+    // use [Terminus](https://packagecontrol.io/packages/Terminus) build system
+    "terminus_exec": false,
 
     // use diagnostics from LSP
     "diagnostics": true,

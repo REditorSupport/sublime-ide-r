@@ -9,7 +9,10 @@ from .utils import is_package, is_supported_file
 class RideExecCommand(sublime_plugin.WindowCommand):
     def run(self, selector="", kill=False, **kwargs):
         if kill:
-            self.window.run_command("exec", {"kill": True})
+            if ride_settings.get("terminus_exec", False):
+                self.window.run_command("terminus_cancel_build")
+            else:
+                self.window.run_command("exec", {"kill": True})
             return
 
         if "cmd" in kwargs and kwargs["cmd"]:
@@ -55,10 +58,8 @@ class RideExecCoreCommand(sublime_plugin.WindowCommand):
         _env.update(env)
         kwargs["env"] = _env
         kwargs = sublime.expand_variables(kwargs, self.window.extract_variables())
-        if ride_settings.get("terminus_output", False):
-            kwargs["panel_name"] = "R-IDE"
-            kwargs["auto_close"] = False
-            self.window.run_command("terminus_open", kwargs)
+        if ride_settings.get("terminus_exec", False):
+            self.window.run_command("terminus_exec", kwargs)
         else:
             self.window.run_command("exec", kwargs)
 
