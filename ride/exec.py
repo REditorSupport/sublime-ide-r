@@ -18,10 +18,14 @@ class RideExecCommand(sublime_plugin.WindowCommand):
         if "cmd" in kwargs and kwargs["cmd"]:
             self.window.run_command("ride_exec_core", kwargs)
         elif "cmd" not in kwargs:
+            # as a workaround of
+            # https://github.com/SublimeTextIssues/Core/issues/3010
+            # we pass an empty `text`
             sublime.set_timeout(lambda: self.window.run_command(
                     "show_overlay", {
                         "overlay": "command_palette",
-                        "command": "ride_exec_core"
+                        "command": "ride_exec_core",
+                        "text": ""
                     }), 10)
 
     def is_enabled(self, selector="", **kwargs):
