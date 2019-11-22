@@ -610,7 +610,7 @@ contexts:
       scope: punctuation.definition.subscript.begin.markdown
       push:
         - meta_scope: markup.subscript.markdown-pandoc
-        - match: ~
+        - match: "~"
           scope: punctuation.definition.subscript.end.markdown
           pop: true
         - include: inline
