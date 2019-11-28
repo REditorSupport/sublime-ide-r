@@ -8,7 +8,11 @@ file_extensions:
   - rmarkdown
   - rmarkdn
 scope: text.html.markdown.rmarkdown
-comment: this definition aims to (eventually) meet CommonMark specifications http://spec.commonmark.org/ with GitHub Formatted Markdown extensions https://github.github.com/gfm/
+comment: |-
+  this definition aims to meet CommonMark specifications http://spec.commonmark.org/
+  with GitHub Formatted Markdown extensions              https://github.github.com/gfm/
+  and has a few extras like Markdown Extra's footnotes   https://michelf.ca/projects/php-markdown/extra/#footnotes
+  the scope suffix should indicate which flavor of Markdown the feature came from, to help make this syntax definition easier to maintain
 variables:
     thematic_break: |-
         (?x:
@@ -20,19 +24,12 @@ variables:
             )
             [ \t]*$                          # followed by any number of tabs or spaces, followed by the end of the line
         )
+    setext_escape: ^(?=\s{0,3}(?:---+|===+)\s*$)
     block_quote: (?:[ ]{,3}>(?:.|$))         # between 0 and 3 spaces, followed by a greater than sign, followed by any character or the end of the line
     atx_heading: (?:[#]{1,6}\s*)             # between 1 and 6 hashes, followed by any amount of whitespace
     indented_code_block: (?:[ ]{4}|\t)       # 4 spaces or a tab
     list_item: (?:[ ]{,3}(?=\d+\.|[*+-])\d*([*+.-])\s) # between 0 and 3 spaces, followed by either: at least one integer and a full stop, or (a star, plus or dash), followed by whitespace
-    link_title: |-
-        (?x:[ \t]*                # Optional whitespace
-          (?:
-              ((\().+?(\)))       # Match title in parens…
-            | ((")[^"]+("))       # or in double quotes…
-            | ((')[^']+('))       # or in single quotes.
-          )?                      # Title is optional
-        )
-    escape: '\\[-`*_#+.!(){}\[\]\\>|]'
+    escape: '\\[-`*_#+.!(){}\[\]\\>|~]'
     backticks: |-
         (?x:
             (`{4})(?![\s`])(?:[^`]+(?=`)|(?!`{4})`+(?!`))+(`{4})(?!`)  # 4 backticks, followed by at least one non whitespace, non backtick character, followed by (less than 4 backticks, or at least one non backtick character) at least once, followed by exactly 4 backticks
@@ -52,15 +49,6 @@ variables:
               )*\]                      #  closing square bracket
           )+                            # at least one character
         )
-    url_and_title: |-
-        (?x:
-          ([ ])?                        # Space not allowed, but we check for it anyway to mark it as invalid
-          (\()                          # Opening paren for url
-              (<?)(\S+?)(>?)            # The url
-              {{link_title}}            # Optional title
-              \s*                       # Optional whitespace
-          (\))
-        )
     html_entity: '&([a-zA-Z0-9]+|#\d+|#x\h+);'
     skip_html_tags: (?:<[^>]+>)
     balance_square_brackets_and_emphasis: |-
@@ -75,11 +63,11 @@ variables:
               )*\]                          #  closing square bracket
           )+                                # at least one character
         )
-    balance_square_brackets_and_pipes: |-
+    balance_square_brackets_pipes_and_emphasis: |-
         (?x:
           (?:
             {{escape}}+                     # escape characters
-          | [^\[\]`\\|]+(?=[\[\]`\\|]|$)    # anything that isn't a square bracket, a backtick, the start of an escape character, or a pipe
+          | [^\[\]`\\_*|]+(?=[\[\]`\\_*|]|$)  # anything that isn't a square bracket, a backtick, the start of an escape character, or an emphasis character
           | {{backticks}}                   # inline code
           | \[(?:                           # nested square brackets (one level deep)
                 [^\[\]`]+(?=[\[\]`])        #  anything that isn't a square bracket or a backtick
@@ -87,25 +75,113 @@ variables:
               )*\]                          #  closing square bracket
           )+                                # at least one character
         )
+    balanced_emphasis: |-
+      (?x:
+          \*  (?!\*){{balance_square_brackets_and_emphasis}}+\*  (?!\*)
+      |   \*\*      {{balance_square_brackets_and_emphasis}}+\*\*
+      |   _   (?!_) {{balance_square_brackets_and_emphasis}}+_   (?!_)
+      |   __        {{balance_square_brackets_and_emphasis}}+__
+      )
+    balanced_table_cell: |- # Pipes inside other inline spans (such as emphasis, code, etc.) will not break a cell, emphasis in table cells can't span multiple lines
+      (?x:
+        (?:
+          {{balance_square_brackets_pipes_and_emphasis}}
+        | {{balanced_emphasis}}
+        )+                                # at least one character
+      )
     table_first_row: |-
         (?x:
-            (?:{{balance_square_brackets_and_pipes}}?\|){2}           # at least 2 non-escaped pipe chars on the line
-        |   (?!\s+\|){{balance_square_brackets_and_pipes}}\|(?!\s+$)  # something other than whitespace followed by a pipe char, followed by something other than whitespace and the end of the line
+            (?:{{balanced_table_cell}}?\|){2}           # at least 2 non-escaped pipe chars on the line
+        |   (?!\s+\|){{balanced_table_cell}}\|(?!\s+$)  # something other than whitespace followed by a pipe char, followed by something other than whitespace and the end of the line
         )
     fenced_code_block_start: |-
         (?x:
-          ^[ ]{0,3}    # up to 3 spaces
+          ([ \t]*)
           (
-            `{3,}      #   3 or more backticks
+            (`){3,}    #   3 or more backticks
             (?![^`]*`) #   not followed by any more backticks on the same line
           |            # or
-            ~{3,}      #   3 or more tildas
+            (~){3,}    #   3 or more tildas
             (?![^~]*~) #   not followed by any more tildas on the same line
           )
+          \s*          # allow for whitespace between code block start and info string
         )
+    fenced_code_block_trailing_infostring_characters: |-
+        (?x:
+          (
+            \s*        # any whitespace, or ..
+          |
+            \s[^`]*    # any characters (except backticks), separated by whitespace ...
+          )
+          $\n?         # ... until EOL
+        )
+    code_fence_escape: |-
+      (?x:
+        ^             # the beginning of the line
+        [ \t]*
+        (
+          \2          # the backtick/tilde combination that opened the code fence
+          (?:\3|\4)*  # plus optional additional closing characters
+        )
+        \s*$          # any amount of whitespace until EOL
+      )
+    html_tag_open_commonmark: |-
+      (?xi:
+        <
+        [a-z]             # A tag name consists of an ASCII letter
+        [a-z0-9-]*        # followed by zero or more ASCII letters, digits, or hyphens (-)
+        (?:               # An attribute consists of whitespace, an attribute name, and an optional attribute value specification
+          \s+
+          [a-z_:]         # An attribute name consists of an ASCII letter, _, or :
+          [a-z0-9_.:-]*   # followed by zero or more ASCII letters, digits, _, ., :, or -
+          (?:             # An attribute value specification consists of optional whitespace, a = character, optional whitespace, and an attribute value
+            \s*
+            =
+            \s*
+            (?:
+              [^ @'=<>`]+ # An unquoted attribute value is a nonempty string of characters not including spaces, ", ', =, <, >, or `
+            | '[^']*'     # A single-quoted attribute value consists of ', zero or more characters not including ', and a final '
+            | "[^"]*"     # A double-quoted attribute value consists of ", zero or more characters not including ", and a final "
+            )
+          )?
+        )*
+        \s*
+        /?
+        >
+      )
+    html_tag_close_commonmark: |-
+      (?xi:
+        </
+        [a-z]             # A tag name consists of an ASCII letter
+        [a-z0-9-]*        # followed by zero or more ASCII letters, digits, or hyphens (-)
+        \s*
+        >
+      )
+    html_tag_block_end_at_close_tag: |-
+      (?xi:
+        (script|style|pre)\b
+      )
+    html_tag_block_end_at_blank_line: |-
+      (?x:
+        /?
+        (?i:address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h1|h2|h3|h4|h5|h6|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option|p|param|section|source|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul)
+        (?:\s|$|/?>)
+      )
+    ascii_space: '\t\n\f '
+    tag_attribute_name_start: (?=[^{{ascii_space}}=/>}])
+    tag_attribute_name_break: (?=[{{ascii_space}}=/>}])
+    tag_unquoted_attribute_start: (?=[^{{ascii_space}}=/>}])
+    tag_unquoted_attribute_break: (?=[{{ascii_space}}}]|/?>)
+    # code_fence_escape: |-
+    #   (?x:
+    #     ^         # the beginning of the line
+    #     [ ]{0,3}  # up to 3 spaces
+    #     (\1)      # the backtick/tilde combination that opened the code fence
+    #     \s*$      # any amount of whitespace until EOL
+    #   )
 contexts:
   main:
-    - match: (?=^\s*---\s*$)
+    - match: (?=^\s*(?:---|\+\+\+)\s*$)
       push: front-matter
     - match: ""
       set: body
@@ -113,16 +189,19 @@ contexts:
     - match: ^\s*(---)\s*$
       captures:
         1: punctuation.definition.frontmatter
-      with_prototype:
-        - include: scope:source.yaml#prototype
-      push:
-        - meta_scope: markup.raw.yaml.front-matter
-        - meta_content_scope: source.yaml
-        - match: ^\s*(---)\s*$
-          captures:
-            1: punctuation.definition.frontmatter
-          pop: true
-        - include: scope:source.yaml
+      embed: scope:source.yaml
+      embed_scope: markup.raw.yaml.front-matter
+      escape: ^\s*(---)\s*$
+      escape_captures:
+          1: punctuation.definition.frontmatter
+    - match: ^\s*(\+\+\+)\s*$
+      captures:
+        1: punctuation.definition.frontmatter
+      embed: scope:source.toml
+      embed_scope: markup.raw.toml.front-matter
+      escape: ^\s*(\+\+\+)\s*$
+      escape_captures:
+          1: punctuation.definition.frontmatter
     - match: ""
       pop: true
       set: body
@@ -141,6 +220,7 @@ contexts:
                         pattern will only match stuff matched by the sub-patterns.
       push:
         - meta_scope: meta.block-level.markdown
+        - include: ligatures
         - include: block-quote
         - include: indented-code-block
         - include: atx-heading
@@ -167,13 +247,44 @@ contexts:
         - match: ^(?=\S)
           pop: true
         - include: list-paragraph
-    - match: '^(?=<(p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|ins|del)\b)'
+    - match: '^[ ]{0,3}(?=<((?i:pre))\b)'
       comment: Markdown formatting is disabled inside block-level tags.
-      push: [disabled-markdown-pop-at-eol, disable-markdown]
+      push: [disabled-markdown-pop-at-eol, disable-markdown-pop-at-tag]
+    - match: '^[ ]{0,3}(?=<{{html_tag_block_end_at_close_tag}})'
+      comment: Markdown formatting is disabled inside block-level tags.
+      push: [disabled-markdown-pop-at-eol, disable-markdown-pop-after-tag]
+    - match: '^[ ]{0,3}(?=<\?)'
+      comment: Markdown formatting is disabled inside preprocessor instructions.
+      push: [disabled-markdown-pop-at-eol, disable-markdown-pop-at-php]
+    - match: '^[ ]{0,3}(?=<!(?:[A-Z]|--))'
+      comment: Markdown formatting is disabled inside doctype declarations and comments.
+      push: [disabled-markdown-pop-at-eol, disable-markdown-pop-after-html-doctype]
+    - match: '^[ ]{0,3}(?=<!\[CDATA\[)'
+      comment: Markdown formatting is disabled inside CDATA.
+      push: [disabled-markdown-pop-at-eol, disable-markdown-pop-after-cdata]
+    - match: '^[ ]{0,3}(?=(?:{{html_tag_open_commonmark}}|{{html_tag_close_commonmark}})\s*$|<{{html_tag_block_end_at_blank_line}})'
+      comment: Markdown formatting is disabled inside block level tags and if a complete HTML tag is the only thing on the line.
+      push: [disabled-markdown-pop-at-eol, disable-markdown-pop-at-blank-line]
     - match: |-
         (?x:
             \s*                        # Leading whitespace
-            (\[)([^\^]+?)(\])(:)           # Reference name
+            (\[)(\^[^]]*)(\])(:)       # Reference name
+            [ \t]*                     # Optional whitespace
+        )
+      captures:
+        1: punctuation.definition.constant.begin.markdown
+        2: entity.name.reference.link.markdown
+        3: punctuation.definition.constant.end.markdown
+        4: punctuation.separator.key-value.markdown
+      push:
+        - meta_scope: meta.link.reference.def.footnote.markdown-extra
+        - match: ^(?![ ]{4}|$)
+          pop: true
+        - include: inline-bold-italic
+    - match: |-
+        (?x:
+            \s*                        # Leading whitespace
+            (\[)([^]]*)(\])(:)         # Reference name
             [ \t]*                     # Optional whitespace
             (?:
               (<)([^>]+)(>)            # The url
@@ -182,54 +293,91 @@ contexts:
         )
       captures:
         1: punctuation.definition.constant.begin.markdown
-        2: constant.other.reference.link.markdown
+        2: entity.name.reference.link.markdown
         3: punctuation.definition.constant.end.markdown
         4: punctuation.separator.key-value.markdown
         5: punctuation.definition.link.begin.markdown
         6: markup.underline.link.markdown
         7: punctuation.definition.link.end.markdown
         8: markup.underline.link.markdown
-      push:
-        - meta_scope: meta.link.reference.def.markdown
-        - include: link-title
+      push: [link-ref-def, after-link-title, link-title]
     - match: '^(?=\S)(?![=-]{3,}\s*$)'
-      push:
-        - meta_scope: meta.paragraph.markdown
-        - match: |-
-            (?x)                       # pop out of this context when
-            ^(?:
-                \s*$                   # the line is blank (or only contains whitespace)
-            |   (?=
-                    {{block_quote}}    # a block quote begins the line
-                |   [ ]{,3}[*+-][ ]    # an unordered list item begins the line
-                |   [ ]{,3}1[.][ ]     # an ordered list item with number "1" begins the line
-                |   \#                 # an ATX heading begins the line
+      branch_point: heading2-branch
+      branch:
+        - not-heading2
+        - heading2
+
+  not-paragraph:
+    - match: |-
+        (?x)                         # pop out of this context when one of the following conditions are met:
+        ^(?:
+            \s*$                     # the line is blank (or only contains whitespace)
+        |   (?=
+                {{block_quote}}      # a block quote begins the line
+            |   [ ]{,3}[*+-][ ]      # an unordered list item begins the line
+            |   [ ]{,3}1[.][ ]       # an ordered list item with number "1" begins the line
+            |   \#                   # an ATX heading begins the line
+            |   [ ]{,3}<(            # all types of HTML blocks except type 7 may interrupt a paragraph
+                  {{html_tag_block_end_at_close_tag}}   # 1
+                | !--                                   # 2
+                | \?                                    # 3
+                | ![A-Z]                                # 4
+                | !\[CDATA\[                            # 5
+                | {{html_tag_block_end_at_blank_line}}  # 6
                 )
             )
-          pop: true
-        - include: inline-bold-italic-linebreak
-        - include: scope:text.html.basic
-        - match: '^(={3,})(?=[ \t]*$)'
-          scope: markup.heading.1.setext.markdown
-          captures:
-            1: punctuation.definition.heading.setext.markdown
-          pop: true
-        - match: '^(-{3,})(?=[ \t]*$)'
-          scope: markup.heading.2.setext.markdown
-          captures:
-            1: punctuation.definition.heading.setext.markdown
-          pop: true
-        - match: '(@)([\w:-]+)'
-          scope: meta.link.reference.markdown
-          captures:
-            1: constant.other.reference
-            2: keyword.other.reference.latex
+        )
+      pop: true
+
+  not-heading2:
+    - include: not-paragraph
+    - match: (?=\S)
+      branch_point: heading1-branch
+      branch:
+        - paragraph
+        - heading1
+    - match: ''
+      pop: true
+
+  paragraph:
+      - meta_scope: meta.paragraph.markdown
+      - match: ^\s{0,3}===+\s*$
+        fail: heading1-branch
+      - match: ^\s{0,3}---+\s*$
+        fail: heading2-branch
+      - include: not-paragraph
+      - include: inline-bold-italic-linebreak
+      - include: scope:text.html.basic
+
+  heading1:
+    - meta_scope: markup.heading.1.markdown
+    - include: inline-bold-italic-linebreak
+    - match: '^[ \t]{0,3}(={3,})(?=[ \t]*$)'
+      captures:
+        1: markup.heading.1.setext.markdown punctuation.definition.heading.setext.markdown
+      pop: true
+
+  heading2:
+    - meta_scope: markup.heading.2.markdown
+    - include: inline-bold-italic-linebreak
+    - match: '^[ \t]{0,3}(-{3,})(?=[ \t]*$)'
+      captures:
+        1: markup.heading.2.setext.markdown punctuation.definition.heading.setext.markdown
+      pop: true
+
+  link-ref-def:
+    - meta_scope: meta.link.reference.def.markdown
+    - match: ''
+      pop: true
   ampersand:
     - match: (?!{{html_entity}})&
       comment: |
         Markdown will convert this for us. We match it so that the
                         HTML grammar will not mark it up as invalid.
       scope: meta.other.valid-ampersand.markdown
+  ligatures:
+    - match: '<=>'          # <=>
+    - match: '<[-=<]'       # <- <= <<
   block-quote:
     - match: '[ ]{,3}(>)[ ]?'
       comment: |
@@ -299,6 +447,7 @@ contexts:
     - match: '{{indented_code_block}}.*$\n?'
       scope: markup.raw.block.markdown
   bold:
+    - include: ligatures
     - match: '(\*\*)(\*)(?=\S)(?!\*)'
       captures:
         1: punctuation.definition.bold.begin.markdown
@@ -306,6 +455,8 @@ contexts:
       push:
         - meta_scope: markup.bold.markdown
         - meta_content_scope: markup.italic.markdown
+        - match: '{{setext_escape}}'
+          pop: true
         - match: |-
             (?x)
                 [ \t]*\*{4,}    # if there are more than 3 its not applicable to be bold or italic
@@ -320,6 +471,8 @@ contexts:
           scope: punctuation.definition.bold.end.markdown
           set:
             - meta_content_scope: markup.italic.markdown
+            - match: '{{setext_escape}}'
+              pop: true
             - match: |-
                 (?x)
                     [ \t]*\*{3,}    # if there are more than 3 its not applicable to be bold or italic
@@ -336,6 +489,8 @@ contexts:
           scope: punctuation.definition.italic.end.markdown
           set:
             - meta_content_scope: markup.bold.markdown
+            - match: '{{setext_escape}}'
+              pop: true
             - match: |-
                 (?x)
                     [ \t]*\*{3,}    # if there are more than 3 its not applicable to be bold or italic
@@ -364,6 +519,8 @@ contexts:
             1: punctuation.definition.bold.end.markdown
           pop: true
         - include: inline
+        - match: \b_(?=[^\s_])(?=[^*_]*\*\*)
+          comment: eat the underscore that has no corresponding underscore before the closing bold punctuation on the same line, as it won't be treated as italic by CommonMark
         - include: italic
         - include: supersubscript
         - include: bold-italic-trailing
@@ -418,7 +575,7 @@ contexts:
             - include: bold-italic-trailing
         - include: inline
         - include: bold-italic-trailing
-    - match: '\b__(?=\S)(?!__|_\s)'
+    - match: '\b__(?=\S)(?!_[_\s])'
       scope: punctuation.definition.bold.begin.markdown
       push:
         - meta_scope: markup.bold.markdown
@@ -432,11 +589,13 @@ contexts:
             1: punctuation.definition.bold.end.markdown
           pop: true
         - include: inline
+        - match: \*(?=[^\s*])(?=[^*_]*__\b)
+          comment: eat the asterisk that has no corresponding asterisk before the closing bold punctuation on the same line, as it won't be treated as italic by CommonMark
         - include: italic
         - include: supersubscript
         - include: bold-italic-trailing
   bracket:
-    - match: '<(?![a-z/?\$!])'
+    - match: '<(?![A-Za-z/?!$])'
       comment: |
         Markdown will convert this for us. We match it so that the
                         HTML grammar will not mark it up as invalid.
@@ -444,6 +603,12 @@ contexts:
   escape:
     - match: '{{escape}}'
       scope: constant.character.escape.markdown
+  atx-heading-terminator:
+    - match: '[ ]*(#*)[ ]*($\n?)' # \n is optional so ## is matched as end punctuation in new document (at eof)
+      captures:
+        1: punctuation.definition.heading.end.markdown
+        2: meta.whitespace.newline.markdown
+      pop: true
   atx-heading:
     - match: '(#)(?!#)\s*(?=\S)'
       captures:
@@ -451,10 +616,7 @@ contexts:
       push:
         - meta_scope: markup.heading.1.markdown
         - meta_content_scope: entity.name.section.markdown
-        - match: \s*(#*)$\n?
-          captures:
-            1: punctuation.definition.heading.end.markdown
-          pop: true
+        - include: atx-heading-terminator
         - include: inline-bold-italic
     - match: '(##)(?!#)\s*(?=\S)'
       captures:
@@ -462,10 +624,7 @@ contexts:
       push:
         - meta_scope: markup.heading.2.markdown
         - meta_content_scope: entity.name.section.markdown
-        - match: \s*(#*)$\n?
-          captures:
-            1: punctuation.definition.heading.end.markdown
-          pop: true
+        - include: atx-heading-terminator
         - include: inline-bold-italic
     - match: '(#{3,6})(?!#)\s*(?=\S)'
       captures:
@@ -473,24 +632,21 @@ contexts:
       push:
         - meta_scope: markup.heading.markdown
         - meta_content_scope: entity.name.section.markdown
-        - match: \s*(#*)$\n?
-          captures:
-            1: punctuation.definition.heading.end.markdown
-          pop: true
+        - include: atx-heading-terminator
         - include: inline-bold-italic
   image-inline:
     - match: |-
         (?x:
-            (\!\[)                            # Images start with ![
-            (?=   {{balance_square_brackets}} # balanced square brackets, backticks, taking into account escapes etc.
-                  \]                          # Closing square bracket
-                  [ ]?                        # Space not allowed, but we check for it anyway to mark it as invalid
-                  \(                          # Open paren
+            (\!\[)                             # Images start with ![
+            (?=   {{balance_square_brackets}}? # balanced square brackets, backticks, taking into account escapes etc.
+                  \]                           # Closing square bracket
+                  [ ]?                         # Space not allowed, but we check for it anyway to mark it as invalid
+                  \(                           # Open paren
             )
          )
       captures:
         1: meta.image.inline.markdown punctuation.definition.image.begin.markdown
-      push: [image-inline-after-text, image-link-text]
+      push: [image-inline-attr, image-inline-after-text, image-link-text]
   image-link-text:
     - meta_content_scope: meta.image.inline.description.markdown
     - include: link-text
@@ -498,40 +654,60 @@ contexts:
       scope: meta.image.inline.markdown punctuation.definition.image.end.markdown
       pop: true
   image-inline-after-text:
-    - match: '{{url_and_title}}'
+    - match: '([ ]*)(\()' # spaces not allowed before the open paren, but we check for it anyway to mark it as invalid
       captures:
         1: invalid.illegal.whitespace.markdown
         2: punctuation.definition.metadata.begin.markdown
-        3: punctuation.definition.link.begin.markdown
-        4: markup.underline.link.image.markdown
-        5: punctuation.definition.link.end.markdown
-        6: string.other.link.description.title.markdown
-        7: punctuation.definition.string.begin.markdown
-        8: punctuation.definition.string.end.markdown
-        9: string.other.link.description.title.markdown
-        10: punctuation.definition.string.begin.markdown
-        11: punctuation.definition.string.end.markdown
-        12: string.other.link.description.title.markdown
-        13: punctuation.definition.string.begin.markdown
-        14: punctuation.definition.string.end.markdown
-        15: punctuation.definition.metadata.end.markdown
-      scope: meta.image.inline.markdown
-      pop: true
+      set:
+        - meta_scope: meta.image.inline.markdown
+        - match: \)
+          scope: punctuation.definition.metadata.end.markdown
+          pop: true
+        - match: <(?=[^>)]*>)
+          scope: punctuation.definition.link.begin.markdown
+          push:
+            - meta_content_scope: markup.underline.link.image.markdown
+            - match: \>
+              scope: punctuation.definition.link.end.markdown
+              set: link-title
+            - match: \s+
+              scope: invalid.illegal.unexpected-whitespace.markdown
+        - match: (?=\S)
+          set:
+            - meta_scope: meta.image.inline.markdown
+            - match: '[^\s)]+'
+              scope: markup.underline.link.image.markdown
+            - match: \)
+              scope: punctuation.definition.metadata.end.markdown
+              pop: true
+            - match: (?!\n)\s+(?!\s*(?:[)('"]|$))
+              scope: invalid.illegal.unexpected-whitespace.markdown
+            - match: (?=\s*(?!\)))
+              push: link-title
+  image-inline-attr:
+    - match: '([ ]*)(\{)(?=[^}]*\})'
+      captures:
+        1: invalid.illegal.whitespace.markdown
+        2: punctuation.definition.attributes.begin.markdown
+      set:
+        - meta_scope: meta.image.inline.markdown
+        - include: tag-attributes
+    - include: immediately-pop
   image-ref:
     - match: |-
         (?x:
-          (\!\[)                            # Images start with ![
-          (?=   {{balance_square_brackets}} # balanced square brackets, backticks, taking into account escapes etc.
-                \]                          # Closing square bracket
-                [ ]?                        # Space
-                \[                          # [
-                [^\]]+                      # anything other than ]
-                \]                          # ]
+          (\!\[)                             # Images start with ![
+          (?=   {{balance_square_brackets}}? # balanced square brackets, backticks, taking into account escapes etc.
+                \]                           # Closing square bracket
+                [ ]?                         # Space
+                \[                           # [
+                [^\]]+                       # anything other than ]
+                \]                           # ]
           )
         )
       captures:
         1: meta.image.reference.markdown punctuation.definition.image.begin.markdown
-      push: [image-ref-after-text, image-ref-text]
+      push: [image-ref-attr, image-ref-after-text, image-ref-text]
   image-ref-text:
     - meta_content_scope: meta.image.reference.description.markdown
     - include: link-text
@@ -546,9 +722,19 @@ contexts:
         3: punctuation.definition.constant.end.markdown
       scope: meta.image.reference.markdown
       pop: true
+  image-ref-attr:
+    - match: '([ ]*)(\{)(?=[^}]*\})'
+      captures:
+        1: invalid.illegal.whitespace.markdown
+        2: punctuation.definition.attributes.begin.markdown
+      set:
+        - meta_scope: meta.image.reference.markdown
+        - include: tag-attributes
+    - include: immediately-pop
   inline:
     - include: escape
     - include: ampersand
+    - include: ligatures
     - include: bracket
     - include: latex-math
     - include: raw
@@ -560,13 +746,13 @@ contexts:
     - include: link-ref-literal
     - include: link-ref
     - include: link-ref-footnote
-    - include: footnote-inline
+    - include: citations
   inline-bold-italic:
     - include: inline
     - include: bold
     - include: italic
-    - include: supersubscript
     - include: strikethrough
+    - include: supersubscript
   inline-bold-italic-linebreak:
     - include: inline-bold-italic
     - include: hard-line-break
@@ -575,6 +761,8 @@ contexts:
       scope: punctuation.definition.italic.begin.markdown
       push:
         - meta_scope: markup.italic.markdown
+        - match: '{{setext_escape}}'
+          pop: true
         - match: |-
               (?x)
                   [ \t]*\*{4,}   # if there are more than 3 its not applicable to be bold or italic
@@ -592,6 +780,8 @@ contexts:
       scope: punctuation.definition.italic.begin.markdown
       push:
         - meta_scope: markup.italic.markdown
+        - match: '{{setext_escape}}'
+          pop: true
         - match: |-
               (?x)
                   [ \t]*_{4,}   # if there are more than 3 its not applicable to be bold or italic
@@ -610,7 +800,7 @@ contexts:
       scope: punctuation.definition.subscript.begin.markdown
       push:
         - meta_scope: markup.subscript.markdown-pandoc
-        - match: "~"
+        - match: '~'
           scope: punctuation.definition.subscript.end.markdown
           pop: true
         - include: inline
@@ -643,6 +833,8 @@ contexts:
         - include: bold-italic-trailing
   bold-italic-trailing:
     - include: scope:text.html.basic
+    - match: '{{setext_escape}}'
+      pop: true
     - match: ^\s*$\n?
       scope: invalid.illegal.non-terminated.bold-italic.markdown
       pop: true
@@ -673,7 +865,7 @@ contexts:
         2: markup.underline.link.markdown
         3: punctuation.definition.link.end.markdown
     - match: (((https|http|ftp)://)|www\.)[\w-]+(\.[\w-]+)+
-      scope: markup.underline.link.markdown
+      scope: markup.underline.link.markdown-gfm
       push: # After a valid domain, zero or more non-space non-< characters may follow
         - match: (?=[?!.,:*_~]*[\s<]) # Trailing punctuation (specifically, ?, !, ., ,, :, *, _, and ~) will not be considered part of the autolink, though they may be included in the interior of the link
           pop: true
@@ -681,7 +873,7 @@ contexts:
           pop: true
         - match: \( # When an autolink ends in ), we scan the entire autolink for the total number of parentheses. If there is a greater number of closing parentheses than opening ones, we don’t consider the last character part of the autolink, in order to facilitate including an autolink inside a parenthesis
           push:
-            - meta_scope: markup.underline.link.markdown
+            - meta_scope: markup.underline.link.markdown-gfm
             - match: (?=[?!.,:*_~]*[\s<])
               pop: true
             - match: \)
@@ -689,61 +881,80 @@ contexts:
         - match: (?=\)[?!.,:*_~]*[\s<])
           pop: true
         - match: '[^?!.,:*_~\s<&()]+|\S'
-          scope: markup.underline.link.markdown
+          scope: markup.underline.link.markdown-gfm
   link-inline:
     - match: |-
         (?x:
             (\[)
             (?=
-                {{balance_square_brackets}}
+                {{balance_square_brackets}}?
                 \]
-                {{url_and_title}}
+                [ ]?\(
             )
         )
       captures:
         1: meta.link.inline.markdown punctuation.definition.link.begin.markdown
-      push: [link-inline-after-text, link-inline-link-text]
+      push: [link-inline-attr, link-inline-after-text, link-inline-link-text]
+  link-inline-after-text:
+    - match: '([ ]*)(\()' # spaces not allowed before the open paren, but we check for it anyway to mark it as invalid
+      captures:
+        1: invalid.illegal.whitespace.markdown
+        2: punctuation.definition.metadata.begin.markdown
+      set:
+        - meta_scope: meta.link.inline.markdown
+        - match: \)
+          scope: punctuation.definition.metadata.end.markdown
+          pop: true
+        - match: <(?=[^>)]*>)
+          scope: punctuation.definition.link.begin.markdown
+          push:
+            - match: \>
+              scope: punctuation.definition.link.end.markdown
+              set: link-title
+            - match: \s+
+              scope: invalid.illegal.unexpected-whitespace.markdown
+        - match: (?=\S)
+          set:
+            - meta_scope: meta.link.inline.markdown
+            - match: '[^\s)]+'
+              scope: markup.underline.link.markdown
+            - match: \)
+              scope: punctuation.definition.metadata.end.markdown
+              pop: true
+            - match: (?!\n)\s+(?!\s*(?:[)('"]|$))
+              scope: invalid.illegal.unexpected-whitespace.markdown
+            - match: (?=\s*(?!\)))
+              push: link-title
+  link-inline-attr:
+    - match: '([ ]*)(\{)(?=[^}]*\})'
+      captures:
+        1: invalid.illegal.whitespace.markdown
+        2: punctuation.definition.attributes.begin.markdown
+      set:
+        - meta_scope: meta.link.inline.markdown
+        - include: tag-attributes
+    - include: immediately-pop
   link-inline-link-text:
     - meta_content_scope: meta.link.inline.description.markdown
     - include: link-text-allow-image
     - match: \]
       scope: meta.link.inline.markdown punctuation.definition.link.end.markdown
       pop: true
-  link-inline-after-text:
-    - match: '{{url_and_title}}'
-      captures:
-        1: invalid.illegal.whitespace.markdown
-        2: punctuation.definition.metadata.begin.markdown
-        3: punctuation.definition.link.begin.markdown
-        4: markup.underline.link.markdown
-        5: punctuation.definition.link.end.markdown
-        6: string.other.link.description.title.markdown
-        7: punctuation.definition.string.begin.markdown
-        8: punctuation.definition.string.end.markdown
-        9: string.other.link.description.title.markdown
-        10: punctuation.definition.string.begin.markdown
-        11: punctuation.definition.string.end.markdown
-        12: string.other.link.description.title.markdown
-        13: punctuation.definition.string.begin.markdown
-        14: punctuation.definition.string.end.markdown
-        15: punctuation.definition.metadata.end.markdown
-      scope: meta.link.inline.markdown
-      pop: true
   link-ref:
     - match: |-
         (?x:
           (\[)
-          (?=   {{balance_square_brackets}} # balanced square brackets, backticks, taking into account escapes etc.
-                \]                          # Closing square bracket
-                [ ]?                        # Space
-                \[                          # [
-                [^\]]+                      # anything other than ]
-                \]                          # ]
+          (?=   {{balance_square_brackets}}? # balanced square brackets, backticks, taking into account escapes etc.
+                \]                           # Closing square bracket
+                [ ]?                         # Space
+                \[                           # [
+                [^\]]+                       # anything other than ]
+                \]                           # ]
           )
         )
       captures:
         1: meta.link.reference.markdown punctuation.definition.link.begin.markdown
-      push: [link-ref-after-text, link-ref-link-text]
+      push: [link-ref-attr, link-ref-after-text, link-ref-link-text]
   link-ref-link-text:
     - meta_content_scope: meta.link.reference.description.markdown
     - include: link-text-allow-image
@@ -758,21 +969,30 @@ contexts:
         3: punctuation.definition.constant.end.markdown
       scope: meta.link.reference.markdown
       pop: true
+  link-ref-attr:
+    - match: '([ ]*)(\{)(?=[^}]*\})'
+      captures:
+        1: invalid.illegal.whitespace.markdown
+        2: punctuation.definition.attributes.begin.markdown
+      set:
+        - meta_scope: meta.link.reference.markdown
+        - include: tag-attributes
+    - include: immediately-pop
   link-ref-literal:
     - match: |-
         (?x:
           (\[)
           (?=
-              {{balance_square_brackets}} # balanced square brackets, backticks, taking into account escapes etc.
-              \]                          # Closing square bracket
-              [ ]?                        # Space
-              \[                          # [
-              \]                          # ]
+              {{balance_square_brackets}}? # balanced square brackets, backticks, taking into account escapes etc.
+              \]                           # Closing square bracket
+              [ ]?                         # Space
+              \[                           # [
+              \]                           # ]
           )
         )
       captures:
         1: meta.link.reference.literal.markdown punctuation.definition.link.begin.markdown
-      push: [link-ref-literal-after-text, link-ref-literal-link-text]
+      push: [link-ref-literal-attr, link-ref-literal-after-text, link-ref-literal-link-text]
   link-ref-literal-link-text:
     - meta_content_scope: meta.link.reference.literal.description.markdown
     - include: link-text-allow-image
@@ -786,6 +1006,15 @@ contexts:
         1: punctuation.definition.constant.begin.markdown
         2: punctuation.definition.constant.end.markdown
       pop: true
+  link-ref-literal-attr:
+    - match: '([ ]*)(\{)(?=[^}]*\})'
+      captures:
+        1: invalid.illegal.whitespace.markdown
+        2: punctuation.definition.attributes.begin.markdown
+      set:
+        - meta_scope: meta.link.reference.literal.markdown
+        - include: tag-attributes
+    - include: immediately-pop
   link-ref-footnote:
     - match: |-
         (?x:
@@ -798,8 +1027,14 @@ contexts:
         1: punctuation.definition.link.begin.markdown
         2: meta.link.reference.literal.footnote-id.markdown
         3: punctuation.definition.link.end.markdown
+  citations:
+    - match: '(@)([\w:-]+)'
+      scope: meta.link.reference.markdown-pandoc
+      captures:
+        1: constant.other.cite.markdown-pandoc
+        2: keyword.other.cite.markdown-pandoc
   list-paragraph:
-    - match: '^(?=\s+(?![>+*\s-]))(?={{indented_code_block}})'
+    - match: '^(?=(?:[ ]{4}|\t){2,}(?![>+*\s-]))(?={{indented_code_block}})'
       push:
         - include: indented-code-block
         - match: $
@@ -808,6 +1043,11 @@ contexts:
       push:
         - include: block-quote
         - match: $
+          pop: true
+    - match: '^(?={{fenced_code_block_start}})'
+      push:
+        - include: fenced-code-block
+        - match: ''
           pop: true
     - match: \s+(?=\S)
       push:
@@ -838,6 +1078,11 @@ contexts:
       pop: true
   list-content:
     - meta_content_scope: meta.paragraph.list.markdown
+    - match: ^(?={{fenced_code_block_start}})
+      push:
+        - match: $
+          pop: true
+        - include: fenced-code-block
     - match: ^
       pop: true
     - include: thematic-break
@@ -853,18 +1098,321 @@ contexts:
     - match: |-
          (?x)
           {{fenced_code_block_start}}
-          ([\w-]*)     # any number of word characters or dashes
-          .*$          # all characters until eol
+          ((?i:xml))
+          {{fenced_code_block_trailing_infostring_characters}}
       captures:
-        1: punctuation.definition.raw.code-fence.begin.markdown
-        2: constant.other.language-name.markdown
+        0: meta.code-fence.definition.begin.xml.markdown-gfm
+        2: punctuation.definition.raw.code-fence.begin.markdown
+        5: constant.other.language-name.markdown
+      embed: scope:text.xml
+      embed_scope: markup.raw.code-fence.xml.markdown-gfm
+      escape: '{{code_fence_escape}}'
+      escape_captures:
+        0: meta.code-fence.definition.end.xml.markdown-gfm
+        1: punctuation.definition.raw.code-fence.end.markdown
+    - match: |-
+         (?x)
+          {{fenced_code_block_start}}
+          ((?i:sql))
+          {{fenced_code_block_trailing_infostring_characters}}
+      captures:
+        0: meta.code-fence.definition.begin.sql.markdown-gfm
+        2: punctuation.definition.raw.code-fence.begin.markdown
+        5: constant.other.language-name.markdown
+      embed: scope:source.sql
+      embed_scope: markup.raw.code-fence.sql.markdown-gfm
+      escape: '{{code_fence_escape}}'
+      escape_captures:
+        0: meta.code-fence.definition.end.sql.markdown-gfm
+        1: punctuation.definition.raw.code-fence.end.markdown
+    - match: |-
+         (?x)
+          {{fenced_code_block_start}}
+          ((?i:python|py))
+          {{fenced_code_block_trailing_infostring_characters}}
+      captures:
+        0: meta.code-fence.definition.begin.python.markdown-gfm
+        2: punctuation.definition.raw.code-fence.begin.markdown
+        5: constant.other.language-name.markdown
+      embed: scope:source.python
+      embed_scope: markup.raw.code-fence.python.markdown-gfm
+      escape: '{{code_fence_escape}}'
+      escape_captures:
+        0: meta.code-fence.definition.end.python.markdown-gfm
+        1: punctuation.definition.raw.code-fence.end.markdown
+    - match: |-
+         (?x)
+          {{fenced_code_block_start}}
+          ((?i:graphviz))
+          {{fenced_code_block_trailing_infostring_characters}}
+      captures:
+        0: meta.code-fence.definition.begin.graphviz.markdown-gfm
+        2: punctuation.definition.raw.code-fence.begin.markdown
+        5: constant.other.language-name.markdown
+      embed: scope:source.dot
+      embed_scope: markup.raw.code-fence.graphviz.markdown-gfm
+      escape: '{{code_fence_escape}}'
+      escape_captures:
+        0: meta.code-fence.definition.end.graphviz.markdown-gfm
+        1: punctuation.definition.raw.code-fence.end.markdown
+    - match: |-
+         (?x)
+          {{fenced_code_block_start}}
+          ((?i:javascript|js))
+          {{fenced_code_block_trailing_infostring_characters}}
+      captures:
+        0: meta.code-fence.definition.begin.javascript.markdown-gfm
+        2: punctuation.definition.raw.code-fence.begin.markdown
+        5: constant.other.language-name.markdown
+      embed: scope:source.js
+      embed_scope: markup.raw.code-fence.javascript.markdown-gfm
+      escape: '{{code_fence_escape}}'
+      escape_captures:
+        0: meta.code-fence.definition.end.javascript.markdown-gfm
+        1: punctuation.definition.raw.code-fence.end.markdown
+    - match: |-
+         (?x)
+          {{fenced_code_block_start}}
+          ((?i:json))
+          {{fenced_code_block_trailing_infostring_characters}}
+      captures:
+        0: meta.code-fence.definition.begin.json.markdown-gfm
+        2: punctuation.definition.raw.code-fence.begin.markdown
+        5: constant.other.language-name.markdown
+      embed: scope:source.json
+      embed_scope: markup.raw.code-fence.json.markdown-gfm
+      escape: '{{code_fence_escape}}'
+      escape_captures:
+        0: meta.code-fence.definition.end.json.markdown-gfm
+        1: punctuation.definition.raw.code-fence.end.markdown
+    - match: |-
+         (?x)
+          {{fenced_code_block_start}}
+          ((?i:java))
+          {{fenced_code_block_trailing_infostring_characters}}
+      captures:
+        0: meta.code-fence.definition.begin.java.markdown-gfm
+        2: punctuation.definition.raw.code-fence.begin.markdown
+        5: constant.other.language-name.markdown
+      embed: scope:source.java
+      embed_scope: markup.raw.code-fence.java.markdown-gfm
+      escape: '{{code_fence_escape}}'
+      escape_captures:
+        0: meta.code-fence.definition.end.java.markdown-gfm
+        1: punctuation.definition.raw.code-fence.end.markdown
+    - match: |-
+         (?x)
+          {{fenced_code_block_start}}
+          ((?i:csharp|c\#|cs))
+          {{fenced_code_block_trailing_infostring_characters}}
+      captures:
+        0: meta.code-fence.definition.begin.csharp.markdown-gfm
+        2: punctuation.definition.raw.code-fence.begin.markdown
+        5: constant.other.language-name.markdown
+      embed: scope:source.cs
+      embed_scope: markup.raw.code-fence.csharp.markdown-gfm
+      escape: '{{code_fence_escape}}'
+      escape_captures:
+        0: meta.code-fence.definition.end.csharp.markdown-gfm
+        1: punctuation.definition.raw.code-fence.end.markdown
+    - match: |-
+         (?x)
+          {{fenced_code_block_start}}
+          ((?i:rust))
+          {{fenced_code_block_trailing_infostring_characters}}
+      captures:
+        0: meta.code-fence.definition.begin.rust.markdown-gfm
+        2: punctuation.definition.raw.code-fence.begin.markdown
+        5: constant.other.language-name.markdown
+      embed: scope:source.rust
+      embed_scope: markup.raw.code-fence.rust.markdown-gfm
+      escape: '{{code_fence_escape}}'
+      escape_captures:
+        0: meta.code-fence.definition.end.rust.markdown-gfm
+        1: punctuation.definition.raw.code-fence.end.markdown
+    - match: |-
+         (?x)
+          {{fenced_code_block_start}}
+          ((?i:shell-script|sh|bash|zsh))
+          {{fenced_code_block_trailing_infostring_characters}}
+      captures:
+        0: meta.code-fence.definition.begin.shell-script.markdown-gfm
+        2: punctuation.definition.raw.code-fence.begin.markdown
+        5: constant.other.language-name.markdown
+      embed: scope:source.shell.bash
+      embed_scope: markup.raw.code-fence.shell-script.markdown-gfm
+      escape: '{{code_fence_escape}}'
+      escape_captures:
+        0: meta.code-fence.definition.end.shell-script.markdown-gfm
+        1: punctuation.definition.raw.code-fence.end.markdown
+    - match: |-
+         (?x)
+          {{fenced_code_block_start}}
+          ((?i:php|inc))
+          {{fenced_code_block_trailing_infostring_characters}}
+      captures:
+        0: meta.code-fence.definition.begin.php.markdown-gfm
+        2: punctuation.definition.raw.code-fence.begin.markdown
+        5: constant.other.language-name.markdown
+      embed: scope:source.php
+      embed_scope: markup.raw.code-fence.php.markdown-gfm
+      escape: '{{code_fence_escape}}'
+      escape_captures:
+        0: meta.code-fence.definition.end.php.markdown-gfm
+        1: punctuation.definition.raw.code-fence.end.markdown
+    - match: |-
+         (?x)
+          {{fenced_code_block_start}}
+          ((?i:html\+php))
+          {{fenced_code_block_trailing_infostring_characters}}
+      captures:
+        0: meta.code-fence.definition.begin.html-php.markdown-gfm
+        2: punctuation.definition.raw.code-fence.begin.markdown
+        5: constant.other.language-name.markdown
+      embed: scope:embedding.php
+      embed_scope: markup.raw.code-fence.html-php.markdown-gfm
+      escape: '{{code_fence_escape}}'
+      escape_captures:
+        0: meta.code-fence.definition.end.html-php.markdown-gfm
+        1: punctuation.definition.raw.code-fence.end.markdown
+    - match: |-
+         (?x)
+          {{fenced_code_block_start}}
+          ((?i:rscript|r|splus))
+          {{fenced_code_block_trailing_infostring_characters}}
+      captures:
+        0: meta.code-fence.definition.begin.r.markdown-gfm
+        2: punctuation.definition.raw.code-fence.begin.markdown
+        5: constant.other.language-name.markdown
+      embed: scope:source.r
+      embed_scope: markup.raw.code-fence.r.markdown-gfm
+      escape: '{{code_fence_escape}}'
+      escape_captures:
+        0: meta.code-fence.definition.end.r.markdown-gfm
+        1: punctuation.definition.raw.code-fence.end.markdown
+    - match: |-
+         (?x)
+          {{fenced_code_block_start}}
+          ((?i:golang))
+          {{fenced_code_block_trailing_infostring_characters}}
+      captures:
+        0: meta.code-fence.definition.begin.go.markdown-gfm
+        2: punctuation.definition.raw.code-fence.begin.markdown
+        5: constant.other.language-name.markdown
+      embed: scope:source.go
+      embed_scope: markup.raw.code-fence.go.markdown-gfm
+      escape: '{{code_fence_escape}}'
+      escape_captures:
+        0: meta.code-fence.definition.end.go.markdown-gfm
+        1: punctuation.definition.raw.code-fence.end.markdown
+    - match: |-
+         (?x)
+          {{fenced_code_block_start}}
+          ((?i:ruby|rb|rbx))
+          {{fenced_code_block_trailing_infostring_characters}}
+      captures:
+        0: meta.code-fence.definition.begin.ruby.markdown-gfm
+        2: punctuation.definition.raw.code-fence.begin.markdown
+        5: constant.other.language-name.markdown
+      embed: scope:source.ruby
+      embed_scope: markup.raw.code-fence.ruby.markdown-gfm
+      escape: '{{code_fence_escape}}'
+      escape_captures:
+        0: meta.code-fence.definition.end.ruby.markdown-gfm
+        1: punctuation.definition.raw.code-fence.end.markdown
+    - match: |-
+         (?x)
+          {{fenced_code_block_start}}
+          ((?i:objc|obj-c|objectivec|objective-c))
+          {{fenced_code_block_trailing_infostring_characters}}
+      captures:
+        0: meta.code-fence.definition.begin.objc.markdown-gfm
+        2: punctuation.definition.raw.code-fence.begin.markdown
+        5: constant.other.language-name.markdown
+      embed: scope:source.objc
+      embed_scope: markup.raw.code-fence.objc.markdown-gfm
+      escape: '{{code_fence_escape}}'
+      escape_captures:
+        0: meta.code-fence.definition.end.objc.markdown-gfm
+        1: punctuation.definition.raw.code-fence.end.markdown
+    - match: |-
+         (?x)
+          {{fenced_code_block_start}}
+          ((?i:objc\+\+|obj-c\+\+|objectivec\+\+|objective-c\+\+))
+          {{fenced_code_block_trailing_infostring_characters}}
+      captures:
+        0: meta.code-fence.definition.begin.objc++.markdown-gfm
+        2: punctuation.definition.raw.code-fence.begin.markdown
+        5: constant.other.language-name.markdown
+      embed: scope:source.objc++
+      embed_scope: markup.raw.code-fence.objc++.markdown-gfm
+      escape: '{{code_fence_escape}}'
+      escape_captures:
+        0: meta.code-fence.definition.end.objc++.markdown-gfm
+        1: punctuation.definition.raw.code-fence.end.markdown
+    - match: |-
+         (?x)
+          {{fenced_code_block_start}}
+          ((?i:c))
+          {{fenced_code_block_trailing_infostring_characters}}
+      captures:
+        0: meta.code-fence.definition.begin.c.markdown-gfm
+        2: punctuation.definition.raw.code-fence.begin.markdown
+        5: constant.other.language-name.markdown
+      embed: scope:source.c
+      embed_scope: markup.raw.code-fence.c.markdown-gfm
+      escape: '{{code_fence_escape}}'
+      escape_captures:
+        0: meta.code-fence.definition.end.c.markdown-gfm
+        1: punctuation.definition.raw.code-fence.end.markdown
+    - match: |-
+         (?x)
+          {{fenced_code_block_start}}
+          ((?i:c\+\+|cpp))
+          {{fenced_code_block_trailing_infostring_characters}}
+      captures:
+        0: meta.code-fence.definition.begin.c++.markdown-gfm
+        2: punctuation.definition.raw.code-fence.begin.markdown
+        5: constant.other.language-name.markdown
+      embed: scope:source.c++
+      embed_scope: markup.raw.code-fence.c++.markdown-gfm
+      escape: '{{code_fence_escape}}'
+      escape_captures:
+        0: meta.code-fence.definition.end.c++.markdown-gfm
+        1: punctuation.definition.raw.code-fence.end.markdown
+    - match: |-
+         (?x)
+          {{fenced_code_block_start}}
+          ((?i:regexp|regex))
+          {{fenced_code_block_trailing_infostring_characters}}
+      captures:
+        0: meta.code-fence.definition.begin.regexp.markdown-gfm
+        2: punctuation.definition.raw.code-fence.begin.markdown
+        5: constant.other.language-name.markdown
+      embed: scope:source.regexp
+      embed_scope: markup.raw.code-fence.regexp.markdown-gfm
+      escape: '{{code_fence_escape}}'
+      escape_captures:
+        0: meta.code-fence.definition.end.regexp.markdown-gfm
+        1: punctuation.definition.raw.code-fence.end.markdown
+    - match: |-
+         (?x)
+          {{fenced_code_block_start}}
+          ([\w-]*)     # any number of word characters or dashes
+          .*$\n?       # all characters until EOL
+      captures:
+        0: meta.code-fence.definition.begin.text.markdown-gfm
+        2: punctuation.definition.raw.code-fence.begin.markdown
+        5: constant.other.language-name.markdown
       push:
-        - meta_scope: markup.raw.code-fence.markdown
-        - match: '[ ]{,3}\1\s*$'
-          scope: punctuation.definition.raw.code-fence.end.markdown
+        - meta_content_scope: markup.raw.code-fence.markdown-gfm
+        - match: '{{code_fence_escape}}'
+          captures:
+            0: meta.code-fence.definition.end.text.markdown-gfm
+            1: punctuation.definition.raw.code-fence.end.markdown
           pop: true
   code-span:
-    - match: (`+)(?=\S)(?!`)
+    - match: (`+)(?!`)
       scope: punctuation.definition.raw.begin.markdown
       push:
         - meta_scope: markup.raw.inline.markdown
@@ -876,13 +1424,14 @@ contexts:
           scope: invalid.illegal.non-terminated.raw.markdown
           pop: true
   raw:
-    - include: fenced-r-code-block
-    - include: fenced-python-code-block
-    - include: fenced-code-block
-    - include: rcode-span
+    - match: ^(?={{fenced_code_block_start}})
+      push:
+        - match: $
+          pop: true
+        - include: fenced-code-block-kintr
+        - include: fenced-code-block
+    - include: code-span-kintr
     - include: code-span
-    - match: '`+'
-      scope: invalid.deprecated.unescaped-backticks.markdown
   thematic-break:
     - match: '(?={{thematic_break}})'
       push:
@@ -892,19 +1441,41 @@ contexts:
         - match: '$\n?'
           pop: true
   disable-markdown:
+    - include: scope:text.html.basic
+  disable-markdown-pop-at-tag:
     - match: (</)(\1)(>)
       captures:
         1: meta.tag.block.any.html punctuation.definition.tag.begin.html
         2: meta.tag.block.any.html entity.name.tag.block.any.html
         3: meta.tag.block.any.html punctuation.definition.tag.end.html
       pop: true
-    - include: scope:text.html.basic
+    - include: disable-markdown
+  disable-markdown-pop-after-tag:
+    - match: (?!</?(?i:script|style)\b)
+      pop: true
+    - include: disable-markdown
+  disable-markdown-pop-at-blank-line:
+    - match: ^\s*$
+      pop: true
+    - include: disable-markdown
+  disable-markdown-pop-after-cdata:
+    - match: (?!<!\[CDATA\[)
+      pop: true
+    - include: disable-markdown
+  disable-markdown-pop-at-php:
+    - match: \?>
+      pop: true
+    - include: disable-markdown
+  disable-markdown-pop-after-html-doctype:
+    - match: (?!<!([A-Z]|--))
+      pop: true
+    - include: disable-markdown
   disabled-markdown-pop-at-eol:
     - meta_content_scope: meta.disable-markdown
-    - match: '$\n?'
+    - match: $\n?
       scope: meta.disable-markdown
       pop: true
-    - include: scope:text.html.basic
+    - include: disable-markdown
   link-text:
     - include: escape
     - include: ampersand
@@ -927,47 +1498,105 @@ contexts:
     - match: \s*(')
       captures:
         1: punctuation.definition.string.begin.markdown
-      push:
+      set:
         - meta_scope: string.other.link.description.title.markdown
         - match: \'
           scope: punctuation.definition.string.end.markdown
-          set: after-link-title
+          pop: true
         - match: ^\s*$\n?
           scope: invalid.illegal.non-terminated.link-title.markdown
           pop: true
     - match: \s*(")
       captures:
         1: punctuation.definition.string.begin.markdown
-      push:
+      set:
         - meta_scope: string.other.link.description.title.markdown
         - match: \"
           scope: punctuation.definition.string.end.markdown
-          set: after-link-title
+          pop: true
         - match: ^\s*$\n?
           scope: invalid.illegal.non-terminated.link-title.markdown
           pop: true
     - match: \s*(\()
       captures:
         1: punctuation.definition.string.begin.markdown
-      push:
+      set:
         - meta_scope: string.other.link.description.title.markdown
         - match: \)
           scope: punctuation.definition.string.end.markdown
-          set: after-link-title
+          pop: true
         - match: ^\s*$\n?
           scope: invalid.illegal.non-terminated.link-title.markdown
           pop: true
     - match: \s*
-      set: after-link-title
+      pop: true
   after-link-title:
     - match: '(.*)$\n?'
       captures:
         1: invalid.illegal.expected-eol.markdown
       pop: true
+
+###[ LINK/IMAGE/REFERENCE ATTRIBUTES ]########################################
+
+  tag-attributes:
+    # https://kramdown.gettalong.org/syntax.html#span-ials
+    # https://michelf.ca/projects/php-markdown/extra/
+    # https://pandoc.org/MANUAL.html#extension-link_attributes
+    - match: \}
+      scope: punctuation.definition.attributes.end.markdown
+      pop: true
+    - match: \,
+      scope: punctuation.separator.mapping.pair.markdown
+    - match: '{{tag_attribute_name_start}}'
+      push: [tag-attr-meta, tag-attr-equals, tag-attr-name]
+
+  tag-attr-name:
+    - meta_scope: entity.other.attribute-name.markdown
+    - match: '{{tag_attribute_name_break}}'
+      pop: true
+    - match: '["''`<]'
+      scope: invalid.illegal.attribute-name.markdown
+
+  tag-attr-meta:
+    - meta_scope: meta.attribute-with-value.markdown
+    - include: immediately-pop
+
+  tag-attr-equals:
+    - match: =
+      scope: punctuation.separator.key-value.markdown
+      set: tag-attr-value
+    - include: else-pop
+
+  tag-attr-value:
+    - match: \"
+      scope: punctuation.definition.string.begin.markdown
+      set:
+        - meta_scope: string.quoted.double.markdown
+        - match: \"
+          scope: punctuation.definition.string.end.markdown
+          pop: true
+    - match: \'
+      scope: punctuation.definition.string.begin.markdown
+      set:
+        - meta_scope: string.quoted.single.markdown
+        - match: \'
+          scope: punctuation.definition.string.end.markdown
+          pop: true
+    - match: '{{tag_unquoted_attribute_start}}'
+      set:
+        - meta_scope: string.unquoted.markdown
+        - match: '{{tag_unquoted_attribute_break}}'
+          pop: true
+        - match: '["''`<]'
+          scope: invalid.illegal.attribute-value.markdown
+    - include: else-pop
+
+###[ TABLE ]##################################################################
+
   table:
     - match: ^(?={{table_first_row}})
       push:
-        - meta_content_scope: meta.table.header.markdown
+        - meta_content_scope: meta.table.header.markdown-gfm
         - match: \|
           scope: punctuation.separator.table-cell.markdown
         - include: inline-bold-italic
@@ -975,7 +1604,7 @@ contexts:
           set:
             - match: ^
               set:
-                - meta_content_scope: meta.table.header-separator.markdown
+                - meta_content_scope: meta.table.header-separator.markdown-gfm
                 - match: \|
                   scope: punctuation.separator.table-cell.markdown
                 - match: ':'
@@ -984,7 +1613,7 @@ contexts:
                   scope: punctuation.section.table-header.markdown
                 - match: $\n?
                   set:
-                    - meta_content_scope: meta.table.markdown
+                    - meta_content_scope: meta.table.markdown-gfm
                     - match: |- # The table is broken at the first empty line, or beginning of another block-level structure
                           (?x)^
                           (?=  {{block_quote}}
@@ -996,14 +1625,7 @@ contexts:
                       pop: true
                     - match: \|
                       scope: punctuation.separator.table-cell.markdown
-                    - match: |- # Pipes inside other inline spans (such as emphasis, code, etc.) will not break a cell, emphasis in table cells can't span multiple lines
-                        (?x)
-                        (?=
-                            \*  (?!\*){{balance_square_brackets_and_emphasis}}+\*  (?!\*)
-                        |   \*\*      {{balance_square_brackets_and_emphasis}}+\*\*
-                        |   _   (?!_) {{balance_square_brackets_and_emphasis}}+_   (?!_)
-                        |   __        {{balance_square_brackets_and_emphasis}}+__
-                        )
+                    - match: (?={{balanced_emphasis}})
                       push:
                         - include: bold
                         - include: italic
@@ -1016,78 +1638,127 @@ contexts:
                         `+
                       scope: invalid.deprecated.unescaped-backticks.markdown
                     - include: inline
-  footnote-inline:
-    - match: \^\[
-      captures:
-        1: punctuation.definition.footnote.begin.markdown
-      push:
-        - meta_scope: meta.footnote.inline.markdown
-        - meta_content_scope: markup.italic.markdown
-        - match: \]
-          captures:
-            1: punctuation.definition.footnote.end.markdown
-          pop: true
-  fenced-python-code-block:
-    - match: |-
-         (?x)
-          (```)
-          (?=\{(python).*\}.*$)
+                    - include: scope:text.html.basic
+
+  fenced-code-block-kintr:
+    - match: (```)(\{)(r|Rscript)
       captures:
         1: punctuation.definition.raw.code-fence.begin.markdown
+        2: punctuation.definition.raw.code-fence.options.begin.markdown
+        3: constant.other.language-name.markdown
       push:
-        - meta_scope: markup.raw.code-fence.markdown
-        - match: \{(python)\s*
-          captures:
-            1: constant.other.language-name.markdown
-          push:
-            - meta_scope: markup.raw.code-fence.markdown.options
-            - meta_content_scope: source.python
-            - match: \}
+        - meta_scope: meta.code-fence.definition.begin.r.markdown-extra
+        - meta_content_scope: meta.code-fence.definition.options.r.markdown-extra
+        - match: (?=\})
+          set:
+            - match: '\}'
+              scope: meta.code-fence.definition.begin.r.markdown-extra punctuation.definition.raw.code-fence.options.end.markdown
+              embed: scope:source.r
+              embed_scope: markup.raw.code-fence.r.markdown-extra
+              escape: '(```)'
+              escape_captures:
+                0: meta.code-fence.definition.end.r.markdown-extra
+                1: punctuation.definition.raw.code-fence.end.markdown
+            - match: ''
               pop: true
-            - include: scope:source.python
-        - match: "```"
-          pop: true
-          capt.ures:
-            1: punctuation.definition.raw.code-fence.end.markdown
-        - match: ''
-          embed: scope:source.python
-          embed_scope: markup.raw.code-fence.markdown
-          escape: (?=```)
-  fenced-r-code-block:
-    - match: |-
-         (?x)
-          (```)
-          (?=\{(r).*\}.*$)
+        - include: scope:source.r
+
+    - match: (```)(\{)(python)
       captures:
         1: punctuation.definition.raw.code-fence.begin.markdown
+        2: punctuation.definition.raw.code-fence.options.begin.markdown
+        3: constant.other.language-name.markdown
       push:
-        - meta_scope: markup.raw.code-fence.markdown
-        - match: \{(r)\s*
-          captures:
-            1: constant.other.language-name.markdown
-          push:
-            - meta_scope: markup.raw.code-fence.markdown.options
-            - meta_content_scope: source.r
-            - match: \}
+        - meta_scope: meta.code-fence.definition.begin.python.markdown-extra
+        - meta_content_scope: meta.code-fence.definition.options.python.markdown-extra
+        - match: (?=\})
+          set:
+            - match: '\}'
+              scope: meta.code-fence.definition.begin.python.markdown-extra punctuation.definition.raw.code-fence.options.end.markdown
+              embed: scope:source.python
+              embed_scope: markup.raw.code-fence.python.markdown-extra
+              escape: '(```)'
+              escape_captures:
+                0: meta.code-fence.definition.end.python.markdown-extra
+                1: punctuation.definition.raw.code-fence.end.markdown
+            - match: ''
               pop: true
-            - include: scope:source.r
-        - match: "```"
-          pop: true
-          capt.ures:
-            1: punctuation.definition.raw.code-fence.end.markdown
-        - match: ''
-          embed: scope:source.r
-          embed_scope: markup.raw.code-fence.markdown
-          escape: (?=```)
+        - include: scope:source.python
+
+    - match: (```)(\{)(julia)
+      captures:
+        1: punctuation.definition.raw.code-fence.begin.markdown
+        2: punctuation.definition.raw.code-fence.options.begin.markdown
+        3: constant.other.language-name.markdown
+      push:
+        - meta_scope: meta.code-fence.definition.begin.julia.markdown-extra
+        - meta_content_scope: meta.code-fence.definition.options.julia.markdown-extra
+        - match: (?=\})
+          set:
+            - match: '\}'
+              scope: meta.code-fence.definition.begin.julia.markdown-extra punctuation.definition.raw.code-fence.options.end.markdown
+              embed: scope:source.julia
+              embed_scope: markup.raw.code-fence.julia.markdown-extra
+              escape: '(```)'
+              escape_captures:
+                0: meta.code-fence.definition.end.julia.markdown-extra
+                1: punctuation.definition.raw.code-fence.end.markdown
+            - match: ''
+              pop: true
+        - include: scope:source.python
+
+    - match: (```)(\{)(sql)
+      captures:
+        1: punctuation.definition.raw.code-fence.begin.markdown
+        2: punctuation.definition.raw.code-fence.options.begin.markdown
+        3: constant.other.language-name.markdown
+      push:
+        - meta_scope: meta.code-fence.definition.begin.sql.markdown-extra
+        - meta_content_scope: meta.code-fence.definition.options.sql.markdown-extra
+        - match: (?=\})
+          set:
+            - match: '\}'
+              scope: meta.code-fence.definition.begin.sql.markdown-extra punctuation.definition.raw.code-fence.options.end.markdown
+              embed: scope:source.sql
+              embed_scope: markup.raw.code-fence.sql.markdown-extra
+              escape: '(```)'
+              escape_captures:
+                0: meta.code-fence.definition.end.sql.markdown-extra
+                1: punctuation.definition.raw.code-fence.end.markdown
+            - match: ''
+              pop: true
+        - include: scope:source.sql
+
+    - match: (```)(\{)(bash)
+      captures:
+        1: punctuation.definition.raw.code-fence.begin.markdown
+        2: punctuation.definition.raw.code-fence.options.begin.markdown
+        3: constant.other.language-name.markdown
+      push:
+        - meta_scope: meta.code-fence.definition.begin.bash.markdown-extra
+        - meta_content_scope: meta.code-fence.definition.options.bash.markdown-extra
+        - match: (?=\})
+          set:
+            - match: '\}'
+              scope: meta.code-fence.definition.begin.bash.markdown-extra punctuation.definition.raw.code-fence.options.end.markdown
+              embed: scope:source.shell.bash
+              embed_scope: markup.raw.code-fence.bash.markdown-extra
+              escape: '(```)'
+              escape_captures:
+                0: meta.code-fence.definition.end.bash.markdown-extra
+                1: punctuation.definition.raw.code-fence.end.markdown
+            - match: ''
+              pop: true
+        - include: scope:source.shell.bash
 
 
-  rcode-span:
+  code-span-kintr:
     - match: (`+)(r) (?!`)
       captures:
         1: punctuation.definition.raw.begin.markdown
         2: constant.other.language-name.markdown
       push:
-        - meta_scope: markup.raw.inline.markdown
+        - meta_scope: markup.raw.inline.markdown-extra
         - meta_content_scope: source.r
         - match: \1(?!`)
           scope: punctuation.definition.raw.end.markdown
@@ -1103,7 +1774,7 @@ contexts:
     - match: \$\$
       scope: string.other.math.latex punctuation.definition.string.begin.latex
       push:
-        - meta_scope: text.tex.latex meta.environment.math.block.dollar.latex
+        - meta_scope: text.tex.latex meta.environment.math.latex
         - include: scope:text.tex.latex#macros
         - include: math-content
         - match: \$\$
@@ -1122,7 +1793,7 @@ contexts:
         )
       scope: string.other.math.latex punctuation.definition.string.begin.latex
       push:
-        - meta_scope: text.tex.latex meta.environment.math.inline.dollar.latex
+        - meta_scope: text.tex.latex meta.environment.math.latex
         - include: scope:text.tex.latex#macros
         - include: math-content
         - match: \$
@@ -1130,7 +1801,6 @@ contexts:
           pop: true
     - match: '(?=\\begin\{\s*(equation|align)\s*\*?\s*\})'
       push:
-        - meta_scope: text.tex.latex meta.environment.math.block.be.latex
         - include: math-content
         - match: '(?=\S)'
           pop: true
@@ -1146,7 +1816,7 @@ contexts:
         - include: math-content
 
   math-content:
-    - include: rcode-span
+    - include: code-span-kintr
     - include: scope:text.tex.latex#verb
     - include: scope:text.tex.latex#text-decorators
     - include: scope:text.tex.latex#references
@@ -1160,3 +1830,14 @@ contexts:
     - include: scope:text.tex#math-characters
     - include: scope:text.tex#math-numerics
     - include: scope:text.tex.latex#general-constants
+
+
+###[ PROTOTYPES ]#############################################################
+
+  else-pop:
+    - match: (?=\S)
+      pop: true
+
+  immediately-pop:
+    - match: ''
+      pop: true
