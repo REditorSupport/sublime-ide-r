@@ -2051,27 +2051,27 @@ end
 
 
 ```{bash}
-|   ^^^^ meta.paragraph.markdown meta.code-fence.definition.begin.bash.markdown-extra constant.other.language-name.markdown
+|   ^^^^ meta.paragraph.markdown meta.code-fence.definition.begin.bash.markdown-knitr constant.other.language-name.markdown
  export x = 1
-|^^^^^^ meta.paragraph.markdown markup.raw.code-fence.bash.markdown-extra source.shell.bash meta.function-call.shell storage.modifier.shell
+|^^^^^^ meta.paragraph.markdown markup.raw.code-fence.bash.markdown-knitr source.shell.bash meta.function-call.shell storage.modifier.shell
 ```
 
 foo
 | <- - meta.code-fence
 
 ```{r}
-|   ^ meta.paragraph.markdown meta.code-fence.definition.begin.r.markdown-extra constant.other.language-name.markdown
+|   ^ meta.paragraph.markdown meta.code-fence.definition.begin.r.markdown-knitr constant.other.language-name.markdown
  function(x) {x + 1}
-|^^^^^^^^ meta.paragraph.markdown markup.raw.code-fence.r.markdown-extra source.r meta.function.r storage.type.function.r 
+|^^^^^^^^ meta.paragraph.markdown markup.raw.code-fence.r.markdown-knitr source.r meta.function.r storage.type.function.r
 ```
 
 foo
 | <- - meta.code-fence
 
 ```{python}
-|   ^^^^^^ meta.paragraph.markdown meta.code-fence.definition.begin.python.markdown-extra constant.other.language-name.markdown
+|   ^^^^^^ meta.paragraph.markdown meta.code-fence.definition.begin.python.markdown-knitr constant.other.language-name.markdown
 def f():
-|   ^ meta.paragraph.markdown markup.raw.code-fence.python.markdown-extra source.python meta.function.python entity.name.function.python meta.generic-name.python  
+|   ^ meta.paragraph.markdown markup.raw.code-fence.python.markdown-knitr source.python meta.function.python entity.name.function.python meta.generic-name.python 
   pass
 ```
 
