@@ -1,5 +1,5 @@
---- /dev/fd/63	2019-11-28 17:43:22.000000000 -0800
-+++ ../R Markdown.sublime-syntax	2019-11-28 17:36:56.000000000 -0800
+--- /dev/fd/63	2019-12-02 02:10:10.000000000 -0800
++++ ../R Markdown.sublime-syntax	2019-12-02 02:09:47.000000000 -0800
 @@ -1,13 +1,13 @@
  %YAML 1.2
  ---
@@ -20,7 +20,7 @@
  comment: |-
    this definition aims to meet CommonMark specifications http://spec.commonmark.org/
    with GitHub Formatted Markdown extensions              https://github.github.com/gfm/
-@@ -181,6 +181,31 @@
+@@ -180,6 +180,31 @@
      #   )
  contexts:
    main:
@@ -52,7 +52,7 @@
      - match: |-
          (?x)^
          (?=  {{block_quote}}
-@@ -458,6 +483,7 @@
+@@ -424,6 +449,7 @@
                pop: true
              - include: inline
              - include: bold
@@ -60,7 +60,7 @@
              - include: bold-italic-trailing
          - match: \*
            scope: punctuation.definition.italic.end.markdown
-@@ -475,6 +501,7 @@
+@@ -439,6 +465,7 @@
                pop: true
              - include: inline
              - include: italic
@@ -68,7 +68,7 @@
              - include: bold-italic-trailing
          - include: inline
          - include: bold-italic-trailing
-@@ -495,6 +522,7 @@
+@@ -459,6 +486,7 @@
          - match: \b_(?=[^\s_])(?=[^*_]*\*\*)
            comment: eat the underscore that has no corresponding underscore before the closing bold punctuation on the same line, as it won't be treated as italic by CommonMark
          - include: italic
@@ -76,7 +76,7 @@
          - include: bold-italic-trailing
      - match: '\b(__)(_)(?=\S)(?!_)'
        captures:
-@@ -527,6 +555,7 @@
+@@ -491,6 +519,7 @@
                pop: true
              - include: inline
              - include: italic
@@ -84,7 +84,7 @@
              - include: bold-italic-trailing
          - match: __\b
            scope: punctuation.definition.bold.end.markdown
-@@ -542,6 +571,7 @@
+@@ -506,6 +535,7 @@
                pop: true
              - include: inline
              - include: bold
@@ -92,7 +92,7 @@
              - include: bold-italic-trailing
          - include: inline
          - include: bold-italic-trailing
-@@ -562,6 +592,7 @@
+@@ -526,6 +556,7 @@
          - match: \*(?=[^\s*])(?=[^*_]*__\b)
            comment: eat the asterisk that has no corresponding asterisk before the closing bold punctuation on the same line, as it won't be treated as italic by CommonMark
          - include: italic
@@ -100,7 +100,7 @@
          - include: bold-italic-trailing
    bracket:
      - match: '<(?![A-Za-z/?!$])'
-@@ -705,6 +736,7 @@
+@@ -669,6 +700,7 @@
      - include: ampersand
      - include: ligatures
      - include: bracket
@@ -108,7 +108,7 @@
      - include: raw
      - include: image-inline
      - include: link-inline
-@@ -714,11 +746,13 @@
+@@ -678,11 +710,13 @@
      - include: link-ref-literal
      - include: link-ref
      - include: link-ref-footnote
@@ -122,7 +122,7 @@
    inline-bold-italic-linebreak:
      - include: inline-bold-italic
      - include: hard-line-break
-@@ -739,6 +773,7 @@
+@@ -701,6 +735,7 @@
            pop: true
          - include: inline
          - include: bold
@@ -130,7 +130,7 @@
          - match: '\*+'
          - include: bold-italic-trailing
      - match: '\b_(?=\S)(?!_)'
-@@ -757,19 +792,44 @@
+@@ -717,19 +752,44 @@
            pop: true
          - include: inline
          - include: bold
@@ -177,7 +177,7 @@
          - include: bold-italic-trailing
    bold-italic-trailing:
      - include: scope:text.html.basic
-@@ -967,6 +1027,12 @@
+@@ -925,6 +985,12 @@
          1: punctuation.definition.link.begin.markdown
          2: meta.link.reference.literal.footnote-id.markdown
          3: punctuation.definition.link.end.markdown
@@ -190,7 +190,7 @@
    list-paragraph:
      - match: '^(?=(?:[ ]{4}|\t){2,}(?![>+*\s-]))(?={{indented_code_block}})'
        push:
-@@ -1362,7 +1428,9 @@
+@@ -1320,7 +1386,9 @@
        push:
          - match: $
            pop: true
@@ -200,7 +200,7 @@
      - include: code-span
    thematic-break:
      - match: '(?={{thematic_break}})'
-@@ -1419,6 +1487,7 @@
+@@ -1377,6 +1445,7 @@
            pop: true
      - include: bold
      - include: italic
@@ -208,7 +208,7 @@
      - include: hard-line-break
      - include: scope:text.html.basic
    link-text-allow-image:
-@@ -1560,6 +1629,7 @@
+@@ -1518,6 +1587,7 @@
                        push:
                          - include: bold
                          - include: italic
@@ -216,7 +216,7 @@
                          - match: ''
                            pop: true
                      - match: |-
-@@ -1570,6 +1640,198 @@
+@@ -1528,6 +1598,198 @@
                      - include: inline
                      - include: scope:text.html.basic
  
