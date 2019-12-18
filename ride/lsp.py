@@ -74,18 +74,25 @@ if LSP_FOUND:
             return "ccls-r"
 
         def __init__(self):
-            extraArgs = [
+            clang_extraArgs = [
                 "-I{}".format(R(script="cat(R.home('include'))"))
             ]
-            env = {}
             if sys.platform == "darwin":
+                # https://github.com/MaskRay/ccls/issues/191#issuecomment-453809905
                 try:
-                    sysrootpath = subprocess.check_output(
-                        ["xcrun", "--show-sdk-path"]).decode().strip()
+                    cpath = subprocess.check_output(["clang", "-print-resource-dir"]).decode().strip()
+                    cpath = os.path.normpath(os.path.join(cpath, "../../../include/c++/v1"))
                 except Exception:
-                    sysrootpath = ""
-                cpath = os.environ["CPATH"] if "CPATH" in os.environ else ""
-                env = {"CPATH": cpath + ":" + sysrootpath + "/usr/include:/usr/local/include"}
+                    cpath = "/Library/Developer/CommandLineTools/usr/include/c++/v1"
+                if os.path.isdir(cpath):
+                    clang_extraArgs.append("-isystem{}".format(cpath))
+
+                try:
+                    sysrootpath = subprocess.check_output(["xcrun", "--show-sdk-path"]).decode().strip()
+                except Exception:
+                    sysrootpath = "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
+                if os.path.isdir(sysrootpath):
+                    clang_extraArgs.append("-isysroot{}".format(sysrootpath))
 
             self._config = ClientConfig(
                 name=self.name,
@@ -108,11 +115,10 @@ if LSP_FOUND:
                 enabled=False,
                 init_options={
                     "cache": {"directory": tempfile.mkdtemp()},
-                    "clang": {"extraArgs": extraArgs},
+                    "clang": {"extraArgs": clang_extraArgs},
                     "client": {"snippetSupport": False}
                 },
-                settings=dict(),
-                env=env
+                settings=dict()
             )
 
         @property
