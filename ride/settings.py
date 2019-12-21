@@ -42,7 +42,7 @@ class RideSettings:
             r_binary = default
         return r_binary
 
-    def custom_env(self, key=None):
+    def custom_env(self):
         env = os.environ.copy()
 
         paths = self.get("additional_paths", [])
@@ -58,10 +58,7 @@ class RideSettings:
         elif "LANG" not in env:
             env["LANG"] = "en_US.UTF-8"
 
-        if key:
-            return env[key]
-        else:
-            return env
+        return env
 
 
 ride_settings = RideSettings()

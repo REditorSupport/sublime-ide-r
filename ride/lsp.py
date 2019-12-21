@@ -79,7 +79,8 @@ if LSP_FOUND:
             ]
             if sys.platform == "darwin":
                 try:
-                    sysrootpath = subprocess.check_output(["xcrun", "--show-sdk-path"]).decode().strip()
+                    sysrootpath = subprocess.check_output(
+                        ["xcrun", "--show-sdk-path"]).decode().strip()
                 except Exception:
                     sysrootpath = "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
                 if os.path.isdir(sysrootpath):
