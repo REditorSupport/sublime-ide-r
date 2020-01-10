@@ -73,7 +73,7 @@
             "selector": "rmarkdown"
         },
         {
-            "caption": "Kint Rnw",
+            "caption": "Knit Rnw",
             "cmd": "knitr::knit2pdf('$file_name')",
             "working_dir": "$file_path",
             "selector": "rnw"
