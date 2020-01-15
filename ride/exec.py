@@ -53,19 +53,21 @@ class RideExecCoreCommand(sublime_plugin.WindowCommand):
         except KeyError:
             pass
 
-        kwargs = {}
-        kwargs["cmd"] = [ride_settings.r_binary(), "--quiet", "-e", cmd]
+        _kwargs = {}
+        _kwargs["cmd"] = [ride_settings.r_binary(), "--quiet", "-e", cmd]
         if not working_dir and is_package(self.window):
             working_dir = self.window.folders()[0]
-        kwargs["working_dir"] = working_dir
+        _kwargs["working_dir"] = working_dir
+        _kwargs = sublime.expand_variables(_kwargs, self.window.extract_variables())
         _env = ride_settings.custom_env()
         _env.update(env)
-        kwargs["env"] = _env
-        kwargs = sublime.expand_variables(kwargs, self.window.extract_variables())
+        _kwargs["env"] = _env
+        if "file_regex" in kwargs:
+            _kwargs["file_regex"] = kwargs["file_regex"]
         if ride_settings.get("terminus_exec", False):
-            self.window.run_command("terminus_exec", kwargs)
+            self.window.run_command("terminus_exec", _kwargs)
         else:
-            self.window.run_command("exec", kwargs)
+            self.window.run_command("exec", _kwargs)
 
     def input(self, *args):
         return RideAskPackage()

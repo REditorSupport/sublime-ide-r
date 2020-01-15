@@ -41,11 +41,15 @@
         {
             "caption": "Test Package",
             "cmd": "devtools::test()",
+            "working_dir": "$folder/tests/testthat",
+            "file_regex": "^(.*?\\.R):(\\d+):(\\d+)? (.*)$",
             "selector": "package"
         },
         {
             "caption": "Test File",
             "cmd": "devtools::test_file(\"$file\")",
+            "working_dir": "$folder/tests/testthat",
+            "file_regex": "^(.*?\\.R):(\\d+):(\\d+)? (.*)$",
             "selector": "package, r"
         },
         {

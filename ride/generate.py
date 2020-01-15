@@ -57,6 +57,8 @@ def generate_menu(path):
                 "cmd": item["cmd"],
                 "selector": item["selector"] if "selector" in item else ""
             }
+            if "file_regex" in item:
+                args["file_regex"] = item["file_regex"]
             if "working_dir" in item:
                 args["working_dir"] = item["working_dir"]
             menu[0]["children"].append({
@@ -90,6 +92,8 @@ def generate_build(path, scope_flags):
             "name": caption,
             "cmd": item["cmd"]
         }
+        if "file_regex" in item:
+            v["file_regex"] = item["file_regex"]
         if "working_dir" in item:
             v["working_dir"] = item["working_dir"]
         build["variants"].append(v)
