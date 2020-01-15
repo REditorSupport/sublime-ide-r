@@ -84,7 +84,6 @@
         }
     ],
 
-    // (experimental)
     // use [Terminus](https://packagecontrol.io/packages/Terminus) build system
     "terminus_exec": false,
 
