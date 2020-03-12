@@ -52,24 +52,42 @@ def expand_variables(cmd, extracted_variables):
     return cmd
 
 
-def is_package(window):
+def is_package_window(window):
     if not window:
         return False
     for folder in window.folders():
         if not os.path.isdir(folder):
             continue
-        for f in os.listdir(folder):
-            if f.endswith(".Rproj"):
-                return True
-
-        description_file = os.path.join(folder, "DESCRIPTION")
-        namespace_file = os.path.join(folder, "NAMESPACE")
-        r_source_dir = os.path.join(folder, "R")
-        if os.path.isfile(description_file) and os.path.isfile(namespace_file) \
-                and os.path.isdir(r_source_dir):
+        if is_package_folder(folder):
             return True
 
     return False
+
+
+def is_package_folder(folder):
+    for f in os.listdir(folder):
+        if f.endswith(".Rproj"):
+            return True
+
+    description_file = os.path.join(folder, "DESCRIPTION")
+    namespace_file = os.path.join(folder, "NAMESPACE")
+    r_source_dir = os.path.join(folder, "R")
+    if os.path.isfile(description_file) and os.path.isfile(namespace_file) \
+            and os.path.isdir(r_source_dir):
+        return True
+
+    return False
+
+
+def get_current_folder(view):
+    fname = view.file_name()
+    window = view.window()
+    if fname:
+        fname = os.path.realpath(fname)
+        for folder in window.folders():
+            if fname.startswith(os.path.realpath(folder) + os.sep):
+                return folder
+    return None
 
 
 def is_supported_file(view, ext=""):

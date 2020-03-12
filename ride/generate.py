@@ -6,7 +6,7 @@ import os
 import threading
 
 from .settings import ride_settings
-from .utils import is_package, is_supported_file
+from .utils import is_package_window, is_supported_file
 
 
 ride_menu = [
@@ -132,7 +132,7 @@ class RideDynamicMenuListener(sublime_plugin.EventListener):
             menu_path = os.path.join(
                 sublime.packages_path(), 'User', 'R-IDE', 'Main.sublime-menu')
 
-            if is_package(view.window()) or is_supported_file(view):
+            if is_package_window(view.window()) or is_supported_file(view):
                 if not os.path.exists(menu_path):
                     generate_menu(menu_path)
             else:
@@ -147,7 +147,7 @@ class RideDynamicBuildListener(sublime_plugin.EventListener):
     def on_activated_async(self, view):
         if view.settings().get('is_widget'):
             return
-        ispackage = is_package(view.window())
+        ispackage = is_package_window(view.window())
         isr = is_supported_file(view, "r")
         isrmarkdown = is_supported_file(view, "rmarkdown")
         isrcpp = is_supported_file(view, "rcpp")

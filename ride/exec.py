@@ -3,7 +3,7 @@ import sublime_plugin
 
 from .settings import ride_settings
 from .r import R
-from .utils import is_package, is_supported_file
+from .utils import is_package_window, is_package_folder, is_supported_file, get_current_folder
 
 
 class RideExecCommand(sublime_plugin.WindowCommand):
@@ -30,7 +30,7 @@ class RideExecCommand(sublime_plugin.WindowCommand):
 
     def is_enabled(self, selector="", **kwargs):
         scopes = [x.strip() for x in selector.split(",")]
-        if "package" in scopes and not is_package(self.window):
+        if "package" in scopes and not is_package_window(self.window):
             return False
 
         view = self.window.active_view()
@@ -55,8 +55,17 @@ class RideExecCoreCommand(sublime_plugin.WindowCommand):
 
         _kwargs = {}
         _kwargs["cmd"] = [ride_settings.r_binary(), "--quiet", "-e", cmd]
-        if not working_dir and is_package(self.window):
-            working_dir = self.window.folders()[0]
+        if not working_dir:
+            view = self.window.active_view()
+            if view:
+                current_folder = get_current_folder(view)
+                if is_package_folder(current_folder):
+                    working_dir = current_folder
+            if not working_dir:
+                for folder in self.window.folders():
+                    if is_package_folder(folder):
+                        working_dir = folder
+                        break
         _kwargs["working_dir"] = working_dir
         _kwargs = sublime.expand_variables(_kwargs, self.window.extract_variables())
         _env = ride_settings.custom_env()

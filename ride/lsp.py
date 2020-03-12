@@ -8,7 +8,7 @@ import subprocess
 
 from .settings import ride_settings
 from .r import R
-from .utils import is_package, is_supported_file
+from .utils import is_package_window, is_supported_file
 
 
 UNLOAD_MESSAGE = """
@@ -66,7 +66,7 @@ if LSP_FOUND:
             return self._config
 
         def on_start(self, window):
-            return is_package(window) or is_supported_file(window.active_view())
+            return is_package_window(window) or is_supported_file(window.active_view())
 
     class LspCclsRPlugin(LanguageHandler):
         @property
@@ -120,7 +120,7 @@ if LSP_FOUND:
             return self._config
 
         def on_start(self, window):
-            return is_package(window) or is_supported_file(window.active_view())
+            return is_package_window(window) or is_supported_file(window.active_view())
 
     def plugin_loaded():
         pass
