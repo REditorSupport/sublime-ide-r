@@ -61,6 +61,8 @@ def generate_menu(path):
                 args["file_regex"] = item["file_regex"]
             if "working_dir" in item:
                 args["working_dir"] = item["working_dir"]
+            if "cwd" in item:
+                args["cwd"] = item["cwd"]
             menu[0]["children"].append({
                 "caption": caption,
                 "command": "ride_exec",
@@ -96,6 +98,8 @@ def generate_build(path, scope_flags):
             v["file_regex"] = item["file_regex"]
         if "working_dir" in item:
             v["working_dir"] = item["working_dir"]
+        if "cwd" in item:
+            v["cwd"] = item["cwd"]
         build["variants"].append(v)
 
     pathdir = os.path.dirname(path)

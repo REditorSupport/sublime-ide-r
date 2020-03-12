@@ -47,7 +47,7 @@ class RideExecCommand(sublime_plugin.WindowCommand):
 
 
 class RideExecCoreCommand(sublime_plugin.WindowCommand):
-    def run(self, cmd="", env={}, working_dir="", **kwargs):
+    def run(self, cmd="", env={}, working_dir="", cwd="", **kwargs):
         try:
             cmd = "{package}::{function}({args})".format(**kwargs)
         except KeyError:
@@ -55,12 +55,13 @@ class RideExecCoreCommand(sublime_plugin.WindowCommand):
 
         _kwargs = {}
         _kwargs["cmd"] = [ride_settings.r_binary(), "--quiet", "-e", cmd]
+        view = self.window.active_view()
+        current_folder = get_current_folder(view) if view else None
+        if not working_dir and cwd and current_folder:
+            working_dir = cwd.replace("$current_folder", current_folder)
         if not working_dir:
-            view = self.window.active_view()
-            if view:
-                current_folder = get_current_folder(view)
-                if is_package_folder(current_folder):
-                    working_dir = current_folder
+            if current_folder and is_package_folder(current_folder):
+                working_dir = current_folder
             if not working_dir:
                 for folder in self.window.folders():
                     if is_package_folder(folder):
