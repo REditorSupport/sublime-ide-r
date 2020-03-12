@@ -1,0 +1,3 @@
+{
+    "auto_complete_selector": "source - comment - string.quoted.double.block - string.quoted.single.block - string.unquoted.heredoc"
+}
