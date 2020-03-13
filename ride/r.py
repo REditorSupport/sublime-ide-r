@@ -2,28 +2,11 @@ import sublime
 import re
 import os
 import subprocess
+from .utils import find_working_dir
 from .settings import ride_settings
 
 ANSI_ESCAPE = re.compile(r'(\x9B|\x1B\[)[0-?]*[ -/]*[@-~]')
 message_shown = [False]
-
-
-def find_working_dir():
-    window = sublime.active_window()
-    if not window:
-        return
-    view = window.active_view()
-    if view and view.file_name():
-        file_dir = os.path.dirname(view.file_name())
-        if os.path.isdir(file_dir):
-            return file_dir
-
-    if window:
-        folders = window.folders()
-        if folders and os.path.isdir(folders[0]):
-            return folders[0]
-
-    return None
 
 
 def R(script=None, file=None, args=None, stdin_text=None,

@@ -1,9 +1,11 @@
 import sublime
 import sublime_plugin
 
+import os
+
 from ..settings import ride_settings
 from ..r import R
-from ..utils import is_package_window, is_package_folder, is_supported_file, get_current_folder
+from ..utils import find_working_dir, selector_is_active
 
 
 class RideExecCommand(sublime_plugin.WindowCommand):
@@ -29,25 +31,11 @@ class RideExecCommand(sublime_plugin.WindowCommand):
                     }), 10)
 
     def is_enabled(self, selector="", **kwargs):
-        scopes = [x.strip() for x in selector.split(",")]
-        if "package" in scopes and not is_package_window(self.window):
-            return False
-
-        view = self.window.active_view()
-        if "r" in scopes and not is_supported_file(view, "r"):
-            return False
-
-        if "rmarkdown" in scopes and not is_supported_file(view, "rmarkdown"):
-            return False
-
-        if "rnw" in scopes and not is_supported_file(view, "rnw"):
-            return False
-
-        return True
+        return selector_is_active(selector, window = self.window)
 
 
 class RideExecCoreCommand(sublime_plugin.WindowCommand):
-    def run(self, cmd="", env={}, working_dir="", cwd="", **kwargs):
+    def run(self, cmd="", env={}, working_dir="", subdir="", **kwargs):
         try:
             cmd = "{package}::{function}({args})".format(**kwargs)
         except KeyError:
@@ -55,18 +43,10 @@ class RideExecCoreCommand(sublime_plugin.WindowCommand):
 
         _kwargs = {}
         _kwargs["cmd"] = [ride_settings.r_binary(), "--quiet", "-e", cmd]
-        view = self.window.active_view()
-        current_folder = get_current_folder(view) if view else None
-        if not working_dir and cwd and current_folder:
-            working_dir = cwd.replace("$current_folder", current_folder)
         if not working_dir:
-            if current_folder and is_package_folder(current_folder):
-                working_dir = current_folder
-            if not working_dir:
-                for folder in self.window.folders():
-                    if is_package_folder(folder):
-                        working_dir = folder
-                        break
+            working_dir = find_working_dir(window = self.window)
+        if working_dir and subdir:
+            working_dir = os.path.join(working_dir, subdir)
         _kwargs["working_dir"] = working_dir
         _kwargs = sublime.expand_variables(_kwargs, self.window.extract_variables())
         _env = ride_settings.ride_env()
@@ -97,7 +77,7 @@ class RideAskPackage(sublime_plugin.ListInputHandler):
     def list_items(self):
         if not self.packages:
             self.packages[:] = R(
-                "cat(paste(rownames(installed.packages())), sep='\n')").strip().split("\n")
+                "cat(.packages(all.available = TRUE), sep='\n')").strip().split("\n")
         return self.packages
 
     def confirm(self, text):

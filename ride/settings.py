@@ -20,12 +20,12 @@ class RideSettings:
     def r_binary(self, default="R"):
         r_binary = self.get("r_binary", None)
         if not r_binary and sublime.platform() == "windows":
-            r_binary = self.r_binary_window()
+            r_binary = self.r_binary_windows()
         if not r_binary:
             r_binary = default
         return r_binary
 
-    def r_binary_window(self):
+    def r_binary_windows(self):
         try:
             return os.path.join(
                 read_registry("Software\\R-Core\\R", "InstallPath")[0],
@@ -38,7 +38,7 @@ class RideSettings:
         env = os.environ.copy()
 
         paths = self.get("additional_paths", [])
-        if sublime.platform() == "osx":
+        if sublime.platform() == "osx" and os.path.isdir("/Library/TeX/texbin"):
             paths += ["/Library/TeX/texbin"]
         if paths:
             sep = ";" if sublime.platform() == "windows" else ":"

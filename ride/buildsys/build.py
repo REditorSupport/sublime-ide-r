@@ -6,7 +6,7 @@ import os
 import threading
 
 from ..settings import ride_settings
-from ..utils import is_package_window, is_supported_file
+from ..utils import selector_is_active
 
 
 ride_menu = [
@@ -61,8 +61,8 @@ def generate_menu(path):
                 args["file_regex"] = item["file_regex"]
             if "working_dir" in item:
                 args["working_dir"] = item["working_dir"]
-            if "cwd" in item:
-                args["cwd"] = item["cwd"]
+            if "subdir" in item:
+                args["subdir"] = item["subdir"]
             menu[0]["children"].append({
                 "caption": caption,
                 "command": "ride_exec",
@@ -78,7 +78,7 @@ def generate_menu(path):
         json.dump(menu, json_file)
 
 
-def generate_build(path, scope_flags):
+def generate_build(path, view):
     build = copy.deepcopy(ride_build)
 
     items = ride_settings.get("exec_items", [])
@@ -86,9 +86,7 @@ def generate_build(path, scope_flags):
         caption = item["caption"] if "caption" in item else item["name"]
         if caption == "-":
             continue
-        selector = item["selector"] if "selector" in item else ""
-        scopes = [x.strip() for x in selector.split(",")]
-        if any(not scope_flags[s] for s in scopes):
+        if "selector" in item and not selector_is_active(item["selector"], view=view):
             continue
         v = {
             "name": caption,
@@ -98,8 +96,8 @@ def generate_build(path, scope_flags):
             v["file_regex"] = item["file_regex"]
         if "working_dir" in item:
             v["working_dir"] = item["working_dir"]
-        if "cwd" in item:
-            v["cwd"] = item["cwd"]
+        if "subdir" in item:
+            v["subdir"] = item["subdir"]
         build["variants"].append(v)
 
     pathdir = os.path.dirname(path)
@@ -136,7 +134,7 @@ class RideDynamicMenuListener(sublime_plugin.EventListener):
             menu_path = os.path.join(
                 sublime.packages_path(), 'User', 'R-IDE', 'Main.sublime-menu')
 
-            if is_package_window(view.window()) or is_supported_file(view):
+            if selector_is_active(view=view):
                 if not os.path.exists(menu_path):
                     generate_menu(menu_path)
             else:
@@ -151,30 +149,17 @@ class RideDynamicBuildListener(sublime_plugin.EventListener):
     def on_activated_async(self, view):
         if view.settings().get('is_widget'):
             return
-        ispackage = is_package_window(view.window())
-        isr = is_supported_file(view, "r")
-        isrmarkdown = is_supported_file(view, "rmarkdown")
-        isrcpp = is_supported_file(view, "rcpp")
-        isrnw = is_supported_file(view, "rnw")
 
-        if not (ispackage or isr or isrmarkdown or isrcpp or isrnw):
+        if not selector_is_active(view=view):
             return
+
         if hasattr(self, "timer") and self.timer:
             self.timer.cancel()
 
         def set_build():
             build_path = os.path.join(
                 sublime.packages_path(), 'User', 'R-IDE', 'R-IDE.sublime-build')
-            generate_build(
-                build_path,
-                {
-                    "package": ispackage,
-                    "r": isr,
-                    "rcpp": isrcpp,
-                    "rmarkdown": isrmarkdown,
-                    "rnw": isrnw
-                }
-            )
+            generate_build(build_path, view=view)
 
         self.timer = threading.Timer(0.5, set_build)
         self.timer.start()

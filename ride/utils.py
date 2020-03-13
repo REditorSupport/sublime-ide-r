@@ -7,6 +7,19 @@ if sublime.platform() == "windows":
     from winreg import OpenKey, QueryValueEx, HKEY_LOCAL_MACHINE, KEY_READ
 
 
+PATTERN = re.compile(r"""
+    (?P<quote>["'])
+    (?P<quoted_var>
+        \$ (?: [_a-z][_a-z0-9]*  | \{[^}]*\} )
+    )
+    (?P=quote)
+    |
+    (?P<var>
+        \$ (?: [_a-z][_a-z0-9]*  | \{[^}]*\} )
+    )
+""", re.VERBOSE)
+
+
 def read_registry(key, valueex):
     reg_key = OpenKey(HKEY_LOCAL_MACHINE, key, 0, KEY_READ)
     return QueryValueEx(reg_key, valueex)
@@ -24,19 +37,6 @@ def escape_squote(cmd):
     return cmd
 
 
-PATTERN = re.compile(r"""
-    (?P<quote>["'])
-    (?P<quoted_var>
-        \$ (?: [_a-z][_a-z0-9]*  | \{[^}]*\} )
-    )
-    (?P=quote)
-    |
-    (?P<var>
-        \$ (?: [_a-z][_a-z0-9]*  | \{[^}]*\} )
-    )
-""", re.VERBOSE)
-
-
 def expand_variables(cmd, extracted_variables):
     def convert(m):
         quote = m.group("quote")
@@ -50,18 +50,6 @@ def expand_variables(cmd, extracted_variables):
             return sublime.expand_variables(m.group("var"), extracted_variables)
     cmd = PATTERN.sub(convert, cmd)
     return cmd
-
-
-def is_package_window(window):
-    if not window:
-        return False
-    for folder in window.folders():
-        if not os.path.isdir(folder):
-            continue
-        if is_package_folder(folder):
-            return True
-
-    return False
 
 
 def is_package_folder(folder):
@@ -90,27 +78,86 @@ def get_current_folder(view):
     return None
 
 
-def is_supported_file(view, ext=""):
+def find_working_dir(window=None, view=None):
+    if not window:
+        if view:
+            window = view.window()
+        else:
+            window = sublime.active_window()
+    if not window:
+        return None
+
     if not view:
+        view = window.active_view()
+
+    if view and view.file_name():
+        folder = get_current_folder(view)
+        if folder and is_package_folder(folder):
+            return folder
+
+        file_dir = os.path.dirname(view.file_name())
+        if os.path.isdir(file_dir):
+            return file_dir
+
+    if window:
+        for folder in window.folders():
+            if not os.path.isdir(folder):
+                continue
+            if is_package_folder(folder):
+                return folder
+
+    return None
+
+
+def is_package_window(window):
+    if not window:
         return False
-    try:
-        pt = view.sel()[0].end()
-    except Exception:
-        pt = 0
+    for folder in window.folders():
+        if not os.path.isdir(folder):
+            continue
+        if is_package_folder(folder):
+            return True
+    return False
 
-    scope_map = {
-        "r": "source.r",
-        "rnw": "text.tex.latex.rsweave",
-        "rmarkdown": "text.html.markdown.rmarkdown",
-        "rcpp": "source.c++.rcpp"
-    }
 
-    if ext:
-        scope = scope_map[ext]
-    else:
-        scope = ",".join(scope_map.values())
+DEFAULT_SELECTOR = ", ".join([
+    "meta.package.r",
+    "source.r",
+    "text.tex.latex.rsweave",
+    "text.html.markdown.rmarkdown",
+    "source.c++.rcpp"
+])
 
-    if view.match_selector(pt, scope):
+
+def selector_is_active(selector=DEFAULT_SELECTOR, window=None, view=None):
+    if not window:
+        if view:
+            window = view.window()
+        else:
+            window = sublime.active_window()
+    if not window:
+        return False
+
+    if not view:
+        view = window.active_view()
+
+    if selector is None:
+        selector = DEFAULT_SELECTOR
+    selectors = [s.strip() for s in selector.split(",")]
+    if "meta.package.r" in selectors and is_package_window(window):
         return True
+
+    view = window.active_view()
+    if view:
+        try:
+            pt = view.sel()[0].end()
+        except Exception:
+            pt = 0
+        for s in selectors:
+            if s.startswith("meta.package.r "):
+                if not is_package_window(window):
+                    continue
+            if view.match_selector(pt, s.replace("meta.package.r ", "")):
+                return True
 
     return False

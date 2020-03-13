@@ -5,7 +5,7 @@ import re
 import os
 
 from ..r import R
-from ..utils import is_supported_file
+from ..utils import selector_is_active
 
 
 class RideExtractFunctionCommand(sublime_plugin.TextCommand):
@@ -73,7 +73,7 @@ class RideExtractFunctionCommand(sublime_plugin.TextCommand):
 
     def is_enabled(self, **kwargs):
         view = self.view
-        if not is_supported_file(view, "r"):
+        if not selector_is_active("source.r", view=view):
             return False
 
         if all(s.empty() for s in view.sel()):
