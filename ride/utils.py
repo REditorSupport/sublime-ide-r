@@ -147,7 +147,6 @@ def selector_is_active(selector=DEFAULT_SELECTOR, window=None, view=None):
     if "meta.package.r" in selectors and is_package_window(window):
         return True
 
-    view = window.active_view()
     if view:
         try:
             pt = view.sel()[0].end()
