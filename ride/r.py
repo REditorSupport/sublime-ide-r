@@ -49,7 +49,7 @@ def R(script=None, file=None, args=None, stdin_text=None,
 
     if not working_dir:
         working_dir = find_working_dir()
-    custom_env = ride_settings.custom_env()
+    ride_env = ride_settings.ride_env()
 
     try:
         p = subprocess.Popen(
@@ -58,7 +58,7 @@ def R(script=None, file=None, args=None, stdin_text=None,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             cwd=working_dir,
-            env=custom_env,
+            env=ride_env,
             startupinfo=startupinfo,
             universal_newlines=True)
 

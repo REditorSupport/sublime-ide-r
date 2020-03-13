@@ -5,8 +5,6 @@ from .utils import read_registry
 
 
 class RideSettings:
-    _r_binary = None
-
     def get(self, key, default):
         window = sublime.active_window()
         if window:
@@ -19,30 +17,24 @@ class RideSettings:
         s = sublime.load_settings('R-IDE.sublime-settings')
         return s.get(key, default)
 
-    def add_on_change(self, key, on_change):
-        s = sublime.load_settings('R-IDE.sublime-settings')
-        s.add_on_change(key, on_change)
-
     def r_binary(self, default="R"):
         r_binary = self.get("r_binary", None)
-        if not r_binary:
-            if sublime.platform() == "windows":
-                if self._r_binary:
-                    r_binary = self._r_binary
-                else:
-                    try:
-                        r_binary = os.path.join(
-                            read_registry("Software\\R-Core\\R", "InstallPath")[0],
-                            "bin",
-                            "R.exe")
-                    except Exception:
-                        pass
-                    self._r_binary = r_binary
+        if not r_binary and sublime.platform() == "windows":
+            r_binary = self.r_binary_window()
         if not r_binary:
             r_binary = default
         return r_binary
 
-    def custom_env(self):
+    def r_binary_window(self):
+        try:
+            return os.path.join(
+                read_registry("Software\\R-Core\\R", "InstallPath")[0],
+                "bin",
+                "R.exe")
+        except Exception:
+            pass
+
+    def ride_env(self):
         env = os.environ.copy()
 
         paths = self.get("additional_paths", [])

@@ -4,8 +4,8 @@ import tempfile
 import re
 import os
 
-from .r import R
-from .utils import is_supported_file
+from ..r import R
+from ..utils import is_supported_file
 
 
 class RideExtractFunctionCommand(sublime_plugin.TextCommand):
@@ -54,7 +54,7 @@ class RideExtractFunctionCommand(sublime_plugin.TextCommand):
 
     def detect_free_vars(self, code):
         dfv_path = tempfile.mkstemp(suffix=".R")[1]
-        data = sublime.load_resource("Packages/R-IDE/ride/detect_free_vars.R")
+        data = sublime.load_resource("Packages/R-IDE/ride/commands/detect_free_vars.R")
         with open(dfv_path, 'w') as f:
             f.write(data.replace("\r\n", "\n"))
             f.close()

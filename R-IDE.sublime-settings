@@ -89,7 +89,7 @@
 
     // use diagnostics from LSP
     "diagnostics": true,
-
+    // log languageserver debug message
     "lsp_debug": false,
 
 

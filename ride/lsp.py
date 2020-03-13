@@ -58,7 +58,7 @@ if LSP_FOUND:
                     "diagnostics": ride_settings.get("diagnostics", True),
                     "debug": ride_settings.get("lsp_debug", False)
                 },
-                env=ride_settings.custom_env()
+                env=ride_settings.ride_env()
             )
 
         @property

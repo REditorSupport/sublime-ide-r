@@ -3,7 +3,7 @@ import sublime_plugin
 import os
 import re
 
-from .utils import escape_dquote
+from ..utils import escape_dquote
 
 
 class RideSourcePromptCommand(sublime_plugin.TextCommand):

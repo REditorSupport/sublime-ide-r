@@ -5,8 +5,8 @@ import json
 import os
 import threading
 
-from .settings import ride_settings
-from .utils import is_package_window, is_supported_file
+from ..settings import ride_settings
+from ..utils import is_package_window, is_supported_file
 
 
 ride_menu = [

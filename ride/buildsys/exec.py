@@ -1,9 +1,9 @@
 import sublime
 import sublime_plugin
 
-from .settings import ride_settings
-from .r import R
-from .utils import is_package_window, is_package_folder, is_supported_file, get_current_folder
+from ..settings import ride_settings
+from ..r import R
+from ..utils import is_package_window, is_package_folder, is_supported_file, get_current_folder
 
 
 class RideExecCommand(sublime_plugin.WindowCommand):
@@ -69,7 +69,7 @@ class RideExecCoreCommand(sublime_plugin.WindowCommand):
                         break
         _kwargs["working_dir"] = working_dir
         _kwargs = sublime.expand_variables(_kwargs, self.window.extract_variables())
-        _env = ride_settings.custom_env()
+        _env = ride_settings.ride_env()
         _env.update(env)
         _kwargs["env"] = _env
         if "file_regex" in kwargs:
