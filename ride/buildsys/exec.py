@@ -31,7 +31,7 @@ class RideExecCommand(sublime_plugin.WindowCommand):
                     }), 10)
 
     def is_enabled(self, selector="", **kwargs):
-        return selector_is_active(selector, window = self.window)
+        return selector_is_active(selector, window=self.window)
 
 
 class RideExecCoreCommand(sublime_plugin.WindowCommand):
@@ -44,7 +44,7 @@ class RideExecCoreCommand(sublime_plugin.WindowCommand):
         _kwargs = {}
         _kwargs["cmd"] = [ride_settings.r_binary(), "--quiet", "-e", cmd]
         if not working_dir:
-            working_dir = find_working_dir(window = self.window)
+            working_dir = find_working_dir(window=self.window)
         if working_dir and subdir:
             working_dir = os.path.join(working_dir, subdir)
         _kwargs["working_dir"] = working_dir

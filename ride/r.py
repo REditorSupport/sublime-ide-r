@@ -1,6 +1,5 @@
 import sublime
 import re
-import os
 import subprocess
 from .utils import find_working_dir
 from .settings import ride_settings
