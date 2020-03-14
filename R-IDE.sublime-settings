@@ -42,14 +42,14 @@
             "caption": "Test Package",
             "cmd": "devtools::test()",
             "subdir": "tests/testthat",
-            "file_regex": "^(.*?\\.R):(\\d+):(\\d+)? (.*)$",
+            "file_regex": "^(.*?\\.(?:R|r)):(\\d+):(\\d+)? (.*)$",
             "selector": "meta.package.r"
         },
         {
             "caption": "Test File",
             "cmd": "devtools::test_file(\"$file\")",
             "subdir": "tests/testthat",
-            "file_regex": "^(.*?\\.R):(\\d+):(\\d+)? (.*)$",
+            "file_regex": "^(.*?\\.(?:R|r):(\\d+):(\\d+)? (.*)$",
             "selector": "meta.package.r source.r"
         },
         {
