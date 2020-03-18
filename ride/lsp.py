@@ -85,6 +85,14 @@ if LSP_FOUND:
                     sysrootpath = "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
                 if os.path.isdir(sysrootpath):
                     clang_extraArgs.append("-isysroot{}".format(sysrootpath))
+                try:
+                    resourcedir = subprocess.check_output(
+                        ["clang", "--print-resource-dir"]).decode().strip()
+                except Exception:
+                    resourcedir = "/Library/Developer/CommandLineTools/usr/lib/clang/11.0.0"
+                if os.path.isdir(resourcedir):
+                    clang_extraArgs.append("-isystem{}/../../../include/c++/v1".format(resourcedir))
+                    clang_extraArgs.append("-isystem{}/include".format(resourcedir))
                 clang_extraArgs.append("-I/usr/include")
                 clang_extraArgs.append("-I/usr/local/include")
 
