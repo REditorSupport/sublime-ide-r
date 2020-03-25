@@ -63,6 +63,10 @@ class RideExecCoreCommand(sublime_plugin.WindowCommand):
         return RideAskPackage()
 
 
+LISTPACKAGES = "cat(.packages(all.available = TRUE), sep='\\n')"
+LISTFUNCTIONS = "cat(paste(getNamespaceExports(asNamespace('{}')), collapse = '\\n'))"
+
+
 class RideAskPackage(sublime_plugin.ListInputHandler):
     packages = []
     _initial_text = None
@@ -76,8 +80,7 @@ class RideAskPackage(sublime_plugin.ListInputHandler):
 
     def list_items(self):
         if not self.packages:
-            self.packages[:] = R(
-                "cat(.packages(all.available = TRUE), sep='\n')").strip().split("\n")
+            self.packages[:] = R(LISTPACKAGES).strip().split("\n")
         return self.packages
 
     def confirm(self, text):
@@ -105,10 +108,7 @@ class RideAskFunction(sublime_plugin.ListInputHandler):
         package = args["package"]
         self.package = package
         if package not in self.exports:
-            self.exports[package] = R(
-                """
-                cat(paste(getNamespaceExports(asNamespace('{}')), collapse = '\n'))
-                """.format(package)).strip().split("\n")
+            self.exports[package] = R(LISTFUNCTIONS.format(package)).strip().split("\n")
 
     def name(self):
         return "function"
