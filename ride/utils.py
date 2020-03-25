@@ -85,7 +85,7 @@ def find_working_dir(window=None, view=None):
         else:
             window = sublime.active_window()
     if not window:
-        return None
+        raise RuntimeError("Working Directory not found.")
 
     if not view:
         view = window.active_view()
@@ -99,14 +99,16 @@ def find_working_dir(window=None, view=None):
         if os.path.isdir(file_dir):
             return file_dir
 
-    if window:
-        for folder in window.folders():
-            if not os.path.isdir(folder):
-                continue
-            if is_package_folder(folder):
-                return folder
+    for folder in window.folders():
+        if not os.path.isdir(folder):
+            continue
+        if is_package_folder(folder):
+            return folder
 
-    return None
+    if len(window.folders()) == 0:
+        RuntimeError("Working Directory not found.")
+
+    return window.folders()[0]
 
 
 def is_package_window(window):
