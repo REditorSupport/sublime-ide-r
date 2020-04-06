@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>scope</key>
+        <string>comment.line.roxygen.r</string>
+        <key>settings</key>
+        <dict>
+            <key>preserveIndent</key>
+            <false/>
+            <key>decreaseIndentPattern</key>
+            <string></string>
+            <key>increaseIndentPattern</key>
+            <string></string>
+            <key>bracketIndentNextLinePattern</key>
+            <string></string>
+            <key>unIndentedLinePattern</key>
+            <string></string>
+        </dict>
+    </dict>
+</plist>
