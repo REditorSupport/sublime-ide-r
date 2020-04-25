@@ -1687,7 +1687,7 @@ contexts:
               pop: true
         - include: scope:source.r
 
-    - match: (```)(\{)(bash)\b
+    - match: (```)(\{)(bash|sh)\b
       captures:
         1: punctuation.definition.raw.code-fence.begin.markdown
         2: punctuation.definition.raw.code-fence.options.begin.markdown
@@ -1700,6 +1700,28 @@ contexts:
             - match: '\}'
               scope: meta.code-fence.definition.begin.bash.markdown-knitr punctuation.definition.raw.code-fence.options.end.markdown
               embed: scope:source.shell.bash
+              embed_scope: markup.raw.code-fence.bash.markdown-knitr
+              escape: '(```)'
+              escape_captures:
+                0: meta.code-fence.definition.end.bash.markdown-knitr
+                1: punctuation.definition.raw.code-fence.end.markdown
+            - match: ''
+              pop: true
+        - include: scope:source.r
+
+    - match: (```)(\{)(Rcpp)\b
+      captures:
+        1: punctuation.definition.raw.code-fence.begin.markdown
+        2: punctuation.definition.raw.code-fence.options.begin.markdown
+        3: constant.other.language-name.markdown
+      push:
+        - meta_scope: meta.code-fence.definition.begin.bash.markdown-knitr
+        - meta_content_scope: meta.code-fence.definition.options..markdown-knitr
+        - match: (?=\})
+          set:
+            - match: '\}'
+              scope: meta.code-fence.definition.begin.bash.markdown-knitr punctuation.definition.raw.code-fence.options.end.markdown
+              embed: scope:source.c++
               embed_scope: markup.raw.code-fence.bash.markdown-knitr
               escape: '(```)'
               escape_captures:
