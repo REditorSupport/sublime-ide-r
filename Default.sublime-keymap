@@ -34,9 +34,9 @@
     // comment indentation
     { "keys": ["enter"], "command": "insert", "args": {"characters": "\n#' "}, "context":
         [
-            { "key": "preceding_text", "operator": "regex_contains", "operand": "^#'.*$", "match_all": true },
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "#'.*$", "match_all": true },
             { "key": "selection_empty", "match_all": true, "operand": true, "operator": "equal"},
-            { "key": "selector", "operator": "equal", "operand": "source.r" }
+            { "key": "selector", "operator": "equal", "operand": "source.r comment.line.roxygen.r" }
         ]
     },
 
