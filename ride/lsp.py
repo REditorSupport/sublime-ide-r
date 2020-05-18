@@ -17,14 +17,104 @@ R-IDE: LSP is not installed. Please install it via Package Control.
 
 try:
     from LSP.plugin.core.handlers import LanguageHandler
-    from LSP.plugin.core.settings import ClientConfig
     LSP_FOUND = True
 except Exception:
     print(UNLOAD_MESSAGE)
     LSP_FOUND = False
 
 
-if LSP_FOUND:
+if LSP_FOUND and sublime.version() > "4000":
+
+    from LSP.plugin.core.settings import read_client_config
+
+    class LspRLangPlugin(LanguageHandler):
+        @property
+        def name(self):
+            return "rlang"
+
+        @property
+        def config(self):
+            path = ride_settings.get("r_binary_lsp", None)
+            if not path:
+                path = ride_settings.r_binary()
+
+            client_config = {
+                "command": [
+                    path,
+                    "--quiet",
+                    "--slave",
+                    "-e",
+                    "languageserver::run()"
+                ],
+                "languageId": "r",
+                "document_selector": "source.r|text.html.markdown.rmarkdown",
+                "enabled": True,
+                "initializationOptions": dict(),
+                "settings": {
+                    "diagnostics": ride_settings.get("diagnostics", True),
+                    "debug": ride_settings.get("lsp_debug", False)
+                },
+                "env": ride_settings.ride_env()
+            }
+
+            return read_client_config(self.name, client_config)
+
+        def on_start(self, window):
+            return selector_is_active(window=window)
+
+    class LspCclsRPlugin(LanguageHandler):
+        @property
+        def name(self):
+            return "ccls-r"
+
+        @property
+        def config(self):
+            clang_extraArgs = [
+                "-I{}".format(R(script="cat(R.home('include'))"))
+            ]
+            if sys.platform == "darwin":
+                try:
+                    sysrootpath = subprocess.check_output(
+                        ["xcrun", "--show-sdk-path"]).decode().strip()
+                except Exception:
+                    sysrootpath = "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
+                if os.path.isdir(sysrootpath):
+                    clang_extraArgs.append("-isysroot{}".format(sysrootpath))
+                try:
+                    resourcedir = subprocess.check_output(
+                        ["clang", "--print-resource-dir"]).decode().strip()
+                except Exception:
+                    resourcedir = "/Library/Developer/CommandLineTools/usr/lib/clang/11.0.0"
+                if os.path.isdir(resourcedir):
+                    clang_extraArgs.append("-isystem{}/../../../include/c++/v1".format(resourcedir))
+                    clang_extraArgs.append("-isystem{}/include".format(resourcedir))
+                clang_extraArgs.append("-I/usr/include")
+                clang_extraArgs.append("-I/usr/local/include")
+
+            client_config = {
+                "command": [
+                    ride_settings.get("ccls", "ccls")
+                ],
+                "languageId": "c++",
+                "document_selector": "source.c|source.c++",
+                "enabled": True,
+                "initializationOptions": {
+                    "cache": {"directory": tempfile.mkdtemp()},
+                    "clang": {"extraArgs": clang_extraArgs},
+                    "client": {"snippetSupport": False}
+                },
+            }
+            return read_client_config(self.name, client_config)
+
+        def on_start(self, window):
+            return selector_is_active(window=window)
+
+    def plugin_loaded():
+        pass
+
+elif LSP_FOUND:
+
+    from LSP.plugin.core.settings import ClientConfig
 
     class LspRLangPlugin(LanguageHandler):
         @property
@@ -132,6 +222,7 @@ if LSP_FOUND:
 
     def plugin_loaded():
         pass
+
 
 else:
     class LspRLangPlugin():

@@ -68,6 +68,16 @@
             "selector": "meta.package.r"
         },
         {
+            "caption": "Preview Package Site",
+            "cmd": "pkgdown::preview_site(preview = TRUE); Sys.sleep(0.1)",
+            "selector": "meta.package.r"
+        },
+        {
+            "caption": "Build README",
+            "cmd": "devtools::build_readme()",
+            "selector": "meta.package.r"
+        },
+        {
             "caption": "-"
         },
         {
