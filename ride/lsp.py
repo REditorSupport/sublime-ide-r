@@ -70,7 +70,9 @@ if LSP_FOUND and sublime.version() > "4000":
         @property
         def config(self):
             clang_extraArgs = [
-                "-I{}".format(R(script="cat(R.home('include'))"))
+                "-I{}".format(R(
+                    script="cat(R.home('include'))",
+                    working_dir=os.path.expanduser("~")))
             ]
             if sys.platform == "darwin":
                 try:
