@@ -23,10 +23,6 @@ install.packages("languageserver")
 
     Execute `LSP: Enable Language Server Globally` (or `In Project` if you are working with a project) in Command Palette and enable `rlang`. Upon successful execution, you should see a badge called `rlang` in the status bar.
 
-- language features for C/C++ files
-    
-    `R-IDE` ultilizes [`ccls`](https://github.com/MaskRay/ccls) to provide language features for C/C++ files. Install `ccls` first. Then enable `ccls-r` server in LSP.
-
 - R-IDE menu
 
     There is a R-IDE menu when an R project or an R file is opened. User could edit the setting `exec_items` to modify the menu.

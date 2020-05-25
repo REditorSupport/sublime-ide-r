@@ -10,7 +10,7 @@ from .ride.buildsys import (
 )
 
 from .ride.lsp import (
-    LspRLangPlugin, LspCclsRPlugin,
+    LspRLangPlugin,
     plugin_loaded as lsp_plugin_loaded
 )
 
