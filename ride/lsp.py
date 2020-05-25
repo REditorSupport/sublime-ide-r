@@ -1,13 +1,7 @@
 import sublime
 
-import tempfile
-import os
-import sys
-import subprocess
-
 
 from .settings import ride_settings
-from .r import R
 from .utils import selector_is_active
 
 
