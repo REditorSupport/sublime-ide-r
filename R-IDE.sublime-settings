@@ -114,10 +114,6 @@
     // log languageserver debug message
     "lsp_debug": false,
 
-
-    // path to ccls
-    // "ccls": "PATH TO ccls",
-
     // environment variable LANG
     // "lang": "en_US.UTF-8",
 
