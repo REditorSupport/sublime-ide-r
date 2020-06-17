@@ -3,7 +3,10 @@
     // (mac, linux): "/usr/local/bin/R"
     // (windows):    "C:\\Program Files\\R\\R-x.y.z\\bin\\R.exe"
     "r_binary": null,
-    // path to R, used by LSP, fallback to `r_binary` if null
+
+    // (Sublime Text 3 only) path to R, used by LSP, fallback to `r_binary` if null
+    // In Sublime Text 4, this settings is ignored, 
+    // the file `LSP-rlang.sublime-settings` is used instead
     "r_binary_lsp": null,
 
     // show R-IDE main menu

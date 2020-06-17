@@ -10,7 +10,7 @@ R-IDE: LSP is not installed. Please install it via Package Control.
 """
 
 try:
-    from LSP.plugin.core.handlers import LanguageHandler
+    import LSP  # noqa
     LSP_FOUND = True
 except Exception:
     print(UNLOAD_MESSAGE)
@@ -18,58 +18,24 @@ except Exception:
 
 
 if LSP_FOUND and sublime.version() > "4000":
+    from LSP.plugin.core.sessions import AbstractPlugin
 
-    from LSP.plugin.core.settings import read_client_config
-
-    class LspRLangPlugin(LanguageHandler):
-
-        def __init__(self, *args, **kwargs):
-
-            client_config = {
-                "command": [
-                    "R",
-                    "--quiet",
-                    "--slave",
-                    "-e",
-                    "languageserver::run()"
-                ],
-                "languageId": "r",
-                "document_selector": "source.r|text.html.markdown.rmarkdown",
-                "enabled": False,
-                "initializationOptions": dict(),
-                "settings": {
-                    "diagnostics": ride_settings.get("diagnostics", True),
-                    "debug": ride_settings.get("lsp_debug", False)
-                },
-                "env": ride_settings.ride_env()
-            }
-
-            self._config = read_client_config(self.name, client_config)
-
-            super().__init__(*args, **kwargs)
-
-        @property
-        def name(self):
+    class LspRLangPlugin(AbstractPlugin):
+        @classmethod
+        def name(cls):
             return "rlang"
 
-        @property
-        def config(self):
-            return self._config
-
-        def on_start(self, window):
-            r_binary = ride_settings.get("r_binary_lsp", None)
-            if not r_binary:
-                r_binary = ride_settings.r_binary()
-            if r_binary:
-                self._config.binary_args[0] = r_binary
-
-            return selector_is_active(window=window)
+        @classmethod
+        def configuration(cls):
+            basename = "LSP-rlang.sublime-settings"
+            filepath = "Packages/R-IDE/{}".format(basename)
+            return sublime.load_settings(basename), filepath
 
     def plugin_loaded():
         pass
 
 elif LSP_FOUND:
-
+    from LSP.plugin.core.handlers import LanguageHandler
     from LSP.plugin.core.settings import ClientConfig
 
     class LspRLangPlugin(LanguageHandler):
@@ -85,7 +51,6 @@ elif LSP_FOUND:
                 name=self.name,
                 binary_args=[
                     path,
-                    "--quiet",
                     "--slave",
                     "-e",
                     "languageserver::run()"
