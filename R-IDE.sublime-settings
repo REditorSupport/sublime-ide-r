@@ -4,9 +4,7 @@
     // (windows):    "C:\\Program Files\\R\\R-x.y.z\\bin\\R.exe"
     "r_binary": null,
 
-    // (Sublime Text 3 only) path to R, used by LSP, fallback to `r_binary` if null
-    // In Sublime Text 4, this settings is ignored, 
-    // the file `LSP-rlang.sublime-settings` is used instead
+    // (deprecated in Sublime Text 4) path to R, used by LSP, fallback to `r_binary` if null
     "r_binary_lsp": null,
 
     // show R-IDE main menu
@@ -112,9 +110,9 @@
     // use [Terminus](https://packagecontrol.io/packages/Terminus) build system
     "terminus_exec": false,
 
-    // use diagnostics from LSP
+    // (deprecated in Sublime Text 4) use diagnostics from LSP
     "diagnostics": true,
-    // log languageserver debug message
+    // (deprecated in Sublime Text 4) log languageserver debug message
     "lsp_debug": false,
 
     // environment variable LANG

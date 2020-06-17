@@ -9,6 +9,15 @@
         }
     },
     {
+        "caption": "Preferences: LSP-rlang Settings",
+        "command": "edit_settings",
+        "args":
+        {
+            "base_file": "${packages}/R-IDE/LSP-rlang.sublime-settings",
+            "default": "{\n\t$0\n}\n"
+        }
+    },
+    {
         "caption": "Preferences: R-IDE Key Bindings",
         "command": "edit_settings",
         "args":
