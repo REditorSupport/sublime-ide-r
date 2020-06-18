@@ -20,24 +20,6 @@ except Exception:
 if LSP_FOUND and sublime.version() > "4000":
     from LSP.plugin.core.sessions import AbstractPlugin
 
-    class LspRLangSettings:
-        def __init__(self, s):
-            self.s = sublime.load_settings(s)
-
-        def get(self, key, default=None):
-            if key == "command":
-                path = ride_settings.get("r_binary_lsp", None)
-                if not path:
-                    path = ride_settings.r_binary()
-                command = self.s.get(key, default)
-                command[0] = path
-                return command
-            else:
-                return self.s.get(key, default)
-
-        def __contains__(self, key):
-            return self.s.has(key)
-
     class LspRLangPlugin(AbstractPlugin):
         @classmethod
         def name(cls):
@@ -47,7 +29,15 @@ if LSP_FOUND and sublime.version() > "4000":
         def configuration(cls):
             basename = "LSP-rlang.sublime-settings"
             filepath = "Packages/R-IDE/{}".format(basename)
-            return LspRLangSettings(basename), filepath
+            return sublime.load_settings(basename), filepath
+
+        @classmethod
+        def additional_variables(cls):
+            r_binary_lsp = ride_settings.get("r_binary_lsp", None)
+            if not r_binary_lsp:
+                r_binary_lsp = ride_settings.r_binary()
+
+            return {"r_binary_lsp": r_binary_lsp}
 
     def plugin_loaded():
         pass
