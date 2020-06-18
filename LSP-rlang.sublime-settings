@@ -1,7 +1,7 @@
 // this file is used by LSP in Sublime Text 4 or above
 {
     "command": [
-        "R",
+        "$r_binary_lsp",  // will be replaced by r_binary_lsp
         "--slave",
         "-e",
         "languageserver::run()"

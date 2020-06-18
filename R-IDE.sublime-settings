@@ -4,7 +4,7 @@
     // (windows):    "C:\\Program Files\\R\\R-x.y.z\\bin\\R.exe"
     "r_binary": null,
 
-    // (deprecated in Sublime Text 4) path to R, used by LSP, fallback to `r_binary` if null
+    // path to R, used by LSP, fallback to `r_binary` if null
     "r_binary_lsp": null,
 
     // show R-IDE main menu
