@@ -1399,6 +1399,7 @@ contexts:
         - match: '$\n?'
           pop: true
   disable-markdown:
+    - include: latex-math
     - include: scope:text.html.basic
   disable-markdown-pop-at-tag:
     - match: (</)(\1)(>)
