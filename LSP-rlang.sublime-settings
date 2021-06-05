@@ -10,7 +10,7 @@
     "document_selector": "source.r | text.html.markdown.rmarkdown",
     "initializationOptions": {},
     "settings": {
-        "diagnostics": true,
-        "debug": false
+        // "diagnostics": true,
+        // "debug": false
     }
 }
