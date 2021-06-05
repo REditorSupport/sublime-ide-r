@@ -17,83 +17,83 @@ except Exception:
     LSP_FOUND = False
 
 
-if LSP_FOUND and sublime.version() > "4000":
-    from LSP.plugin.core.sessions import AbstractPlugin
+def plugin_loaded():
 
-    class LspRLangPlugin(AbstractPlugin):
-        @classmethod
-        def name(cls):
-            return "rlang"
+    if LSP_FOUND and sublime.version() > "4000":
+        from LSP.plugin.core.sessions import AbstractPlugin
 
-        @classmethod
-        def configuration(cls):
-            basename = "LSP-rlang.sublime-settings"
-            filepath = "Packages/R-IDE/{}".format(basename)
-            return sublime.load_settings(basename), filepath
+        class LspRLangPlugin(AbstractPlugin):
+            @classmethod
+            def name(cls):
+                return "rlang"
 
-        @classmethod
-        def additional_variables(cls):
-            r_binary_lsp = ride_settings.get("r_binary_lsp", None)
-            if not r_binary_lsp:
-                r_binary_lsp = ride_settings.r_binary()
+            @classmethod
+            def configuration(cls):
+                basename = "LSP-rlang.sublime-settings"
+                filepath = "Packages/R-IDE/{}".format(basename)
+                return sublime.load_settings(basename), filepath
 
-            return {"r_binary_lsp": r_binary_lsp}
+            @classmethod
+            def additional_variables(cls):
+                r_binary_lsp = ride_settings.get("r_binary_lsp", None)
+                if not r_binary_lsp:
+                    r_binary_lsp = ride_settings.r_binary()
 
-    def plugin_loaded():
-        pass
+                return {"r_binary_lsp": r_binary_lsp}
 
-elif LSP_FOUND:
-    from LSP.plugin.core.handlers import LanguageHandler
-    from LSP.plugin.core.settings import ClientConfig
+        def plugin_loaded():
+            pass
 
-    class LspRLangPlugin(LanguageHandler):
-        @property
-        def name(self):
-            return "rlang"
+    elif LSP_FOUND:
+        from LSP.plugin.core.handlers import LanguageHandler
+        from LSP.plugin.core.settings import ClientConfig
 
-        def __init__(self):
-            path = ride_settings.get("r_binary_lsp", None)
-            if not path:
-                path = ride_settings.r_binary()
-            self._config = ClientConfig(
-                name=self.name,
-                binary_args=[
-                    path,
-                    "--slave",
-                    "-e",
-                    "languageserver::run()"
-                ],
-                tcp_port=None,
-                scopes=["source.r", "text.html.markdown.rmarkdown"],
-                syntaxes=[
-                    "Packages/R/R.sublime-syntax",
-                    "Packages/R-IDE/R Markdown.sublime-syntax"
-                ],
-                languageId='r',
-                languages=[],
-                enabled=False,
-                init_options=dict(),
-                settings={
-                    "diagnostics": ride_settings.get("diagnostics", True),
-                    "debug": ride_settings.get("lsp_debug", False)
-                },
-                env=ride_settings.ride_env()
-            )
+        class LspRLangPlugin(LanguageHandler):
+            @property
+            def name(self):
+                return "rlang"
 
-        @property
-        def config(self):
-            return self._config
+            def __init__(self):
+                path = ride_settings.get("r_binary_lsp", None)
+                if not path:
+                    path = ride_settings.r_binary()
+                self._config = ClientConfig(
+                    name=self.name,
+                    binary_args=[
+                        path,
+                        "--slave",
+                        "-e",
+                        "languageserver::run()"
+                    ],
+                    tcp_port=None,
+                    scopes=["source.r", "text.html.markdown.rmarkdown"],
+                    syntaxes=[
+                        "Packages/R/R.sublime-syntax",
+                        "Packages/R-IDE/R Markdown.sublime-syntax"
+                    ],
+                    languageId='r',
+                    languages=[],
+                    enabled=False,
+                    init_options=dict(),
+                    settings={
+                        "diagnostics": ride_settings.get("diagnostics", True),
+                        "debug": ride_settings.get("lsp_debug", False)
+                    },
+                    env=ride_settings.ride_env()
+                )
 
-        def on_start(self, window):
-            return selector_is_active(window=window)
+            @property
+            def config(self):
+                return self._config
 
-    def plugin_loaded():
-        pass
+            def on_start(self, window):
+                return selector_is_active(window=window)
 
+        def plugin_loaded():
+            pass
 
-else:
-    class LspRLangPlugin():
-        pass
+    else:
+        class LspRLangPlugin():
+            pass
 
-    def plugin_loaded():
         sublime.message_dialog(UNLOAD_MESSAGE)
