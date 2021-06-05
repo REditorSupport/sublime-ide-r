@@ -9,14 +9,6 @@ from .ride.buildsys import (
     RideDynamicMenuListener, RideDynamicBuildListener
 )
 
-from .ride.lsp import (
-    plugin_loaded as lsp_plugin_loaded
-)
-
-
-def plugin_loaded():
-    lsp_plugin_loaded()
-
 
 def plugin_unloaded():
     build_plugin_unloaded()
