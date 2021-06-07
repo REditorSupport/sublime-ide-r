@@ -19,10 +19,6 @@ install.packages("languageserver")
 
 ## Usage
 
-- language features for R files
-
-    Execute `LSP: Enable Language Server Globally` (or `In Project` if you are working with a project) in Command Palette and enable `rlang`. Upon successful execution, you should see a badge called `rlang` in the status bar.
-
 - R-IDE menu
 
     There is a R-IDE menu when an R project or an R file is opened. User could edit the setting `exec_items` to modify the menu.
