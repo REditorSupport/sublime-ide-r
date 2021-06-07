@@ -44,8 +44,8 @@
             "selector": "meta.package.r"
         },
         {
-            "caption": "Test File",
-            "cmd": "devtools::test_file(\"$file\")",
+            "caption": "Test Active File",
+            "cmd": "devtools::test_active_file(\"$file\")",
             "subdir": "tests/testthat",
             "file_regex": "^(.*?\\.(?:R|r):(\\d+):(\\d+)? (.*)$",
             "selector": "meta.package.r source.r"
