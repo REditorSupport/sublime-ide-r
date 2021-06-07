@@ -14,7 +14,7 @@ This is a new iteration of the no-longer-maintained [R-Box](https://github.com/r
 install.packages("languageserver")
 ```
 
-2. Install `R-IDE` and [`LSP`](https://github.com/tomv564/LSP) from Package Control
+2. Install `R-IDE`, [`LSP`](https://github.com/sublimelsp/LSP) and `LSP-R` (release soon) from Package Control
 
 
 ## Usage
