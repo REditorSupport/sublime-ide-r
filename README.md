@@ -1,8 +1,6 @@
 R-IDE: Make Sublime Text a perfect IDE for R
 ------------
 
-<a href="https://www.paypal.me/randy3k/5usd" title="Donate to this project using Paypal"><img src="https://img.shields.io/badge/paypal-donate-blue.svg" /></a>
-
 This is a new iteration of the no-longer-maintained [R-Box](https://github.com/randy3k/R-Box) aiming to utilize the use
   of [language server](https://github.com/REditorSupport/languageserver) + better support R Markdown + better support of R packaging + .....
 
