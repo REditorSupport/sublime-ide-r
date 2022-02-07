@@ -27,13 +27,6 @@
                                     "user_file": "${packages}/User/Default ($platform).sublime-keymap",
                                     "default": "[\n\t$0\n]\n"
                                 }
-                            },
-                            {
-                                "caption": "LSP-rlang Settings",
-                                "command": "edit_settings",
-                                "args": {
-                                    "base_file": "${packages}/R-IDE/LSP-rlang.sublime-settings"
-                                }
                             }
                         ]
                     }
