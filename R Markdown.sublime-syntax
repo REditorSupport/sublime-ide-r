@@ -190,7 +190,7 @@ contexts:
         1: punctuation.definition.frontmatter
       embed: scope:source.yaml
       embed_scope: markup.raw.yaml.front-matter
-      escape: ^\s*(---)\s*$
+      escape: ^\s*(---|\.\.\.)\s*$
       escape_captures:
           1: punctuation.definition.frontmatter
     - match: ^\s*(\+\+\+)\s*$
