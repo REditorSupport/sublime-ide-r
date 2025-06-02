@@ -193,3 +193,54 @@ contexts:
       scope: invalid.illegal.non-terminated.raw.markdown
       pop: 1
     - include: scope:source.r#statements
+
+  math-inline:
+    - meta_append: true
+    # LaTeX \begin{...} \end{...} math blocks
+    - include: scope:text.tex.latex#block-math-begin-end-command
+    # Inline LaTeX Math Expressions with some heuristics
+    # to distinguish from normally escaped characters
+    - match: |-
+        (?x)
+        # begin
+        (\\\[)(?=\S)
+        # end
+        (?= .* [^\s\\\\](\\\\{2})*\\\](?!\w) )
+      scope:
+        markup.math.inline.markdown
+        text.tex.latex.embedded.markdown
+        meta.environment.math.block.dollar.latex
+        punctuation.definition.math.begin.latex
+      embed: math-content
+      embed_scope:
+        markup.math.inline.markdown
+        text.tex.latex.embedded.markdown
+        meta.environment.math.block.dollar.latex
+      escape: '{{no_escape_behind}}\\\]'
+      escape_captures:
+        0: markup.math.inline.markdown
+           text.tex.latex.embedded.markdown
+           meta.environment.math.block.dollar.latex
+           punctuation.definition.math.end.latex
+    - match: |-
+        (?x)
+        # begin
+        (\\\()(?=\S)
+        # end
+        (?= .* [^\s\\\\](\\\\{2})*\\\)(?!\w) )
+      scope:
+        markup.math.inline.markdown
+        text.tex.latex.embedded.markdown
+        meta.environment.math.block.dollar.latex
+        punctuation.definition.math.begin.latex
+      embed: math-content
+      embed_scope:
+        markup.math.inline.markdown
+        text.tex.latex.embedded.markdown
+        meta.environment.math.block.dollar.latex
+      escape: '{{no_escape_behind}}\\\)'
+      escape_captures:
+        0: markup.math.inline.markdown
+           text.tex.latex.embedded.markdown
+           meta.environment.math.block.dollar.latex
+           punctuation.definition.math.end.latex

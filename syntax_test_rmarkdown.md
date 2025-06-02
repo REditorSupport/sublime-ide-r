@@ -78,3 +78,35 @@ This is latex $x^2 = 3$
 |                  ^ keyword.operator.comparison.tex
 |                    ^ meta.number.integer.decimal.tex constant.numeric.value.tex
 |                     ^ punctuation.definition.math.end.latex
+
+Inline \[1 + 1\], but escaped \[ 1+1\] or \[1+1 \]
+|      ^^^^^^^^^ markup.math.inline.markdown text.tex.latex.embedded.markdown meta.environment.math.block.dollar.latex
+|                             ^^ constant.character.escape.markdown
+|                                   ^^ constant.character.escape.markdown
+|                                         ^^ constant.character.escape.markdown
+|                                               ^^ constant.character.escape.markdown
+
+Inline \(1 + 1\), but escaped \( 1+1\) or \(1+1 \)
+|      ^^^^^^^^^ markup.math.inline.markdown text.tex.latex.embedded.markdown meta.environment.math.block.dollar.latex
+|                             ^^ constant.character.escape.markdown
+|                                   ^^ constant.character.escape.markdown
+|                                         ^^ constant.character.escape.markdown
+|                                               ^^ constant.character.escape.markdown
+
+LaTeX \begin{equation}\overline{Y}_{g,t}\end{equation}.
+|^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.paragraph.markdown
+|     ^^^^^^^^^^^^^^^^ meta.function.begin.latex
+|     ^^^^^^ keyword.declaration.environment.begin.latex
+|     ^ punctuation.definition.backslash.latex
+|           ^^^^^^^^^^ meta.group.brace.tex
+|           ^ punctuation.definition.group.brace.begin.tex
+|            ^^^^^^^^ variable.parameter.function.latex
+|                    ^ punctuation.definition.group.brace.end.tex
+|                     ^^^^^^^^^^^^^^^^^^ meta.environment.math.block.latex markup.math.block
+|                                       ^^^^^^^^^^^^^^ meta.function.end.latex
+|                                       ^^^^ keyword.declaration.environment.end.latex
+|                                       ^ punctuation.definition.backslash.latex
+|                                           ^^^^^^^^^^ meta.group.brace.tex
+|                                           ^ punctuation.definition.group.brace.begin.tex
+|                                            ^^^^^^^^ variable.parameter.function.latex
+|                                                    ^ punctuation.definition.group.brace.end.tex
