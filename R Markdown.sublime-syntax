@@ -10,7 +10,7 @@ contexts:
 
   fenced-syntaxes:
     - meta_prepend: true
-    - match: (```)(\{)(bash)\b
+    - match: '[ \t]*(```)(\{)(bash)\b'
       captures:
         1: punctuation.definition.raw.code-fence.begin.markdown
         2: punctuation.definition.raw.code-fence.options.begin.markdown
@@ -28,7 +28,7 @@ contexts:
                 2: meta.fold.begin.markdown
               embed: scope:source.shell.bash
               embed_scope: markup.raw.code-fence.markdown
-              escape: (```)(\n?)
+              escape: ^[ \t]*(```)(\n?)
               escape_captures:
                 0: meta.code-fence.definition.end.markdown
                 1: punctuation.definition.raw.code-fence.end.markdown
@@ -36,7 +36,7 @@ contexts:
               pop: 1
         - include: scope:source.r#statements
 
-    - match: (```)(\{)(julia)\b
+    - match: '[ \t]*(```)(\{)(julia)\b'
       captures:
         1: punctuation.definition.raw.code-fence.begin.markdown
         2: punctuation.definition.raw.code-fence.options.begin.markdown
@@ -54,7 +54,7 @@ contexts:
                 2: meta.fold.begin.markdown
               embed: scope:source.julia
               embed_scope: markup.raw.code-fence.markdown
-              escape: (```)(\n?)
+              escape: ^[ \t]*(```)(\n?)
               escape_captures:
                 0: meta.code-fence.definition.end.markdown
                 1: punctuation.definition.raw.code-fence.end.markdown
@@ -62,7 +62,7 @@ contexts:
               pop: 1
         - include: scope:source.r#statements
 
-    - match: (```)(\{)(python)\b
+    - match: '[ \t]*(```)(\{)(python)\b'
       captures:
         1: punctuation.definition.raw.code-fence.begin.markdown
         2: punctuation.definition.raw.code-fence.options.begin.markdown
@@ -80,7 +80,7 @@ contexts:
                 2: meta.fold.begin.markdown
               embed: scope:source.python
               embed_scope: markup.raw.code-fence.markdown
-              escape: (```)(\n?)
+              escape: ^[ \t]*(```)(\n?)
               escape_captures:
                 0: meta.code-fence.definition.end.markdown
                 1: punctuation.definition.raw.code-fence.end.markdown
@@ -88,7 +88,7 @@ contexts:
               pop: 1
         - include: scope:source.r#statements
 
-    - match: (```)(\{)(r|Rscript)\b
+    - match: '[ \t]*(```)(\{)(r|Rscript)\b'
       captures:
         1: punctuation.definition.raw.code-fence.begin.markdown
         2: punctuation.definition.raw.code-fence.options.begin.markdown
@@ -106,7 +106,7 @@ contexts:
                 2: meta.fold.begin.markdown
               embed: scope:source.r
               embed_scope: markup.raw.code-fence.markdown
-              escape: (```)(\n?)
+              escape: ^[ \t]*(```)(\n?)
               escape_captures:
                 0: meta.code-fence.definition.end.markdown
                 1: punctuation.definition.raw.code-fence.end.markdown
@@ -114,7 +114,7 @@ contexts:
               pop: 1
         - include: scope:source.r#statements
 
-    - match: (```)(\{)(sql)\b
+    - match: '[ \t]*(```)(\{)(sql)\b'
       captures:
         1: punctuation.definition.raw.code-fence.begin.markdown
         2: punctuation.definition.raw.code-fence.options.begin.markdown
@@ -132,7 +132,7 @@ contexts:
                 2: meta.fold.begin.markdown
               embed: scope:source.sql
               embed_scope: markup.raw.code-fence.markdown
-              escape: (```)(\n?)
+              escape: ^[ \t]*(```)(\n?)
               escape_captures:
                 0: meta.code-fence.definition.end.markdown
                 1: punctuation.definition.raw.code-fence.end.markdown
