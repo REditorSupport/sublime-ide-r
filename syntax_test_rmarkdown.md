@@ -19,20 +19,6 @@
 foo
 | <- - meta.code-fence
 
-```{r}
-|^^^^^ meta.code-fence.definition.begin.markdown
-|^^ punctuation.definition.raw.code-fence.begin.markdown
-|  ^ punctuation.definition.raw.code-fence.options.begin.markdown
-|   ^ constant.other.language-name.markdown
-|    ^ punctuation.definition.raw.code-fence.options.end.markdown
- function(x) {x + 1}
-|^^^^^^^^ markup.raw.code-fence.markdown meta.function.r keyword.declaration.function.r
-```
-|^^ meta.code-fence.definition.end.markdown punctuation.definition.raw.code-fence.end.markdown
-
-foo
-| <- - meta.code-fence
-
 ```{python}
 |^^^^^^^^^^ meta.code-fence.definition.begin.markdown
 |^^ punctuation.definition.raw.code-fence.begin.markdown
@@ -47,6 +33,62 @@ def f():
 
 foo
 | <- - meta.code-fence
+
+```{r}
+|^^^^^^ meta.code-fence.definition.begin.markdown
+|^^ punctuation.definition.raw.code-fence.begin.markdown
+|  ^ punctuation.definition.raw.code-fence.options.begin.markdown
+|   ^ constant.other.language-name.markdown
+|    ^ punctuation.definition.raw.code-fence.options.end.markdown
+ function(x) {x + 1}
+|^^^^^^^^ markup.raw.code-fence.markdown meta.function.r keyword.declaration.function.r
+```
+| <- meta.code-fence.definition.end.markdown punctuation.definition.raw.code-fence.end.markdown
+|^^ meta.code-fence.definition.end.markdown punctuation.definition.raw.code-fence.end.markdown
+|  ^ meta.code-fence.definition.end.markdown meta.fold.end.markdown
+
+foo
+| <- - meta.code-fence
+
+   ```{r}
+|^^^^^^^^^ meta.code-fence.definition.begin.markdown
+|  ^^^ punctuation.definition.raw.code-fence.begin.markdown
+|     ^ punctuation.definition.raw.code-fence.options.begin.markdown
+|      ^ constant.other.language-name.markdown
+|       ^ punctuation.definition.raw.code-fence.options.end.markdown
+   func_producing_fenced_code_block(
+    '```{r attrib=value}',
+    'any r-code',
+    '```'
+|^^^^^^^^ markup.raw.code-fence.markdown meta.function-call.arguments.r
+|   ^^^^^ meta.string.r string.quoted.single.r
+|   ^ punctuation.definition.string.begin.r
+|       ^ punctuation.definition.string.end.r
+   )
+|^^^ markup.raw.code-fence.markdown meta.function-call.arguments.r
+|  ^ punctuation.section.arguments.end.r
+   ```
+|^^^^^^ meta.code-fence.definition.end.markdown
+|  ^^^ punctuation.definition.raw.code-fence.end.markdown
+
+- ```{r}
+|^^^^^^^ markup.list.unnumbered.markdown
+| ^^^^^^ meta.code-fence.definition.begin.markdown
+| ^^^ punctuation.definition.raw.code-fence.begin.markdown
+|    ^ punctuation.definition.raw.code-fence.options.begin.markdown
+|     ^ constant.other.language-name.markdown
+|      ^ punctuation.definition.raw.code-fence.options.end.markdown
+   func_producing_fenced_code_block(
+    '```{r attrib=value}',
+    'any r-code',
+    '```'
+|^^^^^^^^ markup.list.unnumbered.markdown markup.raw.code-fence.markdown meta.function-call.arguments.r
+|   ^^^^^ meta.string.r string.quoted.single.r
+|   ^ punctuation.definition.string.begin.r
+|       ^ punctuation.definition.string.end.r
+  ```
+|^^^^ meta.code-fence.definition.end.markdown
+| ^^^ punctuation.definition.raw.code-fence.end.markdown
 
 
 # Test inlines
